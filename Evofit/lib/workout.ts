@@ -1,4 +1,5 @@
 import type { AnamneseData } from "./types";
+import GIF_URLS from "./gif-urls.json";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -24,18 +25,8 @@ export interface Exercise {
   gif?: string; // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
 }
 
-// IDs com GIF disponível em /public/gifs/<id>.gif
-const EXERCISE_GIFS = new Set([
-  "q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15",
-  "g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12",
-  "po1","po3","po4","po5","po6","po8","po9","po10","po11","po12",
-  "pa1","pa2","pa3","pa4","pa5",
-  "p1","p2","p3","p4","p5","p6","p7","p8","p9","p10","p11","p12","p13","p14","p15","p16",
-  "c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14","c15","c16",
-  "o1","o2","o3","o4","o5","o6","o7","o8","o9","o10","o11","o12","o13","o14","o15",
-  "b1","b2","b3","b4","b5","b6","b7","b8","b9","b10","b11","b12","b13","b14",
-  "t1","t2","t3","t4","t5","t6","t7","t8","t9","t10","t11","t12","t13",
-]);
+// Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
+const GIF_MAP = GIF_URLS as Record<string, string>;
 
 export interface DayWorkout {
   name: string;
@@ -642,7 +633,7 @@ export function getWorkoutBySlot(
     sets:   `${sets}x${reps}`,
     rest,
     tip,
-    gif:    EXERCISE_GIFS.has(ex.id) ? `/gifs/${ex.id}.gif` : undefined,
+    gif:    GIF_MAP[ex.id] ?? undefined,
   }));
 
   const restSeconds = parseInt(rest) || 60;
@@ -713,7 +704,7 @@ export function getTodayWorkout(anamnese: AnamneseData | null, cycleNumber: numb
     sets:   `${sets}x${reps}`,
     rest,
     tip,
-    gif:    EXERCISE_GIFS.has(ex.id) ? `/gifs/${ex.id}.gif` : undefined,
+    gif:    GIF_MAP[ex.id] ?? undefined,
   }));
 
   const restSeconds = parseInt(rest) || 60;

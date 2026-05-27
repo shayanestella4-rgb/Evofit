@@ -1,0 +1,16 @@
+# TRD — Elevare
+
+## Plataforma
+Web (navegador)
+
+## Stack tecnológica
+React / Next.js
+
+## Autenticação
+Sim, com Google ou Apple
+
+## Integrações externas
+Nenhuma integração definida neste momento.
+
+## Volume esperado no lançamento
+Até 1.000 (lançamento pequeno)

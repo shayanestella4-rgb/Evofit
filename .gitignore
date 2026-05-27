@@ -1,0 +1,9 @@
+# Pasta de GIFs originais (541MB — muito grande para GitHub)
+Gifs/
+
+# Pastas de referência visual (não fazem parte do código)
+identidade-visual*/
+referencias*/
+
+# Node modules (já tem .gitignore dentro de Evofit/)
+node_modules/

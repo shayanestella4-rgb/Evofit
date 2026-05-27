@@ -1,0 +1,750 @@
+import type { AnamneseData } from "./types";
+
+// ─── Tipos ────────────────────────────────────────────────────────────────────
+
+export type MuscleGroup =
+  | "quadriceps"
+  | "gluteos"
+  | "posteriores"
+  | "panturrilha"
+  | "peito"
+  | "costas"
+  | "ombros"
+  | "biceps"
+  | "triceps"
+  | "core";
+
+export interface Exercise {
+  id: string;
+  name: string;
+  muscle: string;
+  sets: string;
+  rest: string;
+  tip: string;
+  gif?: string; // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
+}
+
+// IDs com GIF disponível em /public/gifs/<id>.gif
+const EXERCISE_GIFS = new Set([
+  "q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15",
+  "g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12",
+  "po1","po3","po4","po5","po6","po8","po9","po10","po11","po12",
+  "pa1","pa2","pa3","pa4","pa5",
+  "p1","p2","p3","p4","p5","p6","p7","p8","p9","p10","p11","p12","p13","p14","p15","p16",
+  "c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14","c15","c16",
+  "o1","o2","o3","o4","o5","o6","o7","o8","o9","o10","o11","o12","o13","o14","o15",
+  "b1","b2","b3","b4","b5","b6","b7","b8","b9","b10","b11","b12","b13","b14",
+  "t1","t2","t3","t4","t5","t6","t7","t8","t9","t10","t11","t12","t13",
+]);
+
+export interface DayWorkout {
+  name: string;
+  emoji: string;
+  muscleLabel: string;
+  duration: number;
+  exercises: Exercise[];
+  isRest: boolean;
+}
+
+export interface WeekDay {
+  day: string;
+  isTraining: boolean;
+  workoutName: string;
+}
+
+interface ExerciseDef {
+  id: string;
+  name: string;
+  primaryMuscle: string;
+  compound: boolean;       // compostos primeiro na ordenação
+  avoidFor: string[];      // lesões que contra-indicam
+}
+
+interface SplitSlot {
+  name: string;
+  emoji: string;
+  groups: MuscleGroup[];
+  /** Quantidade de exercícios a selecionar por grupo muscular */
+  volumes: Partial<Record<MuscleGroup, number>>;
+}
+
+// ─── Banco de exercícios ──────────────────────────────────────────────────────
+
+const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
+
+  // ── QUADRÍCEPS (15 exercícios — ~5 ciclos) ────────────────────────────────
+
+  quadriceps: [
+    { id: "q1",  name: "Agachamento livre",               primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q2",  name: "Leg press 45°",                   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q9",  name: "Leg press horizontal",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q6",  name: "Hack squat (máquina)",            primaryMuscle: "Quadríceps / Vasto lateral",  compound: true,  avoidFor: ["Joelho"] },
+    { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: [] },
+    { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q13", name: "Agachamento com trava",           primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q14", name: "Agachamento taça",                primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q3",  name: "Agachamento búlgaro",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "q4",  name: "Afundo com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "q7",  name: "Agachamento búlgaro com barra",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "q15", name: "Leg press 45° unilateral",        primaryMuscle: "Quadríceps (unilateral)",     compound: true,  avoidFor: [] },
+    { id: "q5",  name: "Cadeira extensora",               primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
+    { id: "q12", name: "Cadeira extensora unilateral",    primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
+  ],
+
+  // ── GLÚTEOS (12 exercícios — ~4 ciclos) ──────────────────────────────────
+  // Ordenados para intercalar padrões de movimento — sem repetir o mesmo padrão
+  // dentro do mesmo ciclo de picks.
+  // Ciclo 1 · volume=2 (homem): g6 + g7 → hip thrust + abdução na máquina ✓
+  // Ciclo 1 · volume=3 (glút+post feminino): g6 + g7 + g2 → hip thrust + abdução + sumô ✓
+  // Ciclo 1 · volume=6 (glút isolado feminino): g6 + g7 + g2 + g8 + g3 + g9 → padrões distintos ✓
+
+  gluteos: [
+    { id: "g6",  name: "Elevação pélvica (hip thrust)",   primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
+    { id: "g7",  name: "Abdução sentada na máquina",      primaryMuscle: "Glúteo médio",                compound: true,  avoidFor: [] },
+    { id: "g2",  name: "Agachamento sumô com haltere",    primaryMuscle: "Glúteos / Adutores",          compound: true,  avoidFor: [] },
+    { id: "g8",  name: "Recuo com halteres",              primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: [] },
+    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "g9",  name: "Elevação de perna em pé",         primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
+    { id: "g12", name: "Step-up com barra",               primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "g10", name: "Elevação pélvica unilateral",     primaryMuscle: "Glúteo máximo (unilateral)",  compound: true,  avoidFor: [] },
+    { id: "g1",  name: "Hip thrust com barra",            primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "g11", name: "Coice de glúteo no cabo",         primaryMuscle: "Glúteo máximo",               compound: false, avoidFor: [] },
+    { id: "g4",  name: "Glúteo no cabo (kickback)",       primaryMuscle: "Glúteo máximo",               compound: false, avoidFor: [] },
+    { id: "g5",  name: "Abdução no cabo baixo",           primaryMuscle: "Glúteo médio",                compound: false, avoidFor: [] },
+  ],
+
+  // ── POSTERIORES (10 exercícios) ───────────────────────────────────────────
+  // Cadeira flexora e mesa flexora promovidos para compound:true e posicionados
+  // logo no início → aparecem no ciclo 1 para todos os alunos.
+  // Terra romeno com halteres e RDL convencional removidos.
+
+  posteriores: [
+    { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po3",  name: "Cadeira flexora",                primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
+    { id: "po4",  name: "Mesa flexora",                   primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
+    { id: "po9",  name: "Stiff com haltere",              primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po6",  name: "Stiff unilateral com halteres",  primaryMuscle: "Isquiotibiais (unilateral)",  compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po5",  name: "Bom dia (good morning)",         primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po11", name: "Bom dia no Smith",               primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po12", name: "Levantamento terra sumô",        primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho"] },
+    { id: "po8",  name: "Flexora em pé",                  primaryMuscle: "Isquiotibiais (isolamento)",  compound: false, avoidFor: ["Joelho"] },
+    { id: "po10", name: "Flexão nórdica",                 primaryMuscle: "Isquiotibiais (excêntrico)",  compound: false, avoidFor: ["Joelho"] },
+  ],
+
+  // ── PANTURRILHA (5 exercícios — ~2 ciclos) ────────────────────────────────
+
+  panturrilha: [
+    { id: "pa1", name: "Panturrilha em pé na máquina",        primaryMuscle: "Gastrocnêmio",            compound: false, avoidFor: [] },
+    { id: "pa3", name: "Panturrilha no leg press",            primaryMuscle: "Gastrocnêmio",            compound: false, avoidFor: [] },
+    { id: "pa5", name: "Panturrilha no leg press horizontal", primaryMuscle: "Gastrocnêmio",            compound: false, avoidFor: [] },
+    { id: "pa4", name: "Panturrilha no Smith",                primaryMuscle: "Gastrocnêmio",            compound: false, avoidFor: [] },
+    { id: "pa2", name: "Panturrilha sentado (sóleo)",         primaryMuscle: "Sóleo",                   compound: false, avoidFor: [] },
+  ],
+
+  // ── PEITO (16 exercícios — ~5 ciclos) ────────────────────────────────────
+
+  peito: [
+    { id: "p1",  name: "Supino reto com barra",           primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p2",  name: "Supino inclinado com halteres",   primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p7",  name: "Supino inclinado com barra",      primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p15", name: "Supino com halteres",             primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p3",  name: "Supino declinado com halteres",   primaryMuscle: "Peitoral inferior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p8",  name: "Supino na máquina",               primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p13", name: "Supino vertical (shoulder press)", primaryMuscle: "Peitoral / Ombros",          compound: true,  avoidFor: ["Ombro"] },
+    { id: "p6",  name: "Flexão de braço",                 primaryMuscle: "Peitoral / Tríceps",          compound: true,  avoidFor: [] },
+    { id: "p4",  name: "Crucifixo com halteres",          primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p9",  name: "Crucifixo inclinado",             primaryMuscle: "Peitoral superior (abertura)", compound: false, avoidFor: ["Ombro"] },
+    { id: "p14", name: "Crucifixo com cabo deitado",      primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p5",  name: "Crossover polia alta",            primaryMuscle: "Peitoral / Serrátil",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p10", name: "Crossover polia baixa",           primaryMuscle: "Peitoral inferior",           compound: false, avoidFor: ["Ombro"] },
+    { id: "p16", name: "Crossover polia média",           primaryMuscle: "Peitoral (porção média)",     compound: false, avoidFor: ["Ombro"] },
+    { id: "p11", name: "Voador peitoral",                 primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p12", name: "Pack deck (máquina)",             primaryMuscle: "Peitoral",                    compound: false, avoidFor: ["Ombro"] },
+  ],
+
+  // ── COSTAS (16 exercícios — ~5 ciclos) ───────────────────────────────────
+
+  costas: [
+    { id: "c7",  name: "Barra fixa",                      primaryMuscle: "Dorsal / Bíceps",             compound: true,  avoidFor: ["Ombro"] },
+    { id: "c1",  name: "Puxada frontal na barra",         primaryMuscle: "Dorsal / Teres maior",        compound: true,  avoidFor: ["Ombro"] },
+    { id: "c13", name: "Puxada pegada fechada",           primaryMuscle: "Dorsal inferior",             compound: true,  avoidFor: [] },
+    { id: "c10", name: "Puxada unilateral",               primaryMuscle: "Dorsal (unilateral)",         compound: true,  avoidFor: [] },
+    { id: "c16", name: "Puxada inclinada com corda",      primaryMuscle: "Dorsal inferior / Serrátil",  compound: false, avoidFor: [] },
+    { id: "c5",  name: "Puxada com triângulo",            primaryMuscle: "Dorsal inferior",             compound: false, avoidFor: [] },
+    { id: "c2",  name: "Remada curvada com barra",        primaryMuscle: "Dorsal / Trapézio médio",     compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c8",  name: "Remada curvada com halteres",     primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c11", name: "Remada curvada invertida",        primaryMuscle: "Dorsal / Bíceps",             compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c15", name: "Remada curvada na máquina",       primaryMuscle: "Dorsal / Trapézio",           compound: true,  avoidFor: [] },
+    { id: "c3",  name: "Remada unilateral (serrote)",     primaryMuscle: "Dorsal",                      compound: true,  avoidFor: [] },
+    { id: "c12", name: "Remada cavalinho",                primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
+    { id: "c14", name: "Remada articulada",               primaryMuscle: "Dorsal / Trapézio",           compound: true,  avoidFor: [] },
+    { id: "c9",  name: "Remada sentada na máquina",       primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
+    { id: "c4",  name: "Remada baixa no cabo",            primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
+    { id: "c6",  name: "Levantamento terra convencional", primaryMuscle: "Costas completa / Glúteos",   compound: true,  avoidFor: ["Coluna/lombar", "Joelho"] },
+  ],
+
+  // ── OMBROS (15 exercícios — ~5 ciclos) ───────────────────────────────────
+
+  ombros: [
+    { id: "o1",  name: "Desenvolvimento com halteres",    primaryMuscle: "Deltóide anterior / lateral", compound: true,  avoidFor: ["Ombro"] },
+    { id: "o5",  name: "Arnold press",                    primaryMuscle: "Deltóide completo",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "o6",  name: "Desenvolvimento na máquina",      primaryMuscle: "Deltóide anterior / lateral", compound: true,  avoidFor: ["Ombro"] },
+    { id: "o10", name: "Desenvolvimento em pé alternado", primaryMuscle: "Deltóide anterior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "o2",  name: "Elevação lateral com halteres",   primaryMuscle: "Deltóide lateral",            compound: false, avoidFor: ["Ombro"] },
+    { id: "o7",  name: "Elevação lateral unilateral cabo", primaryMuscle: "Deltóide lateral",           compound: false, avoidFor: [] },
+    { id: "o8",  name: "Elevação lateral sentado",        primaryMuscle: "Deltóide lateral",            compound: false, avoidFor: ["Ombro"] },
+    { id: "o4",  name: "Elevação frontal com halteres",   primaryMuscle: "Deltóide anterior",           compound: false, avoidFor: ["Ombro"] },
+    { id: "o13", name: "Elevação frontal alternada",      primaryMuscle: "Deltóide anterior",           compound: false, avoidFor: ["Ombro"] },
+    { id: "o3",  name: "Face pull no cabo",               primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
+    { id: "o9",  name: "Posterior de ombro com halteres", primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
+    { id: "o14", name: "Voador para deltoides posterior", primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
+    { id: "o15", name: "Posterior de ombro sentado",      primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
+    { id: "o11", name: "Crucifixo inverso com cabo",      primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
+    { id: "o12", name: "Voador invertido",                primaryMuscle: "Deltóide posterior / Rombóide", compound: false, avoidFor: [] },
+  ],
+
+  // ── BÍCEPS (14 exercícios — ~4 ciclos) ───────────────────────────────────
+
+  biceps: [
+    { id: "b1",  name: "Rosca direta com barra",          primaryMuscle: "Bíceps (cabeça longa)",       compound: false, avoidFor: [] },
+    { id: "b11", name: "Rosca direta barra W",            primaryMuscle: "Bíceps (cabeça curta)",       compound: false, avoidFor: [] },
+    { id: "b6",  name: "Rosca Scott com barra W",         primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
+    { id: "b9",  name: "Rosca Scott na máquina",          primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
+    { id: "b2",  name: "Rosca alternada com halteres",    primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
+    { id: "b12", name: "Rosca alternada sentado",         primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
+    { id: "b13", name: "Rosca bíceps com halteres",       primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
+    { id: "b7",  name: "Rosca banco inclinado",           primaryMuscle: "Bíceps (alongado)",           compound: false, avoidFor: [] },
+    { id: "b3",  name: "Rosca martelo com halteres",      primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
+    { id: "b8",  name: "Rosca martelo com corda",         primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
+    { id: "b14", name: "Rosca martelo sentada",           primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
+    { id: "b4",  name: "Rosca concentrada",               primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
+    { id: "b5",  name: "Rosca no cabo baixo",             primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
+    { id: "b10", name: "Rosca unilateral no cabo",        primaryMuscle: "Bíceps (unilateral)",         compound: false, avoidFor: [] },
+  ],
+
+  // ── TRÍCEPS (13 exercícios — ~4 ciclos) ──────────────────────────────────
+
+  triceps: [
+    { id: "t3",  name: "Mergulho no banco",               primaryMuscle: "Tríceps / Peitoral inf.",     compound: true,  avoidFor: ["Ombro"] },
+    { id: "t1",  name: "Tríceps pulley no cabo",          primaryMuscle: "Tríceps (porção lateral)",    compound: false, avoidFor: [] },
+    { id: "t6",  name: "Tríceps pulley com corda",        primaryMuscle: "Tríceps (porção lateral)",    compound: false, avoidFor: [] },
+    { id: "t9",  name: "Tríceps pulley invertido",        primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
+    { id: "t11", name: "Tríceps pulley barra V",          primaryMuscle: "Tríceps (porção lateral)",    compound: false, avoidFor: [] },
+    { id: "t2",  name: "Tríceps testa (skullcrusher)",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t8",  name: "Tríceps testa unilateral",        primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t13", name: "Tríceps no cabo alto",            primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
+    { id: "t10", name: "Tríceps deitado barra W",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t5",  name: "Tríceps francês com haltere",     primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t7",  name: "Tríceps francês unilateral cabo", primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
+    { id: "t12", name: "Tríceps francês sentado",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t4",  name: "Tríceps kickback com haltere",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
+  ],
+
+  // ── CORE (6 exercícios — rotação completa em 2 ciclos) ───────────────────
+
+  core: [
+    { id: "k1", name: "Prancha frontal (60s)",            primaryMuscle: "Core completo / Estabilização", compound: false, avoidFor: [] },
+    { id: "k4", name: "Prancha lateral",                  primaryMuscle: "Oblíquos",                      compound: false, avoidFor: [] },
+    { id: "k2", name: "Abdômen bicicleta",                primaryMuscle: "Oblíquos / Reto abdominal",     compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "k6", name: "Crunch inverso",                   primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: [] },
+    { id: "k3", name: "Elevação de pernas na barra",      primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "k5", name: "Crunch no cabo",                   primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: ["Coluna/lombar"] },
+  ],
+};
+
+// ─── Divisões semanais ────────────────────────────────────────────────────────
+// volumes: quantidade de exercícios por grupo naquele dia
+// Dia: 0=Seg … 6=Dom
+
+// ── FEMININO ──────────────────────────────────────────────────────────────────
+const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
+
+  "2 dias": {
+    // Seg: inferior completo
+    0: {
+      name: "Quadríceps + Glúteos",
+      emoji: "🦵",
+      groups: ["quadriceps", "gluteos", "panturrilha"],
+      volumes: { quadriceps: 3, gluteos: 3, panturrilha: 1 },
+    },
+    // Qui: posteriores + core
+    3: {
+      name: "Posteriores + Core",
+      emoji: "🍑",
+      groups: ["posteriores", "core"],
+      volumes: { posteriores: 3, core: 2 },
+    },
+  },
+
+  "3 dias": {
+    // Seg: pernas (quad+post)
+    0: {
+      name: "Pernas",
+      emoji: "🦵",
+      groups: ["quadriceps", "posteriores", "panturrilha"],
+      volumes: { quadriceps: 4, posteriores: 3, panturrilha: 1 },
+    },
+    // Qua: superior completo condensado
+    2: {
+      name: "Superior Completo",
+      emoji: "💪",
+      groups: ["costas", "peito", "triceps", "ombros", "biceps"],
+      volumes: { costas: 3, peito: 1, triceps: 1, ombros: 2, biceps: 1 },
+    },
+    // Sex: dia de glúteos (foco total)
+    4: {
+      name: "Glúteos",
+      emoji: "🍑",
+      groups: ["gluteos"],
+      volumes: { gluteos: 6 },
+    },
+  },
+
+  "4 dias": {
+    // Seg: quadríceps
+    0: {
+      name: "Quadríceps",
+      emoji: "🦵",
+      groups: ["quadriceps", "panturrilha"],
+      volumes: { quadriceps: 4, panturrilha: 1 },
+    },
+    // Ter: glúteos
+    1: {
+      name: "Glúteos",
+      emoji: "🍑",
+      groups: ["gluteos"],
+      volumes: { gluteos: 6 },
+    },
+    // Qui: posteriores + core
+    3: {
+      name: "Posteriores + Core",
+      emoji: "🔥",
+      groups: ["posteriores", "core"],
+      volumes: { posteriores: 3, core: 2 },
+    },
+    // Sex: superior
+    4: {
+      name: "Superior",
+      emoji: "💪",
+      groups: ["costas", "peito", "ombros", "biceps", "triceps"],
+      volumes: { costas: 3, peito: 2, ombros: 3, biceps: 1, triceps: 1 },
+    },
+  },
+
+  "5+ dias": {
+    // Seg: quadríceps
+    0: {
+      name: "Quadríceps",
+      emoji: "🦵",
+      groups: ["quadriceps", "panturrilha"],
+      volumes: { quadriceps: 4, panturrilha: 1 },
+    },
+    // Ter: glúteos
+    1: {
+      name: "Glúteos",
+      emoji: "🍑",
+      groups: ["gluteos"],
+      volumes: { gluteos: 6 },
+    },
+    // Qua: costas + bíceps
+    2: {
+      name: "Costas + Bíceps",
+      emoji: "🏋️",
+      groups: ["costas", "biceps"],
+      volumes: { costas: 4, biceps: 2 },
+    },
+    // Qui: posteriores + core
+    3: {
+      name: "Posteriores + Core",
+      emoji: "🔥",
+      groups: ["posteriores", "core"],
+      volumes: { posteriores: 3, core: 2 },
+    },
+    // Sex: peito + ombros + tríceps
+    4: {
+      name: "Peito + Ombros + Tríceps",
+      emoji: "💥",
+      groups: ["peito", "ombros", "triceps"],
+      volumes: { peito: 2, ombros: 4, triceps: 2 },
+    },
+  },
+};
+
+// ── MASCULINO ─────────────────────────────────────────────────────────────────
+const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
+
+  "2 dias": {
+    // Seg: superior completo
+    0: {
+      name: "Superior Completo",
+      emoji: "💪",
+      groups: ["costas", "peito", "ombros", "biceps", "triceps"],
+      volumes: { costas: 3, peito: 3, ombros: 2, biceps: 2, triceps: 2 },
+    },
+    // Qui: inferior + core
+    3: {
+      name: "Inferior + Core",
+      emoji: "🦵",
+      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha", "core"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 2 },
+    },
+  },
+
+  "3 dias": {
+    // Seg: costas + bíceps
+    0: {
+      name: "Costas + Bíceps",
+      emoji: "🏋️",
+      groups: ["costas", "biceps"],
+      volumes: { costas: 4, biceps: 2 },
+    },
+    // Qua: inferior completo
+    2: {
+      name: "Inferior Completo",
+      emoji: "🦵",
+      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+    },
+    // Sex: peito + tríceps + ombros
+    4: {
+      name: "Peito + Tríceps + Ombros",
+      emoji: "💪",
+      groups: ["peito", "triceps", "ombros"],
+      volumes: { peito: 3, triceps: 2, ombros: 2 },
+    },
+  },
+
+  "4 dias": {
+    // Seg: costas + bíceps
+    0: {
+      name: "Costas + Bíceps",
+      emoji: "🏋️",
+      groups: ["costas", "biceps"],
+      volumes: { costas: 4, biceps: 2 },
+    },
+    // Ter: peito + tríceps
+    1: {
+      name: "Peito + Tríceps",
+      emoji: "💪",
+      groups: ["peito", "triceps"],
+      volumes: { peito: 4, triceps: 3 },
+    },
+    // Qui: pernas
+    3: {
+      name: "Pernas",
+      emoji: "🦵",
+      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+    },
+    // Sex: ombros + core
+    4: {
+      name: "Ombros + Core",
+      emoji: "🔥",
+      groups: ["ombros", "core"],
+      volumes: { ombros: 3, core: 2 },
+    },
+  },
+
+  "5+ dias": {
+    // Seg: peito + tríceps
+    0: {
+      name: "Peito + Tríceps",
+      emoji: "💪",
+      groups: ["peito", "triceps"],
+      volumes: { peito: 4, triceps: 3 },
+    },
+    // Ter: costas + bíceps
+    1: {
+      name: "Costas + Bíceps",
+      emoji: "🏋️",
+      groups: ["costas", "biceps"],
+      volumes: { costas: 4, biceps: 3 },
+    },
+    // Qua: pernas
+    2: {
+      name: "Pernas",
+      emoji: "🦵",
+      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+    },
+    // Qui: ombros + core
+    3: {
+      name: "Ombros + Core",
+      emoji: "🔥",
+      groups: ["ombros", "core"],
+      volumes: { ombros: 3, core: 2 },
+    },
+    // Sex: braços — volume
+    4: {
+      name: "Braços — Volume",
+      emoji: "⚡",
+      groups: ["biceps", "triceps"],
+      volumes: { biceps: 4, triceps: 4 },
+    },
+  },
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const GROUP_LABELS: Record<MuscleGroup, string> = {
+  quadriceps:  "Quadríceps",
+  gluteos:     "Glúteos",
+  posteriores: "Posteriores",
+  panturrilha: "Panturrilha",
+  peito:       "Peito",
+  costas:      "Costas",
+  ombros:      "Ombros",
+  biceps:      "Bíceps",
+  triceps:     "Tríceps",
+  core:        "Core",
+};
+
+/** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
+function defaultVol(g: MuscleGroup, isFemale: boolean): number {
+  const female: Record<MuscleGroup, number> = {
+    costas: 4, peito: 3, ombros: 4, biceps: 2, triceps: 2,
+    quadriceps: 4, gluteos: 5, posteriores: 3, panturrilha: 1, core: 2,
+  };
+  const male: Record<MuscleGroup, number> = {
+    costas: 4, peito: 4, ombros: 3, biceps: 3, triceps: 3,
+    quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 2,
+  };
+  return isFemale ? female[g] : male[g];
+}
+
+/**
+ * Define séries, reps e descanso como um personal trainer.
+ */
+function getSetsRest(
+  goal: string,
+  nivel: string
+): { sets: number; reps: string; rest: string; tip: string } {
+  const isInter = nivel?.includes("Intermediário");
+  const baseSets = isInter ? 4 : 3;
+
+  if (goal?.includes("músculo")) {
+    return {
+      sets: baseSets,
+      reps: "8-10",
+      rest: "75s",
+      tip: "Carga progressiva — as últimas 2 reps devem ser difíceis. Desça o peso em 3s (excêntrico). Sinta a contração no pico.",
+    };
+  }
+
+  if (goal?.includes("gordura")) {
+    return {
+      sets: baseSets,
+      reps: "12",
+      rest: "45s",
+      tip: "Descanse pouco para manter o metabolismo elevado. Mantenha a técnica mesmo no cansaço — nunca sacrifique a postura.",
+    };
+  }
+
+  if (goal?.includes("condicionamento")) {
+    return {
+      sets: 3,
+      reps: "12",
+      rest: "40s",
+      tip: "Ritmo constante, respiração controlada. Core sempre ativado. Foco em resistência muscular.",
+    };
+  }
+
+  return {
+    sets: 3,
+    reps: "10-12",
+    rest: "60s",
+    tip: "Qualidade acima de quantidade. Execute cada repetição com controle total — concêntrico 2s, excêntrico 3s.",
+  };
+}
+
+/**
+ * Monta a lista de exercícios filtrada por lesão, ordenada (compostos primeiro)
+ * e rotacionada pelo número do ciclo — exercícios diferentes a cada mês.
+ *
+ * @param volumes  Quantidade de exercícios por grupo (usa defaultVol como fallback)
+ */
+function pickExercises(
+  groups: MuscleGroup[],
+  injuries: string[],
+  cycleNumber: number = 1,
+  volumes: Partial<Record<MuscleGroup, number>> = {},
+  isFemale: boolean = true
+): ExerciseDef[] {
+  const result: ExerciseDef[] = [];
+
+  for (const g of groups) {
+    const pool = LIBRARY[g].filter((ex) => {
+      if (injuries.includes("Outra")) return ex.avoidFor.length === 0;
+      return !ex.avoidFor.some((a) => injuries.includes(a));
+    });
+
+    // Compostos primeiro
+    const sorted = [...pool].sort((a, b) => +b.compound - +a.compound);
+    const cap = volumes[g] ?? defaultVol(g, isFemale);
+
+    if (sorted.length === 0) continue;
+
+    // Rotação: cada ciclo avança `cap` posições → exercícios novos a cada mês
+    const offset = ((cycleNumber - 1) * cap) % sorted.length;
+    for (let i = 0; i < cap && i < sorted.length; i++) {
+      result.push(sorted[(offset + i) % sorted.length]);
+    }
+  }
+
+  return result;
+}
+
+// ─── API pública ──────────────────────────────────────────────────────────────
+
+/** Slots disponíveis para o aluno escolher manualmente */
+export interface ManualSlot {
+  name:   string;
+  emoji:  string;
+  groups: MuscleGroup[];
+}
+
+export const MANUAL_SLOTS: ManualSlot[] = [
+  { name: "Quadríceps",              emoji: "🦵", groups: ["quadriceps", "panturrilha"] },
+  { name: "Glúteos + Posteriores",   emoji: "🍑", groups: ["gluteos", "posteriores"] },
+  { name: "Peito + Tríceps",         emoji: "💪", groups: ["peito", "triceps"] },
+  { name: "Costas + Bíceps",         emoji: "🏋️", groups: ["costas", "biceps"] },
+  { name: "Ombros + Core",           emoji: "🔥", groups: ["ombros", "core"] },
+  { name: "Braços",                  emoji: "⚡", groups: ["biceps", "triceps"] },
+  { name: "Core",                    emoji: "🎯", groups: ["core"] },
+  { name: "Pernas Completo",         emoji: "🏃", groups: ["quadriceps", "posteriores", "panturrilha"] },
+  { name: "Superior Completo",       emoji: "💥", groups: ["peito", "costas", "ombros"] },
+  { name: "Glúteos Isolado",         emoji: "✨", groups: ["gluteos"] },
+];
+
+/** Monta um treino a partir de um slot manual escolhido pelo aluno */
+export function getWorkoutBySlot(
+  anamnese: AnamneseData,
+  slot: ManualSlot,
+  cycleNumber: number = 1
+): DayWorkout {
+  const {
+    sexo      = "Feminino",
+    objetivo  = "Mais disposição e saúde",
+    nivel     = "Iniciante (nunca treinei)",
+    lesoes    = "Não tenho",
+  } = anamnese;
+
+  const isFemale = sexo === "Feminino";
+  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
+  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, {}, isFemale);
+
+  const exercises: Exercise[] = defs.map((ex) => ({
+    id:     ex.id,
+    name:   ex.name,
+    muscle: ex.primaryMuscle,
+    sets:   `${sets}x${reps}`,
+    rest,
+    tip,
+    gif:    EXERCISE_GIFS.has(ex.id) ? `/gifs/${ex.id}.gif` : undefined,
+  }));
+
+  const restSeconds = parseInt(rest) || 60;
+  const timePerEx   = sets * (1.5 + restSeconds / 60);
+  const duration    = Math.round(5 + exercises.length * timePerEx);
+
+  return {
+    name:        slot.name,
+    emoji:       slot.emoji,
+    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
+    duration,
+    exercises,
+    isRest: false,
+  };
+}
+
+/** Retorna o treino personalizado para o dia atual com base no gênero e objetivos */
+export function getTodayWorkout(anamnese: AnamneseData | null, cycleNumber: number = 1): DayWorkout {
+  if (!anamnese) {
+    return {
+      name: "Treino",
+      emoji: "🏋️",
+      muscleLabel: "Complete a anamnese",
+      duration: 0,
+      exercises: [],
+      isRest: false,
+    };
+  }
+
+  const {
+    sexo       = "Feminino",
+    objetivo   = "Mais disposição e saúde",
+    nivel      = "Iniciante (nunca treinei)",
+    diasTreino = "3 dias",
+    lesoes     = "Não tenho",
+  } = anamnese;
+
+  // Hoje: converte JS Sunday=0 → Seg=0…Dom=6
+  const jsDay  = new Date().getDay();
+  const dayIdx = jsDay === 0 ? 6 : jsDay - 1;
+
+  const isFemale = sexo === "Feminino";
+  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
+  const split    = splits[diasTreino] ?? splits["3 dias"];
+  const slot     = split[dayIdx];
+
+  // Dia de descanso
+  if (!slot) {
+    return {
+      name: "Descanso",
+      emoji: "😴",
+      muscleLabel: "Recuperação ativa",
+      duration: 0,
+      exercises: [],
+      isRest: true,
+    };
+  }
+
+  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
+  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel);
+
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale);
+
+  const exercises: Exercise[] = defs.map((ex) => ({
+    id:     ex.id,
+    name:   ex.name,
+    muscle: ex.primaryMuscle,
+    sets:   `${sets}x${reps}`,
+    rest,
+    tip,
+    gif:    EXERCISE_GIFS.has(ex.id) ? `/gifs/${ex.id}.gif` : undefined,
+  }));
+
+  const restSeconds = parseInt(rest) || 60;
+  const timePerEx   = sets * (1.5 + restSeconds / 60);
+  const duration    = Math.round(5 + exercises.length * timePerEx);
+
+  return {
+    name:        slot.name,
+    emoji:       slot.emoji,
+    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
+    duration,
+    exercises,
+    isRest: false,
+  };
+}
+
+/** Retorna os 7 dias da semana com indicação de treino ou descanso */
+export function getWeekSchedule(anamnese: AnamneseData | null): WeekDay[] {
+  const labels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+  if (!anamnese) {
+    return labels.map((d) => ({ day: d, isTraining: false, workoutName: "" }));
+  }
+
+  const isFemale = (anamnese.sexo ?? "Feminino") === "Feminino";
+  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
+  const split    = splits[anamnese.diasTreino ?? "3 dias"] ?? splits["3 dias"];
+
+  return labels.map((d, i) => ({
+    day:         d,
+    isTraining:  !!split[i],
+    workoutName: split[i]?.name ?? "",
+  }));
+}

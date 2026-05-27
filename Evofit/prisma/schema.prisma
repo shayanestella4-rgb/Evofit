@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  profile   Profile?
+  anamnese  Anamnese?
+  workouts  WorkoutLog[]
+  mealLogs  MealLog[]
+  taskLogs  TaskLog[]
+  progress  ProgressEntry[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  age       Int?
+  sex       String?
+  weight    Float?
+  height    Float?
+  goal      String?
+  level     String?
+  photoUrl  String?
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Anamnese {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  objective       String?
+  experienceLevel String?
+  trainingDays    Int?
+  preferredPeriod String?
+  injuries        String?
+  sleepQuality    String?
+  lifestyle       String?
+  dietaryNotes    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("anamnese")
+}
+
+model WorkoutLog {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @default(now())
+  muscleGroup String
+  duration    Int?
+  completed   Boolean  @default(false)
+  exercises   Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("workout_logs")
+}
+
+model MealLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  mealType  String
+  calories  Float?
+  protein   Float?
+  carbs     Float?
+  fat       Float?
+  completed Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("meal_logs")
+}
+
+model TaskLog {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @default(now())
+  taskTitle   String
+  taskEmoji   String?
+  xpEarned    Int      @default(0)
+  completed   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("task_logs")
+}
+
+model ProgressEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  weight    Float?
+  photoUrl  String?
+  notes     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("progress_entries")
+}

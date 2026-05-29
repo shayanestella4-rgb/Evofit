@@ -10,6 +10,8 @@ import {
   markCycleSeen,
   getProgramStatus,
 } from "@/lib/workoutLog";
+import { loadWeightLog, saveWeightEntry } from "@/lib/weightLog";
+import type { WeightEntry } from "@/lib/weightLog";
 import Link from "next/link";
 
 import type { Exercise } from "@/lib/workout";
@@ -17,6 +19,9 @@ import type { Exercise } from "@/lib/workout";
 export default function TreinoPage() {
   const { anamnese, completedExercises, toggleExercise, overrideSlot } = useApp();
   const [gifModal, setGifModal] = useState<Exercise | null>(null);
+  const [weightInput, setWeightInput] = useState("");
+  const [weightLog,   setWeightLog]   = useState<WeightEntry[]>([]);
+  const [weightSaved, setWeightSaved] = useState(false);
   const { cycleNumber } = getProgramStatus();
   const workout = overrideSlot && anamnese
     ? getWorkoutBySlot(anamnese, overrideSlot, cycleNumber)
@@ -56,6 +61,26 @@ export default function TreinoPage() {
 
     if (unseen !== null) setMilestone(unseen);
   }, [allDone, loggedToday, workout, anamnese, totalEx]);
+
+  // Carrega histórico de carga ao abrir modal de exercício
+  useEffect(() => {
+    if (!gifModal) { setWeightInput(""); setWeightLog([]); setWeightSaved(false); return; }
+    const log = loadWeightLog(gifModal.id);
+    setWeightLog(log);
+    const last = log[log.length - 1];
+    setWeightInput(last ? String(last.weight) : "");
+    setWeightSaved(false);
+  }, [gifModal]);
+
+  function handleSaveWeight() {
+    if (!gifModal || !weightInput) return;
+    const kg = parseFloat(weightInput.replace(",", "."));
+    if (isNaN(kg) || kg <= 0) return;
+    const updated = saveWeightEntry(gifModal.id, kg);
+    setWeightLog(updated);
+    setWeightSaved(true);
+    setTimeout(() => setWeightSaved(false), 2000);
+  }
 
   function handleCloseMilestone() {
     if (milestone !== null) markCycleSeen(milestone);
@@ -295,6 +320,53 @@ export default function TreinoPage() {
                 <p className="text-[11px] text-[#713F12] leading-relaxed">
                   💡 {gifModal.tip}
                 </p>
+              </div>
+
+              {/* ── Registro de carga ── */}
+              <div className="bg-[#F3F4F6] rounded-[0.75rem] p-3 mb-4">
+                <p className="text-xs font-bold text-[#374151] mb-2">🏋️ Registrar carga</p>
+
+                <div className="flex gap-2 items-center mb-2">
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Ex: 20"
+                    value={weightInput}
+                    onChange={(e) => { setWeightInput(e.target.value); setWeightSaved(false); }}
+                    className="flex-1 border border-[#D1D5DB] rounded-[0.5rem] px-3 py-2 text-sm font-semibold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  />
+                  <span className="text-sm font-semibold text-[#6B7280]">kg</span>
+                  <button
+                    onClick={handleSaveWeight}
+                    className={`px-4 py-2 rounded-[0.5rem] text-xs font-bold transition-colors ${
+                      weightSaved
+                        ? "bg-[#10B981] text-white"
+                        : "bg-[#7C3AED] text-white hover:bg-[#6D28D9]"
+                    }`}
+                  >
+                    {weightSaved ? "✓ Salvo" : "Salvar"}
+                  </button>
+                </div>
+
+                {weightLog.length > 0 && (
+                  <div>
+                    <p className="text-[10px] text-[#9CA3AF] mb-1">Histórico recente:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[...weightLog].reverse().slice(0, 5).map((entry, i) => (
+                        <span
+                          key={i}
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                            i === 0
+                              ? "bg-[#EDE9FE] text-[#7C3AED]"
+                              : "bg-white text-[#6B7280] border border-[#E5E7EB]"
+                          }`}
+                        >
+                          {entry.weight}kg
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button

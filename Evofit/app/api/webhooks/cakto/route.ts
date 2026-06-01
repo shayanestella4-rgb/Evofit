@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { SubscriptionStatus } from "@prisma/client";
+
+type SubscriptionStatus = "ACTIVE" | "INACTIVE" | "REFUNDED" | "CANCELLED";
 
 const WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET!;
 const PRODUCT_CODE = "Shyane21";
@@ -57,16 +58,16 @@ export async function POST(request: NextRequest) {
   switch (event) {
     case "purchase_approved":
     case "subscription_renewed":
-      await setSubscription(email, SubscriptionStatus.ACTIVE, caktoId);
+      await setSubscription(email, "ACTIVE", caktoId);
       break;
 
     case "purchase_refunded":
     case "purchase_chargeback":
-      await setSubscription(email, SubscriptionStatus.REFUNDED, caktoId);
+      await setSubscription(email, "REFUNDED", caktoId);
       break;
 
     case "subscription_cancelled":
-      await setSubscription(email, SubscriptionStatus.CANCELLED, caktoId);
+      await setSubscription(email, "CANCELLED", caktoId);
       break;
 
     default:

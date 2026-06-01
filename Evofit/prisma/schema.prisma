@@ -22,7 +22,8 @@ model User {
   workouts  WorkoutLog[]
   mealLogs  MealLog[]
   taskLogs  TaskLog[]
-  progress  ProgressEntry[]
+  progress      ProgressEntry[]
+  subscription  Subscription?
 
   @@map("users")
 }
@@ -149,4 +150,25 @@ model ProgressEntry {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("progress_entries")
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  status    SubscriptionStatus @default(INACTIVE)
+  caktoId   String?
+  expiresAt DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  REFUNDED
+  CANCELLED
 }

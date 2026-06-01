@@ -10,7 +10,7 @@ function goToCakto() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
       {/* Header */}
       <header className="fixed top-0 inset-x-0 z-50 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#2D2D2D]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -34,7 +34,7 @@ export default function LandingPage() {
 
       <main className="flex-1 pt-16">
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
+        <section className="bg-[#0A0A0A] max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
           <div className="animate-fade-in">
             <span className="inline-block bg-[#1E1035] text-[#C084FC] text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
               Seu personal trainer digital
@@ -128,7 +128,7 @@ export default function LandingPage() {
         </section>
 
         {/* Steps */}
-        <section className="py-20 max-w-5xl mx-auto px-6">
+        <section className="bg-[#0A0A0A] py-20 max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-extrabold text-center text-[#F0F0F0] mb-12">
             Começa em 3 passos simples
           </h2>

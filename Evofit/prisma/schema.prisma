@@ -153,14 +153,15 @@ model ProgressEntry {
 
 model Subscription {
   id        String             @id @default(cuid())
-  userId    String             @unique
+  email     String             @unique
+  userId    String?            @unique
   status    SubscriptionStatus @default(INACTIVE)
   caktoId   String?
   expiresAt DateTime?
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("subscriptions")
 }

@@ -1,37 +1,46 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import Apple from "next-auth/providers/apple";
+import Credentials from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    Apple({
-      clientId: process.env.APPLE_ID!,
-      clientSecret: process.env.APPLE_SECRET!,
+    Credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email as string | undefined;
+        if (!email) return null;
+
+        const subscription = await prisma.subscription.findUnique({
+          where: { email },
+        });
+
+        if (!subscription || subscription.status !== "ACTIVE") return null;
+
+        return { id: email, email };
+      },
     }),
   ],
   pages: {
     signIn: "/auth/login",
-    error: "/auth/error",
+    error: "/auth/login",
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isProtected = nextUrl.pathname.startsWith("/dashboard") ||
-                          nextUrl.pathname.startsWith("/onboarding");
+      const isProtected =
+        nextUrl.pathname.startsWith("/dashboard") ||
+        nextUrl.pathname.startsWith("/onboarding");
       if (isProtected && !isLoggedIn) {
         return Response.redirect(new URL("/auth/login", nextUrl));
       }
       return true;
     },
     session({ session, token }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
+      if (token.email) session.user.email = token.email as string;
       return session;
     },
   },
+  session: { strategy: "jwt" },
 });

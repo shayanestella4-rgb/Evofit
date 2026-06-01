@@ -9,20 +9,9 @@ const PRODUCT_CODE = "Shyane21";
 interface CaktoPayload {
   event: string;
   data: {
-    buyer?: {
-      name?: string;
-      email?: string;
-      document?: string;
-    };
-    product?: {
-      id?: string;
-      name?: string;
-    };
-    purchase?: {
-      id?: string;
-      value?: number;
-      status?: string;
-    };
+    buyer?: { name?: string; email?: string; document?: string };
+    product?: { id?: string; name?: string };
+    purchase?: { id?: string; value?: number; status?: string };
   };
 }
 
@@ -48,9 +37,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  const email = data?.buyer?.email;
+  const email = data?.buyer?.email?.trim().toLowerCase();
   if (!email) {
-    return NextResponse.json({ error: "Email not found in payload" }, { status: 400 });
+    return NextResponse.json({ error: "Email not found" }, { status: 400 });
   }
 
   const caktoId = data?.purchase?.id;
@@ -60,17 +49,12 @@ export async function POST(request: NextRequest) {
     case "subscription_renewed":
       await setSubscription(email, "ACTIVE", caktoId);
       break;
-
     case "purchase_refunded":
     case "purchase_chargeback":
       await setSubscription(email, "REFUNDED", caktoId);
       break;
-
     case "subscription_cancelled":
       await setSubscription(email, "CANCELLED", caktoId);
-      break;
-
-    default:
       break;
   }
 
@@ -82,12 +66,9 @@ async function setSubscription(
   status: SubscriptionStatus,
   caktoId?: string
 ) {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) return;
-
   await prisma.subscription.upsert({
-    where: { userId: user.id },
-    create: { userId: user.id, status, caktoId },
+    where: { email },
+    create: { email, status, caktoId },
     update: { status, ...(caktoId && { caktoId }) },
   });
 }

@@ -16,19 +16,24 @@ interface CaktoPayload {
 }
 
 export async function POST(request: NextRequest) {
-  const token =
-    request.headers.get("x-cakto-token") ??
-    request.nextUrl.searchParams.get("token");
-
-  if (!WEBHOOK_SECRET || token !== WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   let payload: CaktoPayload;
   try {
     payload = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  // Cakto pode enviar o token no header, query string ou no body
+  const token =
+    request.headers.get("x-cakto-token") ??
+    request.headers.get("x-webhook-token") ??
+    request.headers.get("authorization")?.replace("Bearer ", "") ??
+    request.nextUrl.searchParams.get("token") ??
+    (payload as any)?.token ??
+    (payload as any)?.secret;
+
+  if (WEBHOOK_SECRET && token !== WEBHOOK_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { event, data } = payload;

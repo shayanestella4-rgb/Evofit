@@ -16,12 +16,17 @@ interface CaktoPayload {
 }
 
 export async function POST(request: NextRequest) {
+  console.log("[webhook] recebido POST em /api/webhooks/cakto");
+  console.log("[webhook] headers:", JSON.stringify(Object.fromEntries(request.headers)));
+
   let payload: CaktoPayload;
   try {
     payload = await request.json();
   } catch {
+    console.log("[webhook] erro ao parsear JSON");
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
+  console.log("[webhook] payload:", JSON.stringify(payload));
 
   // Cakto pode enviar o token no header, query string ou no body
   const token =

@@ -15,6 +15,12 @@ interface CaktoPayload {
   };
 }
 
+// Verificação de endpoint (algumas plataformas enviam GET antes de ativar)
+export async function GET() {
+  console.log("[webhook] GET de verificação recebido");
+  return NextResponse.json({ status: "ok", service: "evofit-webhook" });
+}
+
 export async function POST(request: NextRequest) {
   console.log("[webhook] recebido POST em /api/webhooks/cakto");
   console.log("[webhook] headers:", JSON.stringify(Object.fromEntries(request.headers)));
@@ -43,9 +49,7 @@ export async function POST(request: NextRequest) {
 
   const { event, data } = payload;
 
-  if (data?.product?.id !== PRODUCT_CODE) {
-    return NextResponse.json({ received: true });
-  }
+  console.log("[webhook] event:", event, "| product:", data?.product?.id, "| email:", data?.buyer?.email);
 
   const email = data?.buyer?.email?.trim().toLowerCase();
   if (!email) {

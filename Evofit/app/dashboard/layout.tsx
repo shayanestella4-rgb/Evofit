@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import DashboardNav from "./components/DashboardNav";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 

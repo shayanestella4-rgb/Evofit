@@ -63,17 +63,17 @@ export default function TermosPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#7C3AED] font-semibold mb-4 hover:underline">
+        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#C084FC] font-semibold mb-4 hover:underline">
           ← Voltar ao perfil
         </Link>
-        <h1 className="text-2xl font-extrabold text-[#111827]">Termos de Uso</h1>
-        <p className="text-xs text-[#9CA3AF] mt-1">Última atualização: {lastUpdate}</p>
+        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Termos de Uso</h1>
+        <p className="text-xs text-[#CBD5E0] mt-1">Última atualização: {lastUpdate}</p>
       </div>
 
       {/* Aviso de destaque */}
-      <div className="bg-[#FEF3C7] rounded-[1rem] p-4 border border-[#FDE68A] mb-6">
-        <p className="text-xs font-bold text-[#92400E] mb-1">⚠️ Leia com atenção</p>
-        <p className="text-xs text-[#78350F] leading-relaxed">
+      <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E] mb-6">
+        <p className="text-xs font-bold text-[#C084FC] mb-1">⚠️ Leia com atenção</p>
+        <p className="text-xs text-[#C084FC] leading-relaxed">
           O Evofit oferece orientações gerais de condicionamento físico e nutrição. O App não substitui
           avaliação médica, prescrição de educador físico (CREF) ou nutricionista (CRN). Consulte um
           profissional de saúde antes de iniciar qualquer programa de exercícios.
@@ -85,14 +85,14 @@ export default function TermosPage() {
         {SECTIONS.map((section) => (
           <div
             key={section.title}
-            className="bg-white rounded-[1rem] border border-[#E5E7EB] p-5"
+            className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-5"
           >
-            <h2 className="text-sm font-bold text-[#111827] mb-3">{section.title}</h2>
+            <h2 className="text-sm font-bold text-[#F0F0F0] mb-3">{section.title}</h2>
             <div className="space-y-2">
               {section.body.split("\n").map((line, i) =>
                 line.trim() === "" ? null : (
                   <p key={i} className={`text-xs leading-relaxed ${
-                    line.startsWith("•") ? "text-[#374151] pl-2" : "text-[#6B7280]"
+                    line.startsWith("•") ? "text-[#C0C0C0] pl-2" : "text-[#B8B8B8]"
                   }`}>
                     {line}
                   </p>
@@ -105,16 +105,16 @@ export default function TermosPage() {
 
       {/* Rodapé */}
       <div className="mt-6 text-center">
-        <p className="text-[10px] text-[#9CA3AF]">
+        <p className="text-[10px] text-[#CBD5E0]">
           Evofit · CNPJ XX.XXX.XXX/0001-XX · São Paulo/SP
         </p>
-        <p className="text-[10px] text-[#9CA3AF] mt-0.5">
+        <p className="text-[10px] text-[#CBD5E0] mt-0.5">
           Dúvidas?{" "}
           <a
             href="https://wa.me/551145527512?text=Olá%2C%20tenho%20uma%20dúvida%20sobre%20os%20termos%20de%20uso"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#7C3AED] font-semibold hover:underline"
+            className="text-[#C084FC] font-semibold hover:underline"
           >
             Fale conosco pelo WhatsApp
           </a>

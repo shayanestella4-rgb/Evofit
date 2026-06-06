@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ export default function SemAcessoPage() {
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-white">Acesso restrito</h1>
-          <p className="text-[#9CA3AF] text-sm leading-relaxed">
+          <p className="text-[#CBD5E0] text-sm leading-relaxed">
             Para acessar o Evofit você precisa ter uma assinatura ativa.
             Se você já comprou, aguarde alguns instantes e tente novamente.
           </p>
@@ -28,7 +28,7 @@ export default function SemAcessoPage() {
 
           <Link
             href="/auth/login"
-            className="block w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#2D2D2D] text-[#9CA3AF] font-semibold text-sm transition-colors"
+            className="block w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#2D2D2D] text-[#CBD5E0] font-semibold text-sm transition-colors"
           >
             Entrar com outra conta
           </Link>

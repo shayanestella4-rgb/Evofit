@@ -119,7 +119,7 @@ function Stars({ value, size = "md" }: { value: number; size?: "sm" | "md" | "lg
   return (
     <span className={sizes[size]}>
       {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} className={s <= value ? "text-[#F59E0B]" : "text-[#E5E7EB]"}>★</span>
+        <span key={s} className={s <= value ? "text-[#C084FC]" : "text-[#E5E7EB]"}>★</span>
       ))}
     </span>
   );
@@ -138,7 +138,7 @@ function ClickableStars({ value, onChange }: { value: number; onChange: (v: numb
           onMouseLeave={() => setHovered(0)}
           className="text-3xl leading-none transition-transform active:scale-90 hover:scale-110"
         >
-          <span className={(hovered || value) >= s ? "text-[#F59E0B]" : "text-[#E5E7EB]"}>★</span>
+          <span className={(hovered || value) >= s ? "text-[#C084FC]" : "text-[#E5E7EB]"}>★</span>
         </button>
       ))}
     </div>
@@ -199,23 +199,23 @@ export default function AvaliacaoPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#7C3AED] font-semibold mb-4 hover:underline">
+        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#C084FC] font-semibold mb-4 hover:underline">
           ← Voltar ao perfil
         </Link>
-        <h1 className="text-2xl font-extrabold text-[#111827]">Avaliações</h1>
-        <p className="text-sm text-[#6B7280] mt-1">Veja o que os alunos estão dizendo</p>
+        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Avaliações</h1>
+        <p className="text-sm text-[#B8B8B8] mt-1">Veja o que os alunos estão dizendo</p>
       </div>
 
       {/* Nota geral */}
-      <div className="bg-white rounded-[1rem] border border-[#E5E7EB] p-5 mb-4">
+      <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-5 mb-4">
         <div className="flex items-center gap-6">
           {/* Nota grande */}
           <div className="text-center shrink-0">
-            <p className="text-5xl font-extrabold text-[#111827] leading-none">
+            <p className="text-5xl font-extrabold text-[#F0F0F0] leading-none">
               {overall.toFixed(1)}
             </p>
             <Stars value={Math.round(overall)} size="md" />
-            <p className="text-[10px] text-[#9CA3AF] mt-1">{totalReviews} avaliações</p>
+            <p className="text-[10px] text-[#CBD5E0] mt-1">{totalReviews} avaliações</p>
           </div>
 
           {/* Barras de distribuição */}
@@ -225,15 +225,15 @@ export default function AvaliacaoPage() {
               const pct   = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
               return (
                 <div key={star} className="flex items-center gap-2">
-                  <span className="text-[10px] text-[#6B7280] w-3 shrink-0">{star}</span>
-                  <span className="text-[10px] text-[#F59E0B]">★</span>
-                  <div className="flex-1 h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                  <span className="text-[10px] text-[#B8B8B8] w-3 shrink-0">{star}</span>
+                  <span className="text-[10px] text-[#C084FC]">★</span>
+                  <div className="flex-1 h-1.5 bg-[#252525] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#F59E0B] rounded-full transition-all duration-500"
+                      className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-[10px] text-[#9CA3AF] w-7 text-right">{pct}%</span>
+                  <span className="text-[10px] text-[#CBD5E0] w-7 text-right">{pct}%</span>
                 </div>
               );
             })}
@@ -243,7 +243,7 @@ export default function AvaliacaoPage() {
 
       {/* Formulário de avaliação */}
       {submitted ? (
-        <div className="bg-[#F0FDF4] rounded-[1rem] border border-[#BBF7D0] p-5 mb-4 text-center">
+        <div className="bg-[#052E16] rounded-[1rem] border border-[#BBF7D0] p-5 mb-4 text-center">
           <p className="text-2xl mb-2">🎉</p>
           <p className="text-sm font-bold text-[#15803D]">Obrigado pela sua avaliação!</p>
           <p className="text-xs text-[#166534] mt-1">Seu feedback nos ajuda a melhorar o app.</p>
@@ -251,16 +251,16 @@ export default function AvaliacaoPage() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-[1rem] border border-[#E5E7EB] p-5 mb-4"
+          className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-5 mb-4"
         >
-          <p className="text-sm font-bold text-[#111827] mb-4">⭐ Deixe sua avaliação</p>
+          <p className="text-sm font-bold text-[#F0F0F0] mb-4">⭐ Deixe sua avaliação</p>
 
           {/* Estrelas clicáveis */}
           <div className="mb-4">
-            <p className="text-xs text-[#6B7280] mb-2">Sua nota</p>
+            <p className="text-xs text-[#B8B8B8] mb-2">Sua nota</p>
             <ClickableStars value={stars} onChange={setStars} />
             {stars > 0 && (
-              <p className="text-xs text-[#9CA3AF] mt-1">
+              <p className="text-xs text-[#CBD5E0] mt-1">
                 {["", "Ruim", "Regular", "Bom", "Muito bom", "Excelente!"][stars]}
               </p>
             )}
@@ -268,16 +268,16 @@ export default function AvaliacaoPage() {
 
           {/* Campo de comentário */}
           <div className="mb-4">
-            <p className="text-xs text-[#6B7280] mb-2">Seu comentário</p>
+            <p className="text-xs text-[#B8B8B8] mb-2">Seu comentário</p>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Conte sua experiência com o Evofit..."
               maxLength={400}
               rows={4}
-              className="w-full text-sm text-[#111827] placeholder-[#9CA3AF] bg-[#FAF7F2] border border-[#E5E7EB] rounded-[0.75rem] px-3 py-2.5 resize-none focus:outline-none focus:border-[#F59E0B] transition-colors"
+              className="w-full text-sm text-[#F0F0F0] placeholder-[#CBD5E0] bg-[#1A1A1A] border border-[#2D2D2D] rounded-[0.75rem] px-3 py-2.5 resize-none focus:outline-none focus:border-[#F59E0B] transition-colors"
             />
-            <p className="text-[10px] text-[#9CA3AF] text-right mt-0.5">
+            <p className="text-[10px] text-[#CBD5E0] text-right mt-0.5">
               {comment.length}/400
             </p>
           </div>
@@ -288,7 +288,7 @@ export default function AvaliacaoPage() {
 
           <button
             type="submit"
-            className="w-full bg-[#7C3AED] text-white font-bold py-3 rounded-[0.75rem] text-sm hover:bg-[#6D28D9] transition-colors active:scale-[0.98]"
+            className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] text-sm hover:bg-[#9333EA] transition-colors active:scale-[0.98]"
           >
             Enviar avaliação
           </button>
@@ -296,7 +296,7 @@ export default function AvaliacaoPage() {
       )}
 
       {/* Lista de comentários */}
-      <p className="text-xs font-semibold text-[#374151] uppercase tracking-wide mb-3">
+      <p className="text-xs font-semibold text-[#C0C0C0] uppercase tracking-wide mb-3">
         Comentários dos alunos
       </p>
 
@@ -304,22 +304,22 @@ export default function AvaliacaoPage() {
         {allReviews.map((review) => (
           <div
             key={review.id}
-            className="bg-white rounded-[1rem] border border-[#E5E7EB] p-4"
+            className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-4"
           >
             <div className="flex items-start gap-3">
               {/* Avatar */}
-              <div className="w-9 h-9 rounded-full bg-[#7C3AED] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#A855F7] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {review.initial}
               </div>
 
               {/* Conteúdo */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 mb-0.5">
-                  <p className="text-sm font-semibold text-[#111827] truncate">{review.name}</p>
-                  <span className="text-[10px] text-[#9CA3AF] shrink-0">{review.dateLabel}</span>
+                  <p className="text-sm font-semibold text-[#F0F0F0] truncate">{review.name}</p>
+                  <span className="text-[10px] text-[#CBD5E0] shrink-0">{review.dateLabel}</span>
                 </div>
                 <Stars value={review.stars} size="sm" />
-                <p className="text-xs text-[#374151] leading-relaxed mt-1.5">{review.comment}</p>
+                <p className="text-xs text-[#C0C0C0] leading-relaxed mt-1.5">{review.comment}</p>
               </div>
             </div>
           </div>

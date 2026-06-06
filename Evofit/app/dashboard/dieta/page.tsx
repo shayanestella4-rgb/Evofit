@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
@@ -40,11 +40,11 @@ export default function DietaPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <p className="text-xs text-[#7C3AED] font-semibold uppercase tracking-wide mb-1">
+        <p className="text-xs text-[#C084FC] font-semibold uppercase tracking-wide mb-1">
           Plano alimentar · {dayName}
         </p>
-        <h1 className="text-2xl font-extrabold text-[#111827]">Dieta de hoje</h1>
-        <p className="text-sm text-[#6B7280] mt-1">
+        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Dieta de hoje</h1>
+        <p className="text-sm text-[#B8B8B8] mt-1">
           {anamnese
             ? `Personalizada para ${anamnese.nome?.split(" ")[0] ?? "você"} · ${anamnese.objetivo ?? "Condicionamento"}`
             : "Complete a anamnese para personalizar"}
@@ -52,44 +52,44 @@ export default function DietaPage() {
       </div>
 
       {/* Anel calórico + macros */}
-      <div className="bg-white rounded-[1rem] p-5 border border-[#E5E7EB] mb-5">
+      <div className="bg-[#1A1A1A] rounded-[1rem] p-5 border border-[#2D2D2D] mb-5">
         <div className="flex items-center gap-5">
           <div className="relative w-20 h-20 shrink-0">
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="32" fill="none" stroke="#EDE9FE" strokeWidth="8" />
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#2D2D2D" strokeWidth="8" />
               <circle cx="40" cy="40" r="32" fill="none"
-                stroke="#7C3AED" strokeWidth="8"
+                stroke="#A855F7" strokeWidth="8"
                 strokeDasharray={`${2 * Math.PI * 32}`}
                 strokeDashoffset={`${2 * Math.PI * 32 * (1 - progress / 100)}`}
                 strokeLinecap="round" className="transition-all duration-700"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-sm font-extrabold text-[#111827]">{consumed}</span>
-              <span className="text-[9px] text-[#9CA3AF]">kcal</span>
+              <span className="text-sm font-extrabold text-[#F0F0F0]">{consumed}</span>
+              <span className="text-[9px] text-[#CBD5E0]">kcal</span>
             </div>
           </div>
           <div className="flex-1">
-            <div className="flex justify-between text-xs text-[#6B7280] mb-1">
+            <div className="flex justify-between text-xs text-[#B8B8B8] mb-1">
               <span>Consumido</span>
-              <span className="font-semibold text-[#111827]">{consumed} / {diet.totalKcal} kcal</span>
+              <span className="font-semibold text-[#F0F0F0]">{consumed} / {diet.totalKcal} kcal</span>
             </div>
-            <div className="h-1.5 bg-[#EDE9FE] rounded-full mb-3">
-              <div className="h-full bg-[#7C3AED] rounded-full transition-all duration-500"
+            <div className="h-1.5 bg-[#1E1035] rounded-full mb-3">
+              <div className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }} />
             </div>
             <div className="flex gap-4">
               <div className="text-center">
-                <p className="text-xs font-bold text-[#7C3AED]">{diet.protein}g</p>
-                <p className="text-[9px] text-[#9CA3AF]">Proteína</p>
+                <p className="text-xs font-bold text-[#C084FC]">{diet.protein}g</p>
+                <p className="text-[9px] text-[#CBD5E0]">Proteína</p>
               </div>
               <div className="text-center">
-                <p className="text-xs font-bold text-[#F59E0B]">{diet.carbs}g</p>
-                <p className="text-[9px] text-[#9CA3AF]">Carbo</p>
+                <p className="text-xs font-bold text-[#C084FC]">{diet.carbs}g</p>
+                <p className="text-[9px] text-[#CBD5E0]">Carbo</p>
               </div>
               <div className="text-center">
                 <p className="text-xs font-bold text-[#10B981]">{diet.fat}g</p>
-                <p className="text-[9px] text-[#9CA3AF]">Gordura</p>
+                <p className="text-[9px] text-[#CBD5E0]">Gordura</p>
               </div>
             </div>
           </div>
@@ -105,8 +105,8 @@ export default function DietaPage() {
 
           return (
             <div key={meal.id}
-              className={`bg-white rounded-[1rem] border overflow-hidden transition-all ${
-                isDone ? "border-[#10B981]" : "border-[#E5E7EB]"
+              className={`bg-[#1A1A1A] rounded-[1rem] border overflow-hidden transition-all ${
+                isDone ? "border-[#10B981]" : "border-[#2D2D2D]"
               }`}
             >
               {/* Foto do prato */}
@@ -127,7 +127,7 @@ export default function DietaPage() {
                 {/* Overlay verde quando concluída */}
                 {isDone && (
                   <div className="absolute inset-0 bg-[#10B981]/70 flex items-center justify-center z-10">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg">
+                    <div className="w-14 h-14 rounded-full bg-[#1A1A1A] flex items-center justify-center shadow-lg">
                       <span className="text-3xl text-[#10B981]">✓</span>
                     </div>
                   </div>
@@ -148,17 +148,17 @@ export default function DietaPage() {
 
               {/* Barra de ações */}
               <div className="flex items-center px-4 py-2.5 gap-3">
-                <p className="text-xs text-[#9CA3AF] flex-1">🕐 {meal.time}</p>
+                <p className="text-xs text-[#CBD5E0] flex-1">🕐 {meal.time}</p>
                 <button
                   onClick={() => toggleExpand(meal.id)}
-                  className="text-xs text-[#7C3AED] font-semibold px-3 py-1.5 rounded-full bg-[#F5F3FF] hover:bg-[#EDE9FE] transition-colors"
+                  className="text-xs text-[#C084FC] font-semibold px-3 py-1.5 rounded-full bg-[#1E1035] hover:bg-[#1E1035] transition-colors"
                 >
                   {isExpanded ? "Fechar ▲" : "Ver itens ▼"}
                 </button>
                 <button
                   onClick={() => toggleDone(meal.id)}
                   className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                    isDone ? "bg-[#10B981] border-[#10B981] text-white" : "border-[#D1D5DB] hover:border-[#10B981]"
+                    isDone ? "bg-[#10B981] border-[#10B981] text-white" : "border-[#3A3A3A] hover:border-[#10B981]"
                   }`}
                 >
                   {isDone && <span className="text-sm font-bold">✓</span>}
@@ -167,16 +167,16 @@ export default function DietaPage() {
 
               {/* Lista de itens (colapsável) */}
               {isExpanded && (
-                <div className="px-4 pb-3 border-t border-[#F3F4F6] pt-2.5 space-y-1.5">
+                <div className="px-4 pb-3 border-t border-[#252525] pt-2.5 space-y-1.5">
                   {meal.items.map((item) => (
                     <div key={item.name} className="flex justify-between items-center">
-                      <p className="text-xs text-[#374151]">{item.name}</p>
-                      <p className="text-xs text-[#9CA3AF] font-medium ml-2 shrink-0">{item.cals} kcal</p>
+                      <p className="text-xs text-[#C0C0C0]">{item.name}</p>
+                      <p className="text-xs text-[#CBD5E0] font-medium ml-2 shrink-0">{item.cals} kcal</p>
                     </div>
                   ))}
-                  <div className="pt-1.5 mt-1.5 border-t border-[#F3F4F6] flex justify-between">
-                    <p className="text-xs font-semibold text-[#374151]">Total da refeição</p>
-                    <p className="text-xs font-bold text-[#7C3AED]">{meal.kcal} kcal</p>
+                  <div className="pt-1.5 mt-1.5 border-t border-[#252525] flex justify-between">
+                    <p className="text-xs font-semibold text-[#C0C0C0]">Total da refeição</p>
+                    <p className="text-xs font-bold text-[#C084FC]">{meal.kcal} kcal</p>
                   </div>
                 </div>
               )}
@@ -187,16 +187,16 @@ export default function DietaPage() {
 
       {/* Parabéns */}
       {allDone && (
-        <div className="mt-4 bg-[#F0FDF4] rounded-[1rem] p-4 border border-[#86EFAC] text-center">
-          <p className="text-base font-extrabold text-[#059669]">🎉 Plano do dia concluído!</p>
-          <p className="text-xs text-[#6B7280] mt-1">Você seguiu toda a dieta de hoje. Incrível disciplina!</p>
+        <div className="mt-4 bg-[#052E16] rounded-[1rem] p-4 border border-[#166534] text-center">
+          <p className="text-base font-extrabold text-[#34D399]">🎉 Plano do dia concluído!</p>
+          <p className="text-xs text-[#B8B8B8] mt-1">Você seguiu toda a dieta de hoje. Incrível disciplina!</p>
         </div>
       )}
 
       {/* Hidratação */}
-      <div className="mt-4 bg-[#EFF6FF] rounded-[1rem] p-4 border border-[#BFDBFE]">
-        <p className="text-sm font-semibold text-[#1D4ED8] mb-1">💧 Hidratação</p>
-        <p className="text-xs text-[#3B82F6]">
+      <div className="mt-4 bg-[#0A1628] rounded-[1rem] p-4 border border-[#1E3A5F]">
+        <p className="text-sm font-semibold text-[#60A5FA] mb-1">💧 Hidratação</p>
+        <p className="text-xs text-[#93C5FD]">
           Meta: <strong>{diet.waterGoal}L</strong> de água hoje. Beba um copo agora e não espere ter sede!
         </p>
       </div>

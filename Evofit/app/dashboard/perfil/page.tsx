@@ -93,7 +93,7 @@ export default function PerfilPage() {
   const [weight, setWeight] = useState(Number(anamnese?.peso) || 70);
 
   const imc     = height > 0 ? calcIMC(weight, height) : "—";
-  const imcInfo = height > 0 ? imcLabel(Number(imc)) : { label: "—", color: "#9CA3AF" };
+  const imcInfo = height > 0 ? imcLabel(Number(imc)) : { label: "—", color: "#CBD5E0" };
 
   // Dados de evolução (carregados do localStorage)
   const [totalWorkouts, setTotalWorkouts]   = useState(0);
@@ -124,14 +124,14 @@ export default function PerfilPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
-      <h1 className="text-2xl font-extrabold text-[#111827] mb-6">Perfil</h1>
+      <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-6">Perfil</h1>
 
       {/* Avatar */}
-      <div className="bg-white rounded-[1rem] border border-[#E5E7EB] p-5 flex items-center gap-4 mb-4">
+      <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-5 flex items-center gap-4 mb-4">
         <div className="relative shrink-0">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-full overflow-hidden bg-[#7C3AED] flex items-center justify-center text-2xl font-black text-white hover:opacity-90 transition-opacity focus:outline-none"
+            className="w-16 h-16 rounded-full overflow-hidden bg-[#A855F7] flex items-center justify-center text-2xl font-black text-white hover:opacity-90 transition-opacity focus:outline-none"
             title="Trocar foto de perfil"
           >
             {profilePhoto ? (
@@ -141,7 +141,7 @@ export default function PerfilPage() {
               initial
             )}
           </button>
-          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center pointer-events-none shadow-sm">
+          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#1A1A1A] rounded-full border border-[#2D2D2D] flex items-center justify-center pointer-events-none shadow-sm">
             <span className="text-[9px]">📷</span>
           </div>
           <input
@@ -153,16 +153,16 @@ export default function PerfilPage() {
           />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-[#111827] truncate capitalize">{name}</p>
-          <p className="text-sm text-[#6B7280]">{age > 0 ? `${age} anos` : "—"}</p>
+          <p className="font-bold text-[#F0F0F0] truncate capitalize">{name}</p>
+          <p className="text-sm text-[#B8B8B8]">{age > 0 ? `${age} anos` : "—"}</p>
           <div className="flex flex-wrap gap-2 mt-2">
             {goal !== "—" && (
-              <span className="bg-[#FFFBEB] text-[#D97706] text-[10px] font-semibold px-2 py-0.5 rounded-full">
+              <span className="bg-[#1E1035] text-[#C084FC] text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 {goal}
               </span>
             )}
             {level !== "—" && (
-              <span className="bg-[#F3F4F6] text-[#374151] text-[10px] font-semibold px-2 py-0.5 rounded-full">
+              <span className="bg-[#252525] text-[#C0C0C0] text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 {level.split(" ")[0]}
               </span>
             )}
@@ -172,17 +172,17 @@ export default function PerfilPage() {
 
       {/* Stats rápidos */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB] text-center">
-          <p className="text-xl font-extrabold text-[#7C3AED]">{age || "—"}</p>
-          <p className="text-[10px] text-[#9CA3AF]">Idade</p>
+        <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
+          <p className="text-xl font-extrabold text-[#C084FC]">{age || "—"}</p>
+          <p className="text-[10px] text-[#CBD5E0]">Idade</p>
         </div>
-        <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB] text-center">
-          <p className="text-xl font-extrabold text-[#7C3AED]">{height || "—"}</p>
-          <p className="text-[10px] text-[#9CA3AF]">Altura (cm)</p>
+        <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
+          <p className="text-xl font-extrabold text-[#C084FC]">{height || "—"}</p>
+          <p className="text-[10px] text-[#CBD5E0]">Altura (cm)</p>
         </div>
-        <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB] text-center">
+        <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
           <p className="text-xl font-extrabold" style={{ color: imcInfo.color }}>{imc}</p>
-          <p className="text-[10px] text-[#9CA3AF]">IMC</p>
+          <p className="text-[10px] text-[#CBD5E0]">IMC</p>
         </div>
       </div>
 
@@ -200,51 +200,51 @@ export default function PerfilPage() {
       )}
 
       {/* ── EVOLUÇÃO DE TREINOS ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-[1rem] border border-[#E5E7EB] p-4 mb-4">
-        <p className="text-xs font-semibold text-[#374151] mb-4">🏋️ Evolução de treinos</p>
+      <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-4 mb-4">
+        <p className="text-xs font-semibold text-[#C0C0C0] mb-4">🏋️ Evolução de treinos</p>
 
         {/* Ciclo de 30 dias + total de treinos */}
         <div className="flex items-end justify-between mb-2">
           <div>
             {hasStartDate ? (
               <>
-                <p className="text-3xl font-extrabold text-[#7C3AED] leading-none">
+                <p className="text-3xl font-extrabold text-[#C084FC] leading-none">
                   {isOverdue ? "30" : daysInCycle}
                 </p>
-                <p className="text-[10px] text-[#9CA3AF] mt-0.5">
+                <p className="text-[10px] text-[#CBD5E0] mt-0.5">
                   {isOverdue ? "dias — programa vencido" : `dias no programa (ciclo ${cycleNumber})`}
                 </p>
               </>
             ) : (
               <>
-                <p className="text-3xl font-extrabold text-[#9CA3AF] leading-none">—</p>
-                <p className="text-[10px] text-[#9CA3AF] mt-0.5">faça a anamnese para começar</p>
+                <p className="text-3xl font-extrabold text-[#CBD5E0] leading-none">—</p>
+                <p className="text-[10px] text-[#CBD5E0] mt-0.5">faça a anamnese para começar</p>
               </>
             )}
           </div>
           <div className="text-right">
-            <p className="text-sm font-bold text-[#374151]">{totalWorkouts}</p>
-            <p className="text-[10px] text-[#9CA3AF]">treinos no total</p>
+            <p className="text-sm font-bold text-[#C0C0C0]">{totalWorkouts}</p>
+            <p className="text-[10px] text-[#CBD5E0]">treinos no total</p>
           </div>
         </div>
 
         {/* Barra de progresso dos 30 dias */}
-        <div className="h-2.5 bg-[#FEF3C7] rounded-full overflow-hidden mb-1">
+        <div className="h-2.5 bg-[#1E1035] rounded-full overflow-hidden mb-1">
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{
               width: `${hasStartDate ? Math.round((daysInCycle / 30) * 100) : 0}%`,
-              backgroundColor: isOverdue ? "#EF4444" : "#7C3AED",
+              backgroundColor: isOverdue ? "#EF4444" : "#A855F7",
             }}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-[#9CA3AF] mb-5">
+        <div className="flex justify-between text-[10px] text-[#CBD5E0] mb-5">
           <span>Dia {hasStartDate ? daysInCycle : 0}/30</span>
           <span>🔄 A cada 30 dias, programa é renovado</span>
         </div>
 
         {/* Heatmap — últimos 30 dias */}
-        <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wide mb-2">
+        <p className="text-[10px] font-semibold text-[#CBD5E0] uppercase tracking-wide mb-2">
           Últimos 30 dias
         </p>
         {last30Days.length > 0 ? (
@@ -254,7 +254,7 @@ export default function PerfilPage() {
                 <div
                   key={i}
                   className={`aspect-square rounded-sm transition-colors ${
-                    trained ? "bg-[#7C3AED]" : "bg-[#F3F4F6]"
+                    trained ? "bg-[#C084FC]" : "bg-[#252525]"
                   }`}
                   title={trained ? "Treinou" : "Descanso"}
                 />
@@ -262,14 +262,14 @@ export default function PerfilPage() {
             </div>
             <div className="flex items-center gap-3 mb-5">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-sm bg-[#7C3AED]" />
-                <span className="text-[10px] text-[#9CA3AF]">Treinou</span>
+                <div className="w-3 h-3 rounded-sm bg-[#A855F7]" />
+                <span className="text-[10px] text-[#CBD5E0]">Treinou</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-sm bg-[#F3F4F6]" />
-                <span className="text-[10px] text-[#9CA3AF]">Descansou</span>
+                <div className="w-3 h-3 rounded-sm bg-[#252525]" />
+                <span className="text-[10px] text-[#CBD5E0]">Descansou</span>
               </div>
-              <span className="text-[10px] text-[#9CA3AF] ml-auto">
+              <span className="text-[10px] text-[#CBD5E0] ml-auto">
                 {last30Days.filter(Boolean).length} dias ativos
               </span>
             </div>
@@ -277,13 +277,13 @@ export default function PerfilPage() {
         ) : (
           <div className="grid grid-cols-10 gap-1 mb-5">
             {Array.from({ length: 30 }).map((_, i) => (
-              <div key={i} className="aspect-square rounded-sm bg-[#F3F4F6]" />
+              <div key={i} className="aspect-square rounded-sm bg-[#252525]" />
             ))}
           </div>
         )}
 
         {/* Gráfico de frequência semanal */}
-        <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wide mb-3">
+        <p className="text-[10px] font-semibold text-[#CBD5E0] uppercase tracking-wide mb-3">
           Frequência semanal (últimas 7 semanas)
         </p>
         <div className="space-y-1.5">
@@ -294,16 +294,16 @@ export default function PerfilPage() {
 
             return (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-[10px] text-[#9CA3AF] w-20 shrink-0">{label}</span>
-                <div className="flex-1 h-2 bg-[#F3F4F6] rounded-full overflow-hidden">
+                <span className="text-[10px] text-[#CBD5E0] w-20 shrink-0">{label}</span>
+                <div className="flex-1 h-2 bg-[#252525] rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
-                      isLast ? "bg-[#7C3AED]" : "bg-[#C4B5FD]"
+                      isLast ? "bg-[#A855F7]" : "bg-[#C4B5FD]"
                     }`}
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#374151] w-8 text-right font-medium">
+                <span className="text-[10px] text-[#C0C0C0] w-8 text-right font-medium">
                   {count}d
                 </span>
               </div>
@@ -313,21 +313,21 @@ export default function PerfilPage() {
 
         {/* Alerta de renovação */}
         {isOverdue && (
-          <div className="mt-4 bg-[#FEE2E2] rounded-[0.75rem] p-3 border border-[#FECACA]">
-            <p className="text-xs font-bold text-[#991B1B]">
+          <div className="mt-4 bg-[#2D0808] rounded-[0.75rem] p-3 border border-[#4A0A0A]">
+            <p className="text-xs font-bold text-[#FCA5A5]">
               ⏰ Seu programa venceu! Renove para continuar evoluindo.
             </p>
-            <p className="text-[10px] text-[#7F1D1D] mt-0.5 leading-relaxed">
+            <p className="text-[10px] text-[#FCA5A5] mt-0.5 leading-relaxed">
               30 dias se passaram desde a última anamnese. Atualize seus dados e receba um novo programa.
             </p>
           </div>
         )}
         {!isOverdue && hasStartDate && daysRemaining <= 5 && daysRemaining > 0 && (
-          <div className="mt-4 bg-[#FEF3C7] rounded-[0.75rem] p-3 border border-[#FDE68A]">
-            <p className="text-xs font-bold text-[#92400E]">
+          <div className="mt-4 bg-[#1E1035] rounded-[0.75rem] p-3 border border-[#2D1B4E]">
+            <p className="text-xs font-bold text-[#C084FC]">
               ⏰ Faltam apenas {daysRemaining} dia{daysRemaining !== 1 ? "s" : ""} para renovar!
             </p>
-            <p className="text-[10px] text-[#78350F] mt-0.5 leading-relaxed">
+            <p className="text-[10px] text-[#C084FC] mt-0.5 leading-relaxed">
               Seu programa será atualizado em breve. Já vá pensando em seus novos objetivos.
             </p>
           </div>
@@ -335,39 +335,39 @@ export default function PerfilPage() {
       </div>
 
       {/* Atualizar peso */}
-      <div className="bg-white rounded-[1rem] border border-[#E5E7EB] p-4 mb-4">
-        <p className="text-xs font-semibold text-[#374151] mb-3">Atualizar peso atual</p>
+      <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-4 mb-4">
+        <p className="text-xs font-semibold text-[#C0C0C0] mb-3">Atualizar peso atual</p>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setWeight((w) => Math.max(30, Math.round((w - 0.5) * 10) / 10))}
-            className="w-10 h-10 rounded-full bg-[#F3F4F6] text-[#374151] font-bold text-lg hover:bg-[#FEF3C7] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#252525] text-[#C0C0C0] font-bold text-lg hover:bg-[#1E1035] transition-colors"
           >
             −
           </button>
           <div className="flex-1 text-center">
-            <p className="text-3xl font-extrabold text-[#111827]">{weight}</p>
-            <p className="text-xs text-[#9CA3AF]">kg</p>
+            <p className="text-3xl font-extrabold text-[#F0F0F0]">{weight}</p>
+            <p className="text-xs text-[#CBD5E0]">kg</p>
           </div>
           <button
             onClick={() => setWeight((w) => Math.min(300, Math.round((w + 0.5) * 10) / 10))}
-            className="w-10 h-10 rounded-full bg-[#7C3AED] text-white font-bold text-lg hover:bg-[#6D28D9] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#A855F7] text-white font-bold text-lg hover:bg-[#9333EA] transition-colors"
           >
             +
           </button>
         </div>
         <button
           onClick={handleSaveWeight}
-          className="w-full mt-3 border border-[#7C3AED] text-[#7C3AED] font-semibold py-2.5 rounded-[0.75rem] text-sm hover:bg-[#F5F3FF] transition-colors"
+          className="w-full mt-3 border border-[#A855F7] text-[#C084FC] font-semibold py-2.5 rounded-[0.75rem] text-sm hover:bg-[#1E1035] transition-colors"
         >
           Salvar peso
         </button>
       </div>
 
       {/* Menu */}
-      <div className="bg-white rounded-[1rem] border border-[#E5E7EB] overflow-hidden mb-4">
+      <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] overflow-hidden mb-4">
         {MENU_ITEMS.map((item, i) => (
           <div key={item.label}>
-            {i > 0 && <div className="h-px bg-[#F3F4F6]" />}
+            {i > 0 && <div className="h-px bg-[#252525]" />}
 
             {item.href && item.external ? (
               /* Link externo (WhatsApp, etc.) */
@@ -375,43 +375,43 @@ export default function PerfilPage() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-4 hover:bg-[#F0FFF4] transition-colors"
+                className="flex items-center gap-3 px-4 py-4 hover:bg-[#052E16] transition-colors"
               >
                 {item.whatsapp ? <WhatsAppIcon /> : <span className="text-base shrink-0">{item.icon}</span>}
-                <p className="flex-1 text-sm font-medium text-[#374151]">{item.label}</p>
+                <p className="flex-1 text-sm font-medium text-[#C0C0C0]">{item.label}</p>
                 {item.badge && (
-                  <span className="text-[10px] bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full font-semibold">
+                  <span className="text-[10px] bg-[#052E16] text-[#34D399] px-2 py-0.5 rounded-full font-semibold">
                     {item.badge}
                   </span>
                 )}
-                <span className="text-[#9CA3AF] text-sm">›</span>
+                <span className="text-[#CBD5E0] text-sm">›</span>
               </a>
             ) : item.href ? (
               /* Link interno */
               <Link
                 href={item.href}
-                className="flex items-center gap-3 px-4 py-4 hover:bg-[#F9FAFB] transition-colors"
+                className="flex items-center gap-3 px-4 py-4 hover:bg-[#1F1F1F] transition-colors"
               >
                 <span className="text-base shrink-0">{item.icon}</span>
-                <p className="flex-1 text-sm font-medium text-[#374151]">{item.label}</p>
+                <p className="flex-1 text-sm font-medium text-[#C0C0C0]">{item.label}</p>
                 {item.badge && (
-                  <span className="text-[10px] bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full font-semibold">
+                  <span className="text-[10px] bg-[#052E16] text-[#34D399] px-2 py-0.5 rounded-full font-semibold">
                     {item.badge}
                   </span>
                 )}
-                <span className="text-[#9CA3AF] text-sm">›</span>
+                <span className="text-[#CBD5E0] text-sm">›</span>
               </Link>
             ) : (
               /* Botão sem ação ainda */
-              <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-[#F9FAFB] transition-colors">
+              <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-[#1F1F1F] transition-colors">
                 <span className="text-base shrink-0">{item.icon}</span>
-                <p className="flex-1 text-left text-sm font-medium text-[#374151]">{item.label}</p>
+                <p className="flex-1 text-left text-sm font-medium text-[#C0C0C0]">{item.label}</p>
                 {item.badge && (
-                  <span className="text-[10px] bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full font-semibold">
+                  <span className="text-[10px] bg-[#1E1035] text-[#C084FC] px-2 py-0.5 rounded-full font-semibold">
                     {item.badge}
                   </span>
                 )}
-                <span className="text-[#9CA3AF] text-sm">›</span>
+                <span className="text-[#CBD5E0] text-sm">›</span>
               </button>
             )}
           </div>
@@ -421,7 +421,7 @@ export default function PerfilPage() {
       {/* Sair */}
       <button
         onClick={handleLogout}
-        className="w-full flex items-center justify-center gap-2 border border-[#FEE2E2] text-[#EF4444] font-semibold py-3.5 rounded-[0.75rem] text-sm hover:bg-[#FEF2F2] transition-colors"
+        className="w-full flex items-center justify-center gap-2 border border-[#FEE2E2] text-[#EF4444] font-semibold py-3.5 rounded-[0.75rem] text-sm hover:bg-[#2D0808] transition-colors"
       >
         Sair da conta
       </button>

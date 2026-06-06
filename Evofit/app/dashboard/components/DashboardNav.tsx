@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,11 +25,11 @@ export default function DashboardNav() {
               key={item.href}
               href={item.href}
               className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 relative transition-colors ${
-                active ? "text-[#C084FC]" : "text-[#9CA3AF]"
+                active ? "text-[#C084FC]" : "text-[#CBD5E0]"
               }`}
             >
               <span className="text-[18px] leading-none">{item.icon}</span>
-              <span className={`text-[9px] font-semibold ${active ? "text-[#C084FC]" : "text-[#9CA3AF]"}`}>
+              <span className={`text-[9px] font-semibold ${active ? "text-[#C084FC]" : "text-[#CBD5E0]"}`}>
                 {item.label}
               </span>
               {active && (

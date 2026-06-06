@@ -119,11 +119,11 @@ export default function FotoPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <p className="text-xs text-[#7C3AED] font-semibold uppercase tracking-wide mb-1">
+        <p className="text-xs text-[#C084FC] font-semibold uppercase tracking-wide mb-1">
           Evolução visual
         </p>
-        <h1 className="text-2xl font-extrabold text-[#111827]">Registro de fotos</h1>
-        <p className="text-sm text-[#6B7280] mt-1">
+        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Registro de fotos</h1>
+        <p className="text-sm text-[#B8B8B8] mt-1">
           {gallery.length === 0
             ? "Registre seu progresso com fotos do treino"
             : `${gallery.length} foto${gallery.length !== 1 ? "s" : ""} registrada${gallery.length !== 1 ? "s" : ""}`}
@@ -132,13 +132,13 @@ export default function FotoPage() {
 
       {/* Foto de hoje */}
       <div className="mb-6">
-        <p className="text-xs font-semibold text-[#374151] uppercase tracking-wide mb-3">
+        <p className="text-xs font-semibold text-[#C0C0C0] uppercase tracking-wide mb-3">
           Hoje · {todayLabel}
         </p>
 
         {todayPhoto ? (
           /* Já tem foto hoje */
-          <div className="relative rounded-[1rem] overflow-hidden border border-[#E5E7EB] aspect-square">
+          <div className="relative rounded-[1rem] overflow-hidden border border-[#2D2D2D] aspect-square">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={todayPhoto.dataUrl}
@@ -151,7 +151,7 @@ export default function FotoPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="text-xs bg-white/90 text-[#374151] font-semibold px-3 py-1.5 rounded-full hover:bg-white transition-colors"
+                  className="text-xs bg-white/90 text-[#C0C0C0] font-semibold px-3 py-1.5 rounded-full hover:bg-white transition-colors"
                 >
                   Substituir
                 </button>
@@ -169,16 +169,16 @@ export default function FotoPage() {
           <button
             onClick={() => fileRef.current?.click()}
             disabled={loading}
-            className="w-full border-2 border-dashed border-[#D1D5DB] rounded-[1rem] py-14 flex flex-col items-center gap-3 hover:border-[#7C3AED] hover:bg-[#F5F3FF] transition-all active:scale-[0.98]"
+            className="w-full border-2 border-dashed border-[#3A3A3A] rounded-[1rem] py-14 flex flex-col items-center gap-3 hover:border-[#A855F7] hover:bg-[#1E1035] transition-all active:scale-[0.98]"
           >
             {loading ? (
-              <div className="w-10 h-10 border-[3px] border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-[3px] border-[#A855F7] border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <span className="text-6xl">📸</span>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-[#374151]">Registrar treino de hoje</p>
-                  <p className="text-xs text-[#9CA3AF] mt-0.5">Toque para carregar da galeria</p>
+                  <p className="text-sm font-bold text-[#C0C0C0]">Registrar treino de hoje</p>
+                  <p className="text-xs text-[#CBD5E0] mt-0.5">Toque para carregar da galeria</p>
                 </div>
               </>
             )}
@@ -202,14 +202,14 @@ export default function FotoPage() {
       {/* Galeria de fotos passadas */}
       {pastPhotos.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#374151] uppercase tracking-wide mb-3">
+          <p className="text-xs font-semibold text-[#C0C0C0] uppercase tracking-wide mb-3">
             Histórico de fotos
           </p>
           <div className="grid grid-cols-2 gap-3">
             {pastPhotos.map((photo) => (
               <div
                 key={photo.dateStr}
-                className="relative rounded-[1rem] overflow-hidden border border-[#E5E7EB] aspect-square"
+                className="relative rounded-[1rem] overflow-hidden border border-[#2D2D2D] aspect-square"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -238,15 +238,15 @@ export default function FotoPage() {
       {gallery.length === 0 && (
         <div className="text-center py-10">
           <p className="text-5xl mb-3">🏋️</p>
-          <p className="text-sm font-bold text-[#374151] mb-1">Nenhuma foto ainda</p>
-          <p className="text-xs text-[#9CA3AF]">Registre seu primeiro treino acima e acompanhe sua evolução!</p>
+          <p className="text-sm font-bold text-[#C0C0C0] mb-1">Nenhuma foto ainda</p>
+          <p className="text-xs text-[#CBD5E0]">Registre seu primeiro treino acima e acompanhe sua evolução!</p>
         </div>
       )}
 
       {/* Dica */}
-      <div className="mt-5 bg-[#F5F3FF] rounded-[1rem] p-4 border border-[#EDE9FE]">
-        <p className="text-xs font-semibold text-[#7C3AED] mb-1">💡 Por que registrar fotos?</p>
-        <p className="text-xs text-[#374151] leading-relaxed">
+      <div className="mt-5 bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E]">
+        <p className="text-xs font-semibold text-[#C084FC] mb-1">💡 Por que registrar fotos?</p>
+        <p className="text-xs text-[#C0C0C0] leading-relaxed">
           O espelho mente, a balança engana — mas as fotos mostram a verdade. Tire uma foto por semana no mesmo horário e ângulo para enxergar sua evolução real.
         </p>
       </div>

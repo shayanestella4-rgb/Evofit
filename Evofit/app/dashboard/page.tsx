@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
-import { getTodayWorkout, getWeekSchedule, getWorkoutBySlot, MANUAL_SLOTS } from "@/lib/workout";
+import { getTodayWorkout, getWeekSchedule } from "@/lib/workout";
 import { getProgramStatus, loadWorkoutLogs } from "@/lib/workoutLog";
 
 // ─── Frases motivacionais ─────────────────────────────────────────────────────
@@ -51,8 +51,7 @@ function getTodayQuote() {
 }
 
 export default function DashboardHome() {
-  const { anamnese, completedExercises, todayTaskDone, overrideSlot, setOverrideSlot, profilePhoto, setProfilePhoto } = useApp();
-  const [showPicker, setShowPicker] = useState(false);
+  const { anamnese, completedExercises, todayTaskDone, profilePhoto, setProfilePhoto } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   /** Redimensiona a imagem para 220×220 (crop central) e salva como JPEG base64 */
@@ -85,10 +84,7 @@ export default function DashboardHome() {
   }
 
   const { cycleNumber } = getProgramStatus();
-  const baseWorkout  = getTodayWorkout(anamnese, cycleNumber);
-  const workout      = overrideSlot && anamnese
-    ? getWorkoutBySlot(anamnese, overrideSlot, cycleNumber)
-    : baseWorkout;
+  const workout      = getTodayWorkout(anamnese, cycleNumber);
   const weekSchedule = getWeekSchedule(anamnese);
 
   const userName = anamnese?.nome ?? "você";
@@ -131,14 +127,14 @@ export default function DashboardHome() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-sm text-[#6B7280]">{greeting} 👋</p>
-          <h1 className="text-xl font-extrabold text-[#111827] capitalize">{userName}</h1>
+          <p className="text-sm text-[#B8B8B8]">{greeting} 👋</p>
+          <h1 className="text-xl font-extrabold text-[#F0F0F0] capitalize">{userName}</h1>
         </div>
         {/* Avatar — toque para trocar foto */}
         <div className="relative">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-10 h-10 rounded-full overflow-hidden bg-[#7C3AED] flex items-center justify-center text-white font-bold hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/40"
+            className="w-10 h-10 rounded-full overflow-hidden bg-[#A855F7] flex items-center justify-center text-white font-bold hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#A855F7]/40"
             title="Trocar foto de perfil"
           >
             {profilePhoto ? (
@@ -149,7 +145,7 @@ export default function DashboardHome() {
             )}
           </button>
           {/* Ícone de câmera pequeno no canto */}
-          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center pointer-events-none">
+          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-[#1A1A1A] rounded-full border border-[#2D2D2D] flex items-center justify-center pointer-events-none">
             <span className="text-[8px]">📷</span>
           </div>
           <input
@@ -176,14 +172,14 @@ export default function DashboardHome() {
               title={item.workoutName || "Descanso"}
               className={`flex-1 flex flex-col items-center py-2 rounded-xl text-xs font-semibold transition-all ${
                 isToday
-                  ? "bg-[#7C3AED] text-white"
+                  ? "bg-[#A855F7] text-white"
                   : didTrain
-                  ? "bg-[#FEF3C7] text-[#D97706]"
+                  ? "bg-[#1E1035] text-[#C084FC]"
                   : missed
-                  ? "bg-[#FAF7F2] text-[#D1D5DB] border border-[#F3F4F6]"
+                  ? "bg-[#1A1A1A] text-[#D1D5DB] border border-[#252525]"
                   : item.isTraining
-                  ? "bg-white text-[#9CA3AF] border border-[#E5E7EB]"
-                  : "bg-[#FAF7F2] text-[#D1D5DB] border border-[#F3F4F6]"
+                  ? "bg-white text-[#CBD5E0] border border-[#2D2D2D]"
+                  : "bg-[#1A1A1A] text-[#D1D5DB] border border-[#252525]"
               }`}
             >
               {item.day}
@@ -196,101 +192,72 @@ export default function DashboardHome() {
       </div>
 
       {/* Card de treino */}
-      {workout.isRest && !overrideSlot ? (
-        <>
-          <div className="bg-[#F9FAFB] rounded-[1rem] p-5 mb-2 border border-[#E5E7EB]">
-            <p className="text-2xl mb-2">😴</p>
-            <h2 className="text-lg font-extrabold text-[#374151]">Dia de descanso</h2>
-            <p className="text-sm text-[#6B7280] mt-1">
-              Aproveite para se recuperar. Uma caminhada leve ou alongamento são ótimos hoje.
-            </p>
-          </div>
-          {anamnese && (
-            <button
-              onClick={() => setShowPicker(true)}
-              className="w-full text-sm text-[#7C3AED] font-semibold py-2.5 mb-4 hover:underline"
-            >
-              💪 Quero treinar mesmo assim — escolher grupo muscular
-            </button>
-          )}
-        </>
-      ) : (
-        <>
-          <Link href="/dashboard/treino">
-            <div className="bg-gradient-to-br from-[#5B21B6] to-[#7C3AED] rounded-[1rem] p-5 mb-2 shadow-lg shadow-violet-200 hover:shadow-xl transition-shadow cursor-pointer">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-violet-200 uppercase tracking-wide">
-                  {workout.emoji} {overrideSlot ? "Treino escolhido" : "Treino de hoje"}
-                </span>
-                <span className="bg-[#F59E0B] text-white text-xs px-2.5 py-1 rounded-full font-bold">
-                  {workout.duration} min
-                </span>
-              </div>
-              <h2 className="text-xl font-extrabold text-white mb-1">{workout.name}</h2>
-              <p className="text-sm text-violet-200">{workout.muscleLabel} · {totalEx} exercícios</p>
-              <div className="mt-4 bg-white/10 rounded-xl p-3">
-                <div className="flex justify-between text-xs text-violet-200 mb-1.5">
-                  <span>Progresso</span>
-                  <span>{doneCount} / {totalEx} exercícios</span>
-                </div>
-                <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-white rounded-full transition-all duration-500"
-                    style={{ width: `${workoutProgress}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+      {workout.isRest ? (
+        <div className="bg-[#1A1A1A] rounded-[1rem] p-5 mb-4 border border-[#2D2D2D]">
+          <p className="text-2xl mb-2">😴</p>
+          <h2 className="text-lg font-extrabold text-[#C0C0C0]">Dia de descanso</h2>
+          <p className="text-sm text-[#B8B8B8] mt-1 mb-3">
+            Aproveite para se recuperar. Uma caminhada leve ou alongamento são ótimos hoje.
+          </p>
+          <Link href="/dashboard/treino" className="text-xs text-[#C084FC] font-semibold hover:underline">
+            Ver treinos da semana →
           </Link>
-
-          {/* Linha de ação abaixo do card */}
-          {anamnese && (
-            <div className="flex items-center justify-between mb-4 px-1">
-              <button
-                onClick={() => setShowPicker(true)}
-                className="text-xs text-[#7C3AED] font-semibold hover:underline"
-              >
-                🔄 Trocar grupo muscular
-              </button>
-              {overrideSlot && (
-                <button
-                  onClick={() => setOverrideSlot(null)}
-                  className="text-xs text-[#9CA3AF] hover:text-[#EF4444] transition-colors"
-                >
-                  ✕ Voltar ao original
-                </button>
-              )}
+        </div>
+      ) : (
+        <Link href="/dashboard/treino">
+          <div className="bg-gradient-to-br from-[#1A0A2E] to-[#A855F7] rounded-[1rem] p-5 mb-4 shadow-lg shadow-purple-950 hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-purple-300 uppercase tracking-wide">
+                {workout.emoji} Treino de hoje
+              </span>
+              <span className="bg-[#A855F7] text-white text-xs px-2.5 py-1 rounded-full font-bold">
+                {workout.duration} min
+              </span>
             </div>
-          )}
-        </>
+            <h2 className="text-xl font-extrabold text-white mb-1">{workout.name}</h2>
+            <p className="text-sm text-purple-300">{workout.muscleLabel} · {totalEx} exercícios</p>
+            <div className="mt-4 bg-white/5 rounded-xl p-3">
+              <div className="flex justify-between text-xs text-purple-300 mb-1.5">
+                <span>Progresso</span>
+                <span>{doneCount} / {totalEx} exercícios</span>
+              </div>
+              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#1A1A1A] rounded-full transition-all duration-500"
+                  style={{ width: `${workoutProgress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </Link>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <Link href="/dashboard/dieta">
-          <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB] hover:shadow-md transition-shadow cursor-pointer">
-            <p className="text-xs text-[#6B7280] mb-1">🥗 Dieta hoje</p>
-            <p className="text-base font-extrabold text-[#111827]">1.850 kcal</p>
-            <div className="mt-2 h-1.5 bg-[#FEF3C7] rounded-full">
-              <div className="h-full w-[60%] bg-[#F59E0B] rounded-full" />
+          <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] hover:shadow-md transition-shadow cursor-pointer">
+            <p className="text-xs text-[#B8B8B8] mb-1">🥗 Dieta hoje</p>
+            <p className="text-base font-extrabold text-[#F0F0F0]">1.850 kcal</p>
+            <div className="mt-2 h-1.5 bg-[#1E1035] rounded-full">
+              <div className="h-full w-[60%] bg-[#A855F7] rounded-full" />
             </div>
-            <p className="text-[10px] text-[#9CA3AF] mt-1">Meta diária</p>
+            <p className="text-[10px] text-[#CBD5E0] mt-1">Meta diária</p>
           </div>
         </Link>
 
         <Link href="/dashboard/tarefas">
-          <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB] hover:shadow-md transition-shadow cursor-pointer">
-            <p className="text-xs text-[#6B7280] mb-1">⚡ Tarefa do dia</p>
-            <p className="text-sm font-bold text-[#111827] leading-tight">
+          <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] hover:shadow-md transition-shadow cursor-pointer">
+            <p className="text-xs text-[#B8B8B8] mb-1">⚡ Tarefa do dia</p>
+            <p className="text-sm font-bold text-[#F0F0F0] leading-tight">
               Meditar 10 min
             </p>
             <div className="mt-3">
               {todayTaskDone ? (
-                <span className="inline-flex items-center gap-1 bg-[#DCFCE7] text-[#16A34A] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-[#052E16] text-[#34D399] text-[10px] font-bold px-2 py-0.5 rounded-full">
                   ✓ Concluída
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 bg-[#FEF3C7] text-[#D97706] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-[#1E1035] text-[#C084FC] text-[10px] font-bold px-2 py-0.5 rounded-full">
                   Pendente
                 </span>
               )}
@@ -300,17 +267,17 @@ export default function DashboardHome() {
       </div>
 
       {/* Frase motivacional */}
-      <div className="bg-[#FFFBEB] rounded-[1rem] p-4 border border-[#FDE68A] mb-4">
-        <p className="text-xs text-[#D97706] font-semibold mb-1">✨ Frase do dia</p>
-        <p className="text-sm text-[#374151] font-medium leading-relaxed italic">
+      <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E] mb-4">
+        <p className="text-xs text-[#C084FC] font-semibold mb-1">✨ Frase do dia</p>
+        <p className="text-sm text-[#C0C0C0] font-medium leading-relaxed italic">
           &ldquo;{quote.text}&rdquo;
         </p>
-        <p className="text-xs text-[#9CA3AF] mt-1">— {quote.author}</p>
+        <p className="text-xs text-[#CBD5E0] mt-1">— {quote.author}</p>
       </div>
 
       {/* Resumo da semana */}
-      <div className="bg-white rounded-[1rem] p-4 border border-[#E5E7EB]">
-        <p className="text-xs font-semibold text-[#374151] mb-3">Semana em resumo</p>
+      <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D]">
+        <p className="text-xs font-semibold text-[#C0C0C0] mb-3">Semana em resumo</p>
         <div className="grid grid-cols-3 gap-3 text-center">
           {[
             { label: "Treinos feitos", value: String(todayIndex), unit: `/ ${weekSchedule.filter(w => w.isTraining).length}` },
@@ -318,70 +285,16 @@ export default function DashboardHome() {
             { label: "Tarefas feitas", value: todayTaskDone ? "1" : "0", unit: "hoje" },
           ].map((s) => (
             <div key={s.label}>
-              <p className="text-xl font-extrabold text-[#7C3AED]">
+              <p className="text-xl font-extrabold text-[#C084FC]">
                 {s.value}
-                <span className="text-xs text-[#9CA3AF] font-normal ml-0.5">{s.unit}</span>
+                <span className="text-xs text-[#CBD5E0] font-normal ml-0.5">{s.unit}</span>
               </p>
-              <p className="text-[10px] text-[#9CA3AF] mt-0.5">{s.label}</p>
+              <p className="text-[10px] text-[#CBD5E0] mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Bottom sheet: seletor de grupo muscular ──────────────────────────── */}
-      {showPicker && (
-        <div
-          className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center"
-          onClick={() => setShowPicker(false)}
-        >
-          <div
-            className="bg-white w-full max-w-lg rounded-t-[1.5rem] p-5 pb-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Handle */}
-            <div className="w-10 h-1 bg-[#E5E7EB] rounded-full mx-auto mb-4" />
-
-            <p className="text-base font-extrabold text-[#111827] mb-1">
-              Escolha o grupo muscular
-            </p>
-            <p className="text-xs text-[#9CA3AF] mb-4">
-              O treino será montado na hora com base no seu perfil.
-            </p>
-
-            <div className="grid grid-cols-2 gap-2">
-              {MANUAL_SLOTS.map((slot) => {
-                const isActive = overrideSlot?.name === slot.name;
-                return (
-                  <button
-                    key={slot.name}
-                    onClick={() => {
-                      setOverrideSlot(slot);
-                      setShowPicker(false);
-                    }}
-                    className={`flex items-center gap-3 p-3 rounded-[0.875rem] border text-left transition-all active:scale-[0.97] ${
-                      isActive
-                        ? "bg-[#7C3AED] border-[#7C3AED] text-white"
-                        : "bg-white border-[#E5E7EB] hover:border-[#F59E0B] hover:bg-[#FFFBEB]"
-                    }`}
-                  >
-                    <span className="text-xl shrink-0">{slot.emoji}</span>
-                    <span className={`text-xs font-semibold leading-tight ${isActive ? "text-white" : "text-[#374151]"}`}>
-                      {slot.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={() => setShowPicker(false)}
-              className="w-full mt-4 py-3 text-sm text-[#9CA3AF] font-medium hover:text-[#374151] transition-colors"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

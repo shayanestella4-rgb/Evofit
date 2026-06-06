@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
@@ -42,7 +42,7 @@ function LoginForm() {
       <h1 className="text-xl font-bold text-[#F0F0F0] text-center mb-1">
         Acessar minha conta
       </h1>
-      <p className="text-sm text-[#8A8A8A] text-center mb-6">
+      <p className="text-sm text-[#B8B8B8] text-center mb-6">
         Digite o email usado na sua compra
       </p>
 
@@ -71,7 +71,7 @@ function LoginForm() {
       </form>
 
       <div className="mt-6 pt-6 border-t border-[#2D2D2D]">
-        <p className="text-xs text-[#9CA3AF] text-center">
+        <p className="text-xs text-[#CBD5E0] text-center">
           Ainda não assinou?{" "}
           <button
             onClick={() => { window.location.href = CAKTO_URL; }}
@@ -93,7 +93,7 @@ export default function LoginPage() {
           <Link href="/" className="text-2xl font-extrabold text-[#C084FC]">
             Evofit
           </Link>
-          <p className="text-[#8A8A8A] text-sm mt-2">Seu personal trainer digital</p>
+          <p className="text-[#B8B8B8] text-sm mt-2">Seu personal trainer digital</p>
         </div>
         <Suspense fallback={<div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-8 h-64 animate-pulse" />}>
           <LoginForm />

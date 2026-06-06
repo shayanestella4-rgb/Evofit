@@ -118,19 +118,19 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-[#1A1A1A] flex flex-col">
       {/* Top bar */}
       <div className="px-6 pt-8 pb-4 max-w-lg mx-auto w-full">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-[#7C3AED]">Evofit</span>
-          <span className="text-xs text-[#9CA3AF]">
+          <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+          <span className="text-xs text-[#CBD5E0]">
             {step + 1} de {STEPS.length}
           </span>
         </div>
         {/* Progress bar */}
-        <div className="h-1.5 bg-[#EDE9FE] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#7C3AED] rounded-full transition-all duration-500"
+            className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -140,13 +140,13 @@ export default function OnboardingPage() {
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-6 pb-8">
         <div className="animate-fade-in" key={step}>
           <div className="text-4xl mb-4">{current.emoji}</div>
-          <h1 className="text-2xl font-extrabold text-[#111827] mb-1">{current.title}</h1>
-          <p className="text-sm text-[#6B7280] mb-8">{current.subtitle}</p>
+          <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-1">{current.title}</h1>
+          <p className="text-sm text-[#B8B8B8] mb-8">{current.subtitle}</p>
 
           <div className="space-y-6">
             {current.fields.map((field) => (
               <div key={field.key}>
-                <label className="block text-sm font-semibold text-[#374151] mb-3">
+                <label className="block text-sm font-semibold text-[#C0C0C0] mb-3">
                   {field.label}
                 </label>
 
@@ -156,7 +156,7 @@ export default function OnboardingPage() {
                     placeholder={field.placeholder}
                     value={data[field.key] ?? ""}
                     onChange={(e) => setValue(field.key, e.target.value)}
-                    className="w-full border border-[#E5E7EB] rounded-[0.75rem] px-4 py-3 text-sm text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#7C3AED] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
+                    className="w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#A855F7] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
                   />
                 ) : field.type === "select" ? (
                   <div className="flex gap-3">
@@ -166,8 +166,8 @@ export default function OnboardingPage() {
                         onClick={() => setValue(field.key, opt)}
                         className={`flex-1 py-3 rounded-[0.75rem] text-sm font-semibold border transition-all ${
                           data[field.key] === opt
-                            ? "bg-[#7C3AED] text-white border-[#7C3AED]"
-                            : "bg-white text-[#374151] border-[#E5E7EB] hover:border-[#7C3AED]"
+                            ? "bg-[#A855F7] text-white border-[#A855F7]"
+                            : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A855F7]"
                         }`}
                       >
                         {opt}
@@ -182,17 +182,17 @@ export default function OnboardingPage() {
                         onClick={() => setValue(field.key, opt)}
                         className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
                           data[field.key] === opt
-                            ? "bg-[#F5F3FF] text-[#7C3AED] border-[#7C3AED]"
-                            : "bg-white text-[#374151] border-[#E5E7EB] hover:border-[#C4B5FD]"
+                            ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
+                            : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
                         }`}
                       >
                         <span
                           className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
-                            data[field.key] === opt ? "border-[#7C3AED]" : "border-[#D1D5DB]"
+                            data[field.key] === opt ? "border-[#A855F7]" : "border-[#3A3A3A]"
                           }`}
                         >
                           {data[field.key] === opt && (
-                            <span className="w-2 h-2 rounded-full bg-[#7C3AED]" />
+                            <span className="w-2 h-2 rounded-full bg-[#A855F7]" />
                           )}
                         </span>
                         {opt}
@@ -210,14 +210,14 @@ export default function OnboardingPage() {
           {step > 0 && (
             <button
               onClick={back}
-              className="flex-1 border border-[#E5E7EB] text-[#374151] font-semibold py-4 rounded-[0.75rem] hover:bg-[#F9FAFB] transition-colors"
+              className="flex-1 border border-[#2D2D2D] text-[#C0C0C0] font-semibold py-4 rounded-[0.75rem] hover:bg-[#1F1F1F] transition-colors"
             >
               Voltar
             </button>
           )}
           <button
             onClick={next}
-            className="flex-1 bg-[#7C3AED] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#6D28D9] transition-colors shadow-lg shadow-violet-100"
+            className="flex-1 bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
           >
             {step === STEPS.length - 1 ? "Ver meu plano 🚀" : "Continuar"}
           </button>

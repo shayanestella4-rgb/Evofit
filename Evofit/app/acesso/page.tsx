@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -33,14 +33,14 @@ export default function AcessoPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-2xl font-extrabold text-[#C084FC]">Evofit</span>
-          <p className="text-[#8A8A8A] text-sm mt-2">Seu personal trainer digital</p>
+          <p className="text-[#B8B8B8] text-sm mt-2">Seu personal trainer digital</p>
         </div>
 
         <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-8">
           <div className="text-center mb-6">
             <div className="text-4xl mb-3">🎉</div>
             <h1 className="text-xl font-bold text-[#F0F0F0] mb-1">Compra confirmada!</h1>
-            <p className="text-sm text-[#9CA3AF]">
+            <p className="text-sm text-[#CBD5E0]">
               Digite o email que você usou na compra para ativar seu acesso.
             </p>
           </div>

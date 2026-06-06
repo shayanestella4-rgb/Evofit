@@ -16,7 +16,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
     where: { email: session.user.email },
   });
 
-  if (!subscription || subscription.status !== "ACTIVE") {
+  const now = new Date();
+  const isActive =
+    subscription?.status === "ACTIVE" &&
+    (!subscription.expiresAt || subscription.expiresAt > now);
+
+  if (!isActive) {
     redirect("/sem-acesso");
   }
 

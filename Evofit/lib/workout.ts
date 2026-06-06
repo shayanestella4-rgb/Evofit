@@ -41,6 +41,7 @@ export interface WeekDay {
   day: string;
   isTraining: boolean;
   workoutName: string;
+  emoji: string;
 }
 
 interface ExerciseDef {
@@ -314,12 +315,12 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["posteriores", "core"],
       volumes: { posteriores: 3, core: 2 },
     },
-    // Sex: superior
+    // Sex: superior — 8 exercícios
     4: {
       name: "Superior",
       emoji: "💪",
       groups: ["costas", "peito", "ombros", "biceps", "triceps"],
-      volumes: { costas: 3, peito: 2, ombros: 3, biceps: 1, triceps: 1 },
+      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1 },
     },
   },
 
@@ -366,19 +367,19 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
 const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
 
   "2 dias": {
-    // Seg: superior completo
+    // Seg: superior completo — 8 exercícios
     0: {
       name: "Superior Completo",
       emoji: "💪",
       groups: ["costas", "peito", "ombros", "biceps", "triceps"],
-      volumes: { costas: 3, peito: 3, ombros: 2, biceps: 2, triceps: 2 },
+      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1 },
     },
-    // Qui: inferior + core
+    // Qui: inferior + core — 8 exercícios
     3: {
       name: "Inferior + Core",
       emoji: "🦵",
       groups: ["quadriceps", "gluteos", "posteriores", "panturrilha", "core"],
-      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 2 },
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 1 },
     },
   },
 
@@ -505,48 +506,60 @@ function defaultVol(g: MuscleGroup, isFemale: boolean): number {
 }
 
 /**
- * Define séries, reps e descanso como um personal trainer.
+ * Periodização em 4 fases que rotacionam a cada ciclo de 30 dias.
+ *
+ * Fase 1 — Hipertrofia base  (ciclos 1, 5, 9 …)
+ * Fase 2 — Força             (ciclos 2, 6, 10 …)
+ * Fase 3 — Volume alto       (ciclos 3, 7, 11 …)
+ * Fase 4 — Técnicas avançadas (ciclos 4, 8, 12 …)  ← dropset / cluster set
  */
 function getSetsRest(
   goal: string,
-  nivel: string
+  nivel: string,
+  cycleNumber: number = 1,
 ): { sets: number; reps: string; rest: string; tip: string } {
   const isInter = nivel?.includes("Intermediário");
-  const baseSets = isInter ? 4 : 3;
+  const phase   = ((cycleNumber - 1) % 4) + 1; // 1 → 2 → 3 → 4 → 1 → …
 
-  if (goal?.includes("músculo")) {
-    return {
-      sets: baseSets,
-      reps: "8-10",
-      rest: "75s",
-      tip: "Carga progressiva — as últimas 2 reps devem ser difíceis. Desça o peso em 3s (excêntrico). Sinta a contração no pico.",
-    };
+  // ── Fase 1: Hipertrofia base ────────────────────────────────────────────────
+  if (phase === 1) {
+    const sets = isInter ? 4 : 3;
+    if (goal?.includes("músculo")) {
+      return { sets, reps: "8-10", rest: "75s",
+        tip: "Carga progressiva — as últimas 2 reps devem ser difíceis. Desça o peso em 3s (excêntrico). Sinta a contração no pico." };
+    }
+    if (goal?.includes("gordura")) {
+      return { sets, reps: "12", rest: "45s",
+        tip: "Descanse pouco para manter o metabolismo elevado. Mantenha a técnica mesmo no cansaço — nunca sacrifique a postura." };
+    }
+    if (goal?.includes("condicionamento")) {
+      return { sets: 3, reps: "12", rest: "40s",
+        tip: "Ritmo constante, respiração controlada. Core sempre ativado. Foco em resistência muscular." };
+    }
+    return { sets: 3, reps: "10-12", rest: "60s",
+      tip: "Qualidade acima de quantidade. Execute cada repetição com controle total — concêntrico 2s, excêntrico 3s." };
   }
 
-  if (goal?.includes("gordura")) {
-    return {
-      sets: baseSets,
-      reps: "12",
-      rest: "45s",
-      tip: "Descanse pouco para manter o metabolismo elevado. Mantenha a técnica mesmo no cansaço — nunca sacrifique a postura.",
-    };
+  // ── Fase 2: Força ───────────────────────────────────────────────────────────
+  if (phase === 2) {
+    return { sets: 4, reps: "5-7", rest: "2min",
+      tip: "🏋️ Fase de força: use cargas pesadas com técnica perfeita. Descanse por completo entre séries. Aumente a carga assim que conseguir 7 reps limpas." };
   }
 
-  if (goal?.includes("condicionamento")) {
-    return {
-      sets: 3,
-      reps: "12",
-      rest: "40s",
-      tip: "Ritmo constante, respiração controlada. Core sempre ativado. Foco em resistência muscular.",
-    };
+  // ── Fase 3: Volume alto ─────────────────────────────────────────────────────
+  if (phase === 3) {
+    const sets = isInter ? 5 : 4;
+    return { sets, reps: goal?.includes("músculo") ? "12-15" : "15", rest: "40s",
+      tip: "💦 Fase de volume: carga moderada, muitas repetições, descanso curto. Foco em pump e resistência. Seu músculo vai crescer nas micro-pausas." };
   }
 
-  return {
-    sets: 3,
-    reps: "10-12",
-    rest: "60s",
-    tip: "Qualidade acima de quantidade. Execute cada repetição com controle total — concêntrico 2s, excêntrico 3s.",
-  };
+  // ── Fase 4: Técnicas avançadas ─────────────────────────────────────────────
+  if (goal?.includes("gordura") || goal?.includes("condicionamento")) {
+    return { sets: 3, reps: "12+8", rest: "60s",
+      tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico em cada série." };
+  }
+  return { sets: isInter ? 4 : 3, reps: "8+4", rest: "90s",
+    tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita." };
 }
 
 /**
@@ -590,22 +603,23 @@ function pickExercises(
 
 /** Slots disponíveis para o aluno escolher manualmente */
 export interface ManualSlot {
-  name:   string;
-  emoji:  string;
-  groups: MuscleGroup[];
+  name:    string;
+  emoji:   string;
+  groups:  MuscleGroup[];
+  volumes: Partial<Record<MuscleGroup, number>>;
 }
 
 export const MANUAL_SLOTS: ManualSlot[] = [
-  { name: "Quadríceps",              emoji: "🦵", groups: ["quadriceps", "panturrilha"] },
-  { name: "Glúteos + Posteriores",   emoji: "🍑", groups: ["gluteos", "posteriores"] },
-  { name: "Peito + Tríceps",         emoji: "💪", groups: ["peito", "triceps"] },
-  { name: "Costas + Bíceps",         emoji: "🏋️", groups: ["costas", "biceps"] },
-  { name: "Ombros + Core",           emoji: "🔥", groups: ["ombros", "core"] },
-  { name: "Braços",                  emoji: "⚡", groups: ["biceps", "triceps"] },
-  { name: "Core",                    emoji: "🎯", groups: ["core"] },
-  { name: "Pernas Completo",         emoji: "🏃", groups: ["quadriceps", "posteriores", "panturrilha"] },
-  { name: "Superior Completo",       emoji: "💥", groups: ["peito", "costas", "ombros"] },
-  { name: "Glúteos Isolado",         emoji: "✨", groups: ["gluteos"] },
+  { name: "Quadríceps",            emoji: "🦵", groups: ["quadriceps", "panturrilha"],               volumes: { quadriceps: 5, panturrilha: 2 } },
+  { name: "Glúteos + Posteriores", emoji: "🍑", groups: ["gluteos", "posteriores"],                  volumes: { gluteos: 4, posteriores: 3 } },
+  { name: "Peito + Tríceps",       emoji: "💪", groups: ["peito", "triceps"],                        volumes: { peito: 4, triceps: 3 } },
+  { name: "Costas + Bíceps",       emoji: "🏋️", groups: ["costas", "biceps"],                        volumes: { costas: 4, biceps: 3 } },
+  { name: "Ombros + Core",         emoji: "🔥", groups: ["ombros", "core"],                          volumes: { ombros: 4, core: 3 } },
+  { name: "Braços",                emoji: "⚡", groups: ["biceps", "triceps"],                       volumes: { biceps: 4, triceps: 4 } },
+  { name: "Core",                  emoji: "🎯", groups: ["core"],                                    volumes: { core: 5 } },
+  { name: "Pernas Completo",       emoji: "🏃", groups: ["quadriceps", "posteriores", "panturrilha"], volumes: { quadriceps: 3, posteriores: 2, panturrilha: 2 } },
+  { name: "Superior Completo",     emoji: "💥", groups: ["peito", "costas", "ombros"],               volumes: { peito: 3, costas: 2, ombros: 2 } },
+  { name: "Glúteos Isolado",       emoji: "✨", groups: ["gluteos"],                                 volumes: { gluteos: 6 } },
 ];
 
 /** Monta um treino a partir de um slot manual escolhido pelo aluno */
@@ -623,8 +637,73 @@ export function getWorkoutBySlot(
 
   const isFemale = sexo === "Feminino";
   const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
-  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, {}, isFemale);
+  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel, cycleNumber);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale);
+
+  const exercises: Exercise[] = defs.map((ex) => ({
+    id:     ex.id,
+    name:   ex.name,
+    muscle: ex.primaryMuscle,
+    sets:   `${sets}x${reps}`,
+    rest,
+    tip,
+    gif:    GIF_MAP[ex.id] ?? undefined,
+  }));
+
+  const restSeconds = parseInt(rest) || 60;
+  const timePerEx   = sets * (1.5 + restSeconds / 60);
+  const duration    = Math.round(5 + exercises.length * timePerEx);
+
+  return {
+    name:        slot.name,
+    emoji:       slot.emoji,
+    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
+    duration,
+    exercises,
+    isRest: false,
+  };
+}
+
+/** Retorna o treino para um dia específico da semana (0=Seg … 6=Dom) */
+export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, cycleNumber: number = 1): DayWorkout {
+  if (!anamnese) {
+    return {
+      name: "Treino",
+      emoji: "🏋️",
+      muscleLabel: "Complete a anamnese",
+      duration: 0,
+      exercises: [],
+      isRest: false,
+    };
+  }
+
+  const {
+    sexo       = "Feminino",
+    objetivo   = "Mais disposição e saúde",
+    nivel      = "Iniciante (nunca treinei)",
+    diasTreino = "3 dias",
+    lesoes     = "Não tenho",
+  } = anamnese;
+
+  const isFemale = sexo === "Feminino";
+  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
+  const split    = splits[diasTreino] ?? splits["3 dias"];
+  const slot     = split[dayIdx];
+
+  if (!slot) {
+    return {
+      name: "Descanso",
+      emoji: "😴",
+      muscleLabel: "Recuperação ativa",
+      duration: 0,
+      exercises: [],
+      isRest: true,
+    };
+  }
+
+  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
+  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel, cycleNumber);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale);
 
   const exercises: Exercise[] = defs.map((ex) => ({
     id:     ex.id,
@@ -652,73 +731,9 @@ export function getWorkoutBySlot(
 
 /** Retorna o treino personalizado para o dia atual com base no gênero e objetivos */
 export function getTodayWorkout(anamnese: AnamneseData | null, cycleNumber: number = 1): DayWorkout {
-  if (!anamnese) {
-    return {
-      name: "Treino",
-      emoji: "🏋️",
-      muscleLabel: "Complete a anamnese",
-      duration: 0,
-      exercises: [],
-      isRest: false,
-    };
-  }
-
-  const {
-    sexo       = "Feminino",
-    objetivo   = "Mais disposição e saúde",
-    nivel      = "Iniciante (nunca treinei)",
-    diasTreino = "3 dias",
-    lesoes     = "Não tenho",
-  } = anamnese;
-
-  // Hoje: converte JS Sunday=0 → Seg=0…Dom=6
   const jsDay  = new Date().getDay();
   const dayIdx = jsDay === 0 ? 6 : jsDay - 1;
-
-  const isFemale = sexo === "Feminino";
-  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
-  const split    = splits[diasTreino] ?? splits["3 dias"];
-  const slot     = split[dayIdx];
-
-  // Dia de descanso
-  if (!slot) {
-    return {
-      name: "Descanso",
-      emoji: "😴",
-      muscleLabel: "Recuperação ativa",
-      duration: 0,
-      exercises: [],
-      isRest: true,
-    };
-  }
-
-  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
-  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel);
-
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale);
-
-  const exercises: Exercise[] = defs.map((ex) => ({
-    id:     ex.id,
-    name:   ex.name,
-    muscle: ex.primaryMuscle,
-    sets:   `${sets}x${reps}`,
-    rest,
-    tip,
-    gif:    GIF_MAP[ex.id] ?? undefined,
-  }));
-
-  const restSeconds = parseInt(rest) || 60;
-  const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = Math.round(5 + exercises.length * timePerEx);
-
-  return {
-    name:        slot.name,
-    emoji:       slot.emoji,
-    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
-    duration,
-    exercises,
-    isRest: false,
-  };
+  return getWorkoutForDay(anamnese, dayIdx, cycleNumber);
 }
 
 /** Retorna os 7 dias da semana com indicação de treino ou descanso */
@@ -726,7 +741,7 @@ export function getWeekSchedule(anamnese: AnamneseData | null): WeekDay[] {
   const labels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
   if (!anamnese) {
-    return labels.map((d) => ({ day: d, isTraining: false, workoutName: "" }));
+    return labels.map((d) => ({ day: d, isTraining: false, workoutName: "", emoji: "" }));
   }
 
   const isFemale = (anamnese.sexo ?? "Feminino") === "Feminino";
@@ -737,5 +752,6 @@ export function getWeekSchedule(anamnese: AnamneseData | null): WeekDay[] {
     day:         d,
     isTraining:  !!split[i],
     workoutName: split[i]?.name ?? "",
+    emoji:       split[i]?.emoji ?? "",
   }));
 }

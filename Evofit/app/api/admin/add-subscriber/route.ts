@@ -5,7 +5,7 @@ const ADMIN_PASSWORD = "evofit-admin-2026";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { email, password } = body;
+  const { email, password, action = "grant" } = body;
 
   if (password !== ADMIN_PASSWORD) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,11 +15,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email inválido" }, { status: 400 });
   }
 
+  const status = action === "revoke" ? "CANCELLED" : "ACTIVE";
+
   await prisma.subscription.upsert({
     where: { email },
-    create: { email, status: "ACTIVE" },
-    update: { status: "ACTIVE" },
+    create: { email, status },
+    update: { status },
   });
 
-  return NextResponse.json({ ok: true, email });
+  return NextResponse.json({ ok: true, email, status });
 }

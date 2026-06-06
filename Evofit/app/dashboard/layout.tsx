@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import DashboardNav from "./components/DashboardNav";
 
@@ -7,6 +8,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!session?.user?.email) {
     redirect("/auth/login");
+  }
+
+  const subscription = await prisma.subscription.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!subscription || subscription.status !== "ACTIVE") {
+    redirect("/sem-acesso");
   }
 
   return (

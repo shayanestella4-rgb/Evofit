@@ -1,6 +1,6 @@
 const BASE = "https://api.cakto.com.br/public_api";
 
-async function getToken(): Promise<string> {
+export async function getToken(): Promise<string> {
   const res = await fetch(`${BASE}/token/`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -14,15 +14,18 @@ async function getToken(): Promise<string> {
   return data.access_token;
 }
 
-export async function hasActiveCaktoOrder(email: string): Promise<boolean> {
-  const token = await getToken();
+export async function hasActiveCaktoOrder(
+  email: string,
+  token?: string
+): Promise<boolean> {
+  const t = token ?? (await getToken());
 
   const url = new URL(`${BASE}/orders/`);
   url.searchParams.set("search", email);
   url.searchParams.set("status", "paid");
 
   const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${t}` },
   });
 
   if (!res.ok) return false;

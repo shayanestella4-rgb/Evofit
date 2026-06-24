@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hasActiveCaktoOrder } from "@/lib/cakto";
+import { hasActiveSubscription } from "@/lib/cakto";
 
 function getExpiresAt(days = 30) {
   const date = new Date();
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   let ativo: boolean;
   try {
-    ativo = await hasActiveCaktoOrder(normalizedEmail);
+    ativo = await hasActiveSubscription(normalizedEmail);
   } catch {
     return NextResponse.json(
       { error: "Erro ao consultar a Cakto. Tente novamente." },

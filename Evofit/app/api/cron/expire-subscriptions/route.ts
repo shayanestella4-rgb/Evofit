@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getToken, hasActiveCaktoOrder } from "@/lib/cakto";
+import { getToken, hasActiveSubscription } from "@/lib/cakto";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     for (const { email } of semData) {
       try {
-        const ativo = await hasActiveCaktoOrder(email, token);
+        const ativo = await hasActiveSubscription(email, token);
         if (!ativo) {
           await prisma.subscription.update({
             where: { email },

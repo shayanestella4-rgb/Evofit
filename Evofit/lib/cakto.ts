@@ -14,15 +14,15 @@ export async function getToken(): Promise<string> {
   return data.access_token;
 }
 
-export async function hasActiveCaktoOrder(
+export async function hasActiveSubscription(
   email: string,
   token?: string
 ): Promise<boolean> {
   const t = token ?? (await getToken());
 
-  const url = new URL(`${BASE}/orders/`);
+  const url = new URL(`${BASE}/subscriptions/`);
   url.searchParams.set("search", email);
-  url.searchParams.set("status", "paid");
+  url.searchParams.set("status", "active");
 
   const res = await fetch(url.toString(), {
     headers: { Authorization: `Bearer ${t}` },
@@ -33,9 +33,9 @@ export async function hasActiveCaktoOrder(
   const data = await res.json();
   if (!data.results?.length) return false;
 
-  // confirma que o pedido pertence ao e-mail buscado
+  // confirma que a assinatura pertence ao e-mail buscado
   return data.results.some(
-    (order: { customer?: { email?: string } }) =>
-      order.customer?.email?.toLowerCase() === email.toLowerCase()
+    (sub: { customer?: { email?: string } }) =>
+      sub.customer?.email?.toLowerCase() === email.toLowerCase()
   );
 }

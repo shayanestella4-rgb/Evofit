@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-
-const CAKTO_URL = "https://pay.cakto.com.br/aprvkwz_909423";
-
-function goToCakto() {
-  window.location.href = CAKTO_URL;
-}
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const goToQuiz = () => router.push("/quiz");
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
       {/* Header */}
@@ -23,7 +21,7 @@ export default function LandingPage() {
               Entrar
             </Link>
             <button
-              onClick={goToCakto}
+              onClick={goToQuiz}
               className="bg-[#A855F7] text-white text-sm font-semibold px-5 py-2.5 rounded-[0.75rem] active:bg-[#9333EA] transition-colors"
             >
               Assinar agora
@@ -49,7 +47,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
-                onClick={goToCakto}
+                onClick={goToQuiz}
                 className="bg-[#A855F7] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors text-base shadow-lg shadow-purple-950"
               >
                 Começar agora
@@ -157,7 +155,7 @@ export default function LandingPage() {
               Junte-se a quem já parou de procurar e começou a treinar.
             </p>
             <button
-              onClick={goToCakto}
+              onClick={goToQuiz}
               className="bg-white text-[#A855F7] font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#EDE9FE] transition-colors inline-block"
             >
               Quero assinar agora

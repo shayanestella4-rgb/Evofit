@@ -36,14 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
-# local-only media assets (too large for git)
-/reels
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.vercel
 
 # local dev-env backups
 .env.local.bak

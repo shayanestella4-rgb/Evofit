@@ -1,0 +1,16 @@
+# Game Plan — Elevare
+
+## MVP (versão mínima viável)
+criar conta, anaminese, adcionar tarefas motivacionais, marcar treino como concluido
+
+## Prazo de lançamento
+1 mês
+
+## Quem vai construir
+Só eu (no-code / low-code)
+
+## Principal risco
+mercado
+
+## Modelo de monetização
+Assinatura mensal

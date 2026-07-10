@@ -1,0 +1,31 @@
+# UserFlow — Elevare
+
+## Ponto de entrada
+Link direto ou landing page
+
+## Primeira experiência (onboarding)
+cria conta e senha
+primeira anamnese (avaliação inicial feita para entender o perfil, os objetivos e as condições físicas do aluno 
+antes de montar treinos e dietas. Nela, são coletadas informações como idade, peso, rotina, objetivo físico, histórico 
+de treino, alimentação, qualidade do sono, possíveis lesões, doenças ou limitações. O objetivo é criar um acompanhamento 
+mais personalizado, seguro e eficiente, ajudando o aluno a ter melhores resultados e evitando riscos à saúde), atraves 
+de fotos e questionarios
+
+depois da avaliação, criar o treino e a dieta, através dos objetivos que o cliente preencheu na anamnese
+
+## Loop de engajamento
+todos os dias o treino é diferente, cada dia um exercicio para determinado grupo muscular, e todos os dia terá 
+uma mini tarefa motivacional, por exemplo: tirar uma foto na academia, não ter comido chocolate fora da dieta, ter 
+meditado etc 
+
+## Telas do MVP
+quiz anamnese meu perfil-nutriçao-estilo de vida habitos-objetivos-peso altura imc idade
+treino
+dieta
+dados pessoais
+lista de tarefas 
+configurações
+
+
+## Tratamento de erros
+mensagem clara do que aconteceu, botão de tente novamente, falar com suporte

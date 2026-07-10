@@ -1,0 +1,22 @@
+# PRD — Elevare
+
+## O Produto
+Elevare é um app desenvolvido para resolver o seguinte problema:
+direcionado para quem quer melhorar o corpo e a saúde, mas não sabem 
+por onde começar ou têm dificuldade em manter constância. Ele reúne treinos personalizados, 
+dietas e mensagens motivacionais em um só lugar, facilitando a rotina e eliminando a perda de 
+tempo procurando informações na internet. O app otimiza o processo de organização fitness, oferecendo praticidade, 
+direcionamento e incentivo diário, funcionando como um personal trainer digital acessível e motivador
+
+## Público-alvo
+Pessoas de 18 a 60 anos, que trabalham como CLT, e não tem como ter um personal, por falta de acessibilidade, 
+ou uma pessoa que trabalha de casa também, mas procura algo mais prático e acessivel. São para pessoas que nunca 
+treinaram, e não sabem por onde começar, e que querem melhorar o condicionamento fisico, resistencia e força muscular
+
+## Funcionalidades principais
+Treino personalisado
+Dieta
+Frase, atividade motivacional
+
+## Métricas de sucesso
+Um alcance de 1000 usuarios ativos mensais, com uma taxa de retenção de 80% e uma receita mais ou menos de 40.000,00

@@ -1,0 +1,16 @@
+# Backend Schema — Elevare
+
+## Entidades do banco de dados
+email, dados pessoais, anamnese, treino, dieta, evolução do aluno, começar de onde parou
+
+## Autenticação
+Google + Apple
+
+## Storage (arquivos e imagens)
+Sim (imagens de perfil, fotos)
+
+## Notificações
+Email
+
+## Banco de dados
+SQL (PostgreSQL, MySQL)

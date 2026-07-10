@@ -1,0 +1,16 @@
+# Design System — Elevare
+
+## Estilo visual
+Minimalista e clean
+
+## Tom de comunicação
+Motivador e energético
+
+## Referência de design
+Bitterme 
+
+## Componentes essenciais
+botão de inicio
+
+## Diferencial visual
+cor marcante, e tela fluidas

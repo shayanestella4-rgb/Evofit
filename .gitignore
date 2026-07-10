@@ -1,0 +1,18 @@
+# Pasta de GIFs originais (541MB — muito grande para GitHub)
+Gifs/
+
+# Pastas de referência visual (não fazem parte do código)
+identidade-visual*/
+referencias*/
+
+# Node modules (já tem .gitignore dentro de Evofit/)
+node_modules/
+
+.vercel
+
+# arquivo com credenciais da API da Cakto (segredo, nunca commitar)
+codigo api cakto.txt
+
+# pastas de vídeo de anúncios (grandes demais para o GitHub)
+Anuncio/
+cortes anuncio/

@@ -5,8 +5,6 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const CAKTO_URL = "https://pay.cakto.com.br/aprvkwz_909423";
-
 function LoginForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
@@ -74,7 +72,7 @@ function LoginForm() {
         <p className="text-xs text-[#CBD5E0] text-center">
           Ainda não assinou?{" "}
           <button
-            onClick={() => { window.location.href = CAKTO_URL; }}
+            onClick={() => router.push("/quiz")}
             className="text-[#C084FC] font-semibold"
           >
             Assinar o Evofit

@@ -2,90 +2,262 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Phase = "hook" | "quiz" | "analyzing" | "chat";
 
-const QUESTIONS = [
+type Option = { label: string; icon: string };
+
+type QuizItem =
+  | { type: "question"; key: string; question: string; options: Option[] }
+  | { type: "insight"; title: string; text: string }
+  | { type: "social"; title: string; subtitle: string };
+
+const ORBIT_CENTER = "/pessoas/user-1.png";
+const ORBIT_RING = [
+  "/pessoas/user-2.png",
+  "/pessoas/user-3.png",
+  "/pessoas/user-4.png",
+  "/pessoas/user-5.png",
+  "/pessoas/user-6.png",
+  "/pessoas/user-7.png",
+  "/pessoas/user-8.png",
+  "/pessoas/user-9.png",
+];
+
+const QUIZ_ITEMS: QuizItem[] = [
   {
-    key: "identificacao",
-    question: "Qual dessas frases mais parece com você agora?",
+    type: "question",
+    key: "sexo",
+    question: "Você é...",
     options: [
-      "Cuido de todo mundo e nunca sobra tempo pra mim",
-      "Já tentei academia ou dieta um monte de vezes e não colou",
-      "Vivo cansada(o), sem energia nem pras minhas coisas",
-      "Quero mudar, mas não sei nem por onde começar",
+      { label: "Homem", icon: "👨" },
+      { label: "Mulher", icon: "👩" },
     ],
   },
   {
-    key: "procrastinacao",
-    question: "Quantas vezes você já disse \"segunda-feira eu começo\"?",
+    type: "question",
+    key: "idade",
+    question: "Qual sua faixa de idade?",
     options: [
-      "Perdi a conta de tantas vezes",
-      "Comecei, mas parei já na primeira semana",
-      "Essa seria minha primeira vez de verdade",
-      "Pra mim não é sobre dia — é não saber por onde começar",
+      { label: "18–25 anos", icon: "🧑" },
+      { label: "26–35 anos", icon: "🧑" },
+      { label: "36–45 anos", icon: "🧑" },
+      { label: "46+ anos", icon: "🧑" },
     ],
   },
   {
+    type: "social",
+    title: "Pessoas reais treinando com o Evofit",
+    subtitle: "Gente comum, com rotina corrida, que decidiu colocar o corpo e a mente em primeiro lugar",
+  },
+  {
+    type: "question",
+    key: "experiencia",
+    question: "Você já treinou em academia antes?",
+    options: [
+      { label: "Nunca treinei", icon: "🌱" },
+      { label: "Já treinei, mas parei", icon: "⏸️" },
+      { label: "Treino de vez em quando", icon: "🔄" },
+      { label: "Treino regularmente e quero evoluir", icon: "📈" },
+    ],
+  },
+  {
+    type: "question",
+    key: "objetivo",
+    question: "Qual é o seu objetivo principal?",
+    options: [
+      { label: "Perder gordura", icon: "🔥" },
+      { label: "Ganhar músculo", icon: "💪" },
+      { label: "Melhorar disposição e saúde", icon: "⚡" },
+      { label: "Só sair do sedentarismo", icon: "🚶" },
+    ],
+  },
+  {
+    type: "question",
+    key: "foco",
+    question: "Qual área você mais quer trabalhar?",
+    options: [
+      { label: "Barriga", icon: "🎯" },
+      { label: "Braços e costas", icon: "💪" },
+      { label: "Pernas e glúteos", icon: "🦵" },
+      { label: "Corpo todo", icon: "🔥" },
+    ],
+  },
+  {
+    type: "question",
+    key: "condicionamento",
+    question: "Como você descreveria seu condicionamento hoje?",
+    options: [
+      { label: "Fico sem fôlego fácil", icon: "😮‍💨" },
+      { label: "Consigo me exercitar um pouco", icon: "🙂" },
+      { label: "Aguento bem esforço moderado", icon: "💪" },
+      { label: "Estou em boa forma, mas quero mais", icon: "🏆" },
+    ],
+  },
+  {
+    type: "insight",
+    title: "Seu ponto de partida não define seu resultado",
+    text: "Não importa se você nunca treinou ou já tentou várias vezes — o que muda o jogo é ter um plano que se encaixa na sua rotina real, não na rotina ideal que ninguém tem.",
+  },
+  {
+    type: "question",
+    key: "tentativas",
+    question: "Você já tentou treinar antes e não conseguiu manter?",
+    options: [
+      { label: "Várias vezes", icon: "🔁" },
+      { label: "Uma ou duas vezes", icon: "✌️" },
+      { label: "Nunca tentei de verdade", icon: "🆕" },
+      { label: "Treino, mas sempre travo em algum ponto", icon: "🚧" },
+    ],
+  },
+  {
+    type: "question",
+    key: "obstaculo",
+    question: "O que mais te atrapalha a manter uma rotina de treino?",
+    options: [
+      { label: "Falta de tempo", icon: "⏰" },
+      { label: "Falta de motivação", icon: "🔋" },
+      { label: "Não saber o que fazer", icon: "❓" },
+      { label: "Cansaço no fim do dia", icon: "😴" },
+    ],
+  },
+  {
+    type: "insight",
+    title: "Consistência importa mais que intensidade",
+    text: "20 minutos de treino feitos toda semana valem mais do que 2 horas uma vez por mês. É por isso que o plano se adapta ao tempo que você realmente tem — não ao tempo que você acha que deveria ter.",
+  },
+  {
+    type: "question",
+    key: "diasSemana",
+    question: "Quantos dias por semana você consegue treinar?",
+    options: [
+      { label: "1–2 dias", icon: "🗓️" },
+      { label: "3–4 dias", icon: "📅" },
+      { label: "5+ dias", icon: "🔥" },
+      { label: "Não sei, nunca organizei isso", icon: "🤷" },
+    ],
+  },
+  {
+    type: "question",
+    key: "local",
+    question: "Prefere treinar em casa ou na academia?",
+    options: [
+      { label: "Em casa", icon: "🏠" },
+      { label: "Na academia", icon: "🏋️" },
+      { label: "Os dois", icon: "🔀" },
+      { label: "Ainda não decidi", icon: "🤔" },
+    ],
+  },
+  {
+    type: "question",
+    key: "alimentacao",
+    question: "Como está sua alimentação hoje?",
+    options: [
+      { label: "Bem desorganizada", icon: "🍔" },
+      { label: "Tento comer bem, mas erro no fim de semana", icon: "⚖️" },
+      { label: "Já como razoavelmente bem", icon: "🥗" },
+      { label: "Não sei nem por onde começar a dieta", icon: "❓" },
+    ],
+  },
+  {
+    type: "insight",
+    title: "Treino e dieta andam juntos",
+    text: "Treinar sem ajustar a alimentação é como remar contra a maré. Por isso o Evofit monta os dois ao mesmo tempo — sem dieta restritiva, sem cortar tudo que você gosta.",
+  },
+  {
+    type: "question",
+    key: "sono",
+    question: "Como está sua qualidade de sono?",
+    options: [
+      { label: "Durmo mal", icon: "😵" },
+      { label: "Durmo razoável", icon: "😐" },
+      { label: "Durmo bem", icon: "😴" },
+      { label: "Varia muito", icon: "🔄" },
+    ],
+  },
+  {
+    type: "question",
+    key: "vergonha",
+    question: "Você sente vergonha ou insegurança de treinar perto de outras pessoas?",
+    options: [
+      { label: "Sim, bastante", icon: "😳" },
+      { label: "Um pouco", icon: "🙈" },
+      { label: "Não, mas não sei o que fazer", icon: "🤷" },
+      { label: "Não tenho vergonha", icon: "💪" },
+    ],
+  },
+  {
+    type: "question",
     key: "bloqueio",
     question: 'O que mais pesa quando você pensa em "treinar" ou "fazer dieta"?',
     options: [
-      "Vergonha de começar do zero",
-      "Medo de gastar e não dar certo",
-      "Não saber montar treino/dieta sozinho(a)",
-      "Ninguém pra cobrar/confiar",
+      { label: "Vergonha de começar do zero", icon: "😳" },
+      { label: "Medo de gastar e não dar certo", icon: "💸" },
+      { label: "Não saber montar treino/dieta sozinho(a)", icon: "🧩" },
+      { label: "Ninguém pra cobrar/confiar", icon: "🤝" },
     ],
   },
   {
-    key: "desejo",
-    question: "Se em 90 dias seu corpo E sua cabeça estivessem no controle, o que mudaria primeiro?",
+    type: "question",
+    key: "procrastinacao",
+    question: 'Quantas vezes você já disse "segunda-feira eu começo"?',
     options: [
-      "Minha energia no dia a dia",
-      "Minha autoestima no espelho",
-      "Minha disposição pra cuidar de quem eu amo",
-      "Finalmente eu em primeiro lugar, por uma vez",
+      { label: "Perdi a conta de tantas vezes", icon: "🔁" },
+      { label: "Comecei, mas parei já na primeira semana", icon: "⏸️" },
+      { label: "Essa seria minha primeira vez de verdade", icon: "✨" },
+      { label: "Pra mim não é sobre dia — é não saber por onde começar", icon: "🧭" },
+    ],
+  },
+  {
+    type: "question",
+    key: "identificacao",
+    question: "Qual dessas frases mais parece com você agora?",
+    options: [
+      { label: "Cuido de todo mundo e nunca sobra tempo pra mim", icon: "❤️" },
+      { label: "Já tentei academia ou dieta um monte de vezes e não colou", icon: "🔁" },
+      { label: "Vivo cansada(o), sem energia nem pras minhas coisas", icon: "🔋" },
+      { label: "Quero mudar, mas não sei nem por onde começar", icon: "🧭" },
     ],
   },
 ];
 
+const QUESTIONS = QUIZ_ITEMS.filter((i): i is Extract<QuizItem, { type: "question" }> => i.type === "question");
+
 const BLOQUEIO_INSIGHT: Record<string, string> = {
   "Vergonha de começar do zero":
-    "e vi que a vergonha de começar do zero é o que mais te trava — isso é mais comum do que você imagina, e aqui ninguém vai te julgar",
+    "vi que a vergonha de começar do zero é seu maior travamento — aqui ninguém te julga",
   "Medo de gastar e não dar certo":
-    "e vi que o medo de gastar e não dar certo é o que mais te trava — por isso o Evofit custa menos que um lanche por dia",
+    "vi que o medo de gastar é seu maior travamento — o Evofit custa menos que um lanche por dia",
   "Não saber montar treino/dieta sozinho(a)":
-    "e vi que não saber montar treino ou dieta sozinho(a) é o que mais te trava — é exatamente pra isso que eu existo",
+    "vi que não saber montar treino sozinho(a) é seu maior travamento — é pra isso que eu existo",
   "Ninguém pra cobrar/confiar":
-    "e vi que faltar alguém pra cobrar de você é o que mais te trava — é literalmente meu trabalho todo dia",
+    "vi que faltar alguém pra te cobrar é seu maior travamento — isso é literalmente meu trabalho",
 };
 
 function buildChatMessages(bloqueio: string | undefined): string[] {
-  const insight =
-    (bloqueio && BLOQUEIO_INSIGHT[bloqueio]) ||
-    "e vi exatamente onde você trava hoje";
+  const insight = (bloqueio && BLOQUEIO_INSIGHT[bloqueio]) || "vi exatamente onde você trava";
 
   return [
     "oi, aqui é a Evo 👋",
-    "terminei de analisar suas respostas",
     insight,
-    "você não precisa de mais um app de treino genérico",
-    "que ninguém segue depois da 2ª semana",
-    "nem de personal caro cobrando R$150+ pra te passar o mesmo treino de sempre",
-    "você precisa de algo que treine você onde você tá, com o tempo que sobra",
-    "e que cuide da sua cabeça também, não só do corpo",
-    "comecei a montar seu plano personalizado...",
-    "enquanto isso, olha rapidinho como funciona 👇",
+    "nada de app genérico ou personal caro cobrando R$150+",
+    "um plano que treina você onde você tá, e cuida da sua cabeça também",
+    "já comecei seu plano...",
+    "olha rapidinho como funciona 👇",
   ];
 }
 
 export default function QuizPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("hook");
-  const [step, setStep] = useState(0);
+  const [itemIndex, setItemIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [chatCount, setChatCount] = useState(0);
 
   const messages = buildChatMessages(answers.bloqueio);
+  const currentItem = QUIZ_ITEMS[itemIndex];
+  const questionNumber = QUIZ_ITEMS.slice(0, itemIndex + 1).filter((i) => i.type === "question").length;
 
   // Revela as mensagens da Evo uma por uma
   useEffect(() => {
@@ -102,45 +274,56 @@ export default function QuizPage() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  function selectAnswer(key: string, value: string) {
-    const next = { ...answers, [key]: value };
-    setAnswers(next);
-    if (step < QUESTIONS.length - 1) {
-      setStep((s) => s + 1);
+  function advance() {
+    if (itemIndex < QUIZ_ITEMS.length - 1) {
+      setItemIndex((i) => i + 1);
     } else {
       setPhase("analyzing");
     }
+  }
+
+  function selectAnswer(key: string, value: string) {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+    advance();
   }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
       {phase === "hook" && (
         <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full px-6 py-16 text-center animate-fade-in">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#F0F0F0] leading-tight mb-4">
-            Chega de vergonha na academia, de procrastinar...
-            <br />
-            <span className="text-[#C084FC]">e de cuidar de todo mundo, menos de você.</span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F0F0F0] leading-tight mb-4">
+            Esse aplicativo está ajudando homens e mulheres a{" "}
+            <span className="text-[#C084FC]">treinar e emagrecer</span> de forma
+            simples e eficaz
           </h1>
-          <p className="text-[#8A8A8A] mb-10 leading-relaxed">
-            Em 2 minutos, descubra um plano de treino e dieta que encaixa no
-            tempo que você já tem — sem pagar caro por personal e nutricionista.
+          <p className="text-[#8A8A8A] mb-8 leading-relaxed">
+            Responda esse teste gratuito de apenas 2 minutos e aprenda 👇
           </p>
 
-          <div className="bg-[#1E1035] rounded-[1.5rem] p-5 text-left border border-[#2D1B4E] mb-10">
-            <span className="inline-block bg-[#2D1B4E] text-[#C084FC] text-xs font-semibold px-3 py-1 rounded-full mb-3">
-              💜 SUGESTÃO EVO IA
-            </span>
-            <p className="text-sm text-[#F0F0F0] leading-relaxed">
-              &ldquo;Seu maior travamento não é preguiça — é rotina. E isso muda
-              com 20 minutos, não com 2 horas de academia.&rdquo;
-            </p>
+          <div className="grid grid-cols-2 gap-3 mb-10">
+            <div className="relative aspect-square rounded-[1rem] overflow-hidden border border-[#2D2D2D]">
+              <Image
+                src="/antes-depois-1.png"
+                alt="Antes e depois de uma usuária do Evofit"
+                fill
+                className="object-cover object-center"
+              />
+            </div>
+            <div className="relative aspect-square rounded-[1rem] overflow-hidden border border-[#2D2D2D]">
+              <Image
+                src="/antes-depois-homem.png"
+                alt="Antes e depois de um usuário do Evofit"
+                fill
+                className="object-cover object-center"
+              />
+            </div>
           </div>
 
           <button
             onClick={() => setPhase("quiz")}
             className="bg-[#A855F7] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
           >
-            Começar meu diagnóstico
+            Quero aprender mais
           </button>
 
           <p className="text-xs text-[#6B7280] mt-6">
@@ -149,36 +332,116 @@ export default function QuizPage() {
         </div>
       )}
 
-      {phase === "quiz" && (
+      {phase === "quiz" && currentItem.type === "question" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
-              {step + 1} de {QUESTIONS.length}
+              {questionNumber} de {QUESTIONS.length}
             </span>
           </div>
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
-              style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }}
+              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
             />
           </div>
 
-          <div className="flex-1 animate-fade-in" key={step}>
+          <div className="flex-1 animate-fade-in" key={itemIndex}>
             <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-8 leading-snug">
-              {QUESTIONS[step].question}
+              {currentItem.question}
             </h2>
             <div className="space-y-3">
-              {QUESTIONS[step].options.map((opt) => (
+              {currentItem.options.map((opt) => (
                 <button
-                  key={opt}
-                  onClick={() => selectAnswer(QUESTIONS[step].key, opt)}
-                  className="w-full text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border border-[#2D2D2D] text-[#C0C0C0] bg-[#1A1A1A] hover:border-[#A855F7] hover:text-[#F0F0F0] transition-all"
+                  key={opt.label}
+                  onClick={() => selectAnswer(currentItem.key, opt.label)}
+                  className="w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border border-[#2D2D2D] text-[#C0C0C0] bg-[#1A1A1A] hover:border-[#A855F7] hover:text-[#F0F0F0] transition-all"
                 >
-                  {opt}
+                  <span>{opt.label}</span>
+                  <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
+                    {opt.icon}
+                  </span>
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {phase === "quiz" && currentItem.type === "insight" && (
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+            <div
+              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
+            />
+          </div>
+          <div className="flex-1 flex flex-col justify-center animate-fade-in" key={itemIndex}>
+            <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] p-6 mb-8">
+              <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-3 leading-snug">
+                {currentItem.title}
+              </h2>
+              <p className="text-sm text-[#8A8A8A] leading-relaxed">{currentItem.text}</p>
+            </div>
+            <button
+              onClick={advance}
+              className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {phase === "quiz" && currentItem.type === "social" && (
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+            <div
+              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
+            />
+          </div>
+          <div className="flex-1 flex flex-col justify-center items-center text-center animate-fade-in" key={itemIndex}>
+            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-2 leading-snug">
+              {currentItem.title}
+            </h2>
+            <p className="text-sm text-[#8A8A8A] mb-10 max-w-xs">{currentItem.subtitle}</p>
+
+            <div className="relative w-64 h-64 mb-10">
+              {/* Círculos-guia */}
+              <div className="absolute inset-0 rounded-full border border-dashed border-[#2D2D2D]" />
+              <div className="absolute inset-8 rounded-full border border-dashed border-[#2D2D2D]" />
+
+              {/* Avatar central */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full overflow-hidden border-2 border-[#A855F7] shadow-lg shadow-purple-950 z-10">
+                <Image src={ORBIT_CENTER} alt="Usuário do Evofit" width={80} height={80} className="w-full h-full object-cover" />
+              </div>
+
+              {/* Avatares em órbita */}
+              {ORBIT_RING.map((src, i) => {
+                const angle = (i / ORBIT_RING.length) * 2 * Math.PI;
+                const radius = 118;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                return (
+                  <div
+                    key={src}
+                    className="absolute top-1/2 left-1/2 w-11 h-11 rounded-full overflow-hidden border-2 border-[#2D2D2D]"
+                    style={{ transform: `translate(${x - 22}px, ${y - 22}px)` }}
+                  >
+                    <Image src={src} alt="Usuário do Evofit" width={44} height={44} className="w-full h-full object-cover" />
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={advance}
+              className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+            >
+              Continuar
+            </button>
           </div>
         </div>
       )}

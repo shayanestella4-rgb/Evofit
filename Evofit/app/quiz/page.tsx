@@ -373,6 +373,24 @@ export default function QuizPage() {
     goToNext(next);
   }
 
+  function goBack() {
+    if (itemIndex > 0) {
+      setItemIndex((i) => i - 1);
+    } else {
+      setPhase("hook");
+    }
+  }
+
+  const BackButton = (
+    <button
+      onClick={goBack}
+      aria-label="Voltar"
+      className="text-[#8A8A8A] hover:text-[#F0F0F0] transition-colors mb-4 -ml-1 w-8 h-8 flex items-center justify-center"
+    >
+      ←
+    </button>
+  );
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
       {phase === "hook" && (
@@ -420,6 +438,7 @@ export default function QuizPage() {
 
       {phase === "quiz" && currentItem.type === "question" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          {BackButton}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
@@ -457,6 +476,7 @@ export default function QuizPage() {
 
       {phase === "quiz" && currentItem.type === "input" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          {BackButton}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
@@ -503,6 +523,7 @@ export default function QuizPage() {
 
       {phase === "quiz" && currentItem.type === "insight" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          {BackButton}
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
@@ -528,6 +549,7 @@ export default function QuizPage() {
 
       {phase === "quiz" && currentItem.type === "social" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          {BackButton}
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"

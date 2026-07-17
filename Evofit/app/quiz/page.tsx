@@ -11,7 +11,8 @@ type Option = { label: string; icon: string };
 type QuizItem =
   | { type: "question"; key: string; question: string; options: Option[] }
   | { type: "insight"; title: string; text: string }
-  | { type: "social"; title: string; subtitle: string };
+  | { type: "social"; title: string; subtitle: string }
+  | { type: "input"; key: string; question: string; inputType: "text" | "number"; placeholder: string; suffix?: string };
 
 const ORBIT_CENTER = "/pessoas/user-1.png";
 const ORBIT_RING = [
@@ -129,13 +130,13 @@ const QUIZ_ITEMS: QuizItem[] = [
   },
   {
     type: "question",
-    key: "diasSemana",
+    key: "diasTreino",
     question: "Quantos dias por semana você consegue treinar?",
     options: [
-      { label: "1–2 dias", icon: "🗓️" },
-      { label: "3–4 dias", icon: "📅" },
-      { label: "5+ dias", icon: "🔥" },
-      { label: "Não sei, nunca organizei isso", icon: "🤷" },
+      { label: "2 dias", icon: "🗓️" },
+      { label: "3 dias", icon: "📅" },
+      { label: "4 dias", icon: "🔥" },
+      { label: "5+ dias", icon: "🚀" },
     ],
   },
   {
@@ -220,9 +221,62 @@ const QUIZ_ITEMS: QuizItem[] = [
       { label: "Quero mudar, mas não sei nem por onde começar", icon: "🧭" },
     ],
   },
+  {
+    type: "insight",
+    title: "Só faltam alguns dados pra deixar seu plano 100% preciso",
+    text: "Treino e dieta calculados certinho pro SEU corpo — não uma média genérica. Leva 30 segundos.",
+  },
+  {
+    type: "input",
+    key: "idadeExata",
+    question: "Qual sua idade exata?",
+    inputType: "number",
+    placeholder: "Ex: 28",
+  },
+  {
+    type: "input",
+    key: "peso",
+    question: "Qual seu peso atual?",
+    inputType: "number",
+    placeholder: "Ex: 70",
+    suffix: "kg",
+  },
+  {
+    type: "input",
+    key: "altura",
+    question: "Qual sua altura?",
+    inputType: "number",
+    placeholder: "Ex: 170",
+    suffix: "cm",
+  },
+  {
+    type: "question",
+    key: "lesoes",
+    question: "Você tem alguma lesão ou limitação física?",
+    options: [
+      { label: "Não tenho", icon: "✅" },
+      { label: "Joelho", icon: "🦵" },
+      { label: "Coluna ou lombar", icon: "🧍" },
+      { label: "Ombro", icon: "💪" },
+      { label: "Outra", icon: "❓" },
+    ],
+  },
+  {
+    type: "question",
+    key: "periodo",
+    question: "Qual período você prefere treinar?",
+    options: [
+      { label: "Manhã", icon: "🌅" },
+      { label: "Tarde", icon: "🌤️" },
+      { label: "Noite", icon: "🌙" },
+      { label: "Indiferente", icon: "🔀" },
+    ],
+  },
 ];
 
-const QUESTIONS = QUIZ_ITEMS.filter((i): i is Extract<QuizItem, { type: "question" }> => i.type === "question");
+const ANSWERABLE = QUIZ_ITEMS.filter(
+  (i): i is Extract<QuizItem, { type: "question" | "input" }> => i.type === "question" || i.type === "input",
+);
 
 const BLOQUEIO_INSIGHT: Record<string, string> = {
   "Vergonha de começar do zero":
@@ -248,16 +302,44 @@ function buildChatMessages(bloqueio: string | undefined): string[] {
   ];
 }
 
+function mapNivel(experiencia: string | undefined): string {
+  if (experiencia === "Treino regularmente e quero evoluir") return "Intermediário (treino regularmente)";
+  if (experiencia === "Treino de vez em quando") return "Básico (treino às vezes)";
+  return "Iniciante (nunca treinei)";
+}
+
+function buildAnamnese(answers: Record<string, string>) {
+  return {
+    idade: answers.idadeExata,
+    sexo: answers.sexo,
+    peso: answers.peso,
+    altura: answers.altura,
+    objetivo: answers.objetivo,
+    nivel: mapNivel(answers.experiencia),
+    diasTreino: answers.diasTreino,
+    periodo: answers.periodo,
+    lesoes: answers.lesoes,
+    sono: answers.sono,
+  };
+}
+
 export default function QuizPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("hook");
   const [itemIndex, setItemIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [inputValue, setInputValue] = useState("");
   const [chatCount, setChatCount] = useState(0);
 
   const messages = buildChatMessages(answers.bloqueio);
   const currentItem = QUIZ_ITEMS[itemIndex];
-  const questionNumber = QUIZ_ITEMS.slice(0, itemIndex + 1).filter((i) => i.type === "question").length;
+  const answerNumber = QUIZ_ITEMS.slice(0, itemIndex + 1).filter(
+    (i) => i.type === "question" || i.type === "input",
+  ).length;
+
+  useEffect(() => {
+    setInputValue("");
+  }, [itemIndex]);
 
   // Revela as mensagens da Evo uma por uma
   useEffect(() => {
@@ -274,17 +356,21 @@ export default function QuizPage() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  function advance() {
+  function goToNext(latestAnswers: Record<string, string> = answers) {
     if (itemIndex < QUIZ_ITEMS.length - 1) {
       setItemIndex((i) => i + 1);
     } else {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("evofit_anamnese", JSON.stringify(buildAnamnese(latestAnswers)));
+      }
       setPhase("analyzing");
     }
   }
 
   function selectAnswer(key: string, value: string) {
-    setAnswers((prev) => ({ ...prev, [key]: value }));
-    advance();
+    const next = { ...answers, [key]: value };
+    setAnswers(next);
+    goToNext(next);
   }
 
   return (
@@ -337,13 +423,13 @@ export default function QuizPage() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
-              {questionNumber} de {QUESTIONS.length}
+              {answerNumber} de {ANSWERABLE.length}
             </span>
           </div>
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
-              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
+              style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
 
@@ -369,12 +455,58 @@ export default function QuizPage() {
         </div>
       )}
 
+      {phase === "quiz" && currentItem.type === "input" && (
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+            <span className="text-xs text-[#8A8A8A]">
+              {answerNumber} de {ANSWERABLE.length}
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+            <div
+              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
+            />
+          </div>
+
+          <div className="flex-1 animate-fade-in" key={itemIndex}>
+            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-8 leading-snug">
+              {currentItem.question}
+            </h2>
+            <div className="relative">
+              <input
+                type={currentItem.inputType}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={currentItem.placeholder}
+                autoFocus
+                className="w-full border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-4 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#A855F7] transition-all"
+              />
+              {currentItem.suffix && (
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#6B7280]">
+                  {currentItem.suffix}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <button
+            onClick={() => selectAnswer(currentItem.key, inputValue.trim())}
+            disabled={!inputValue.trim()}
+            className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
+          >
+            Continuar
+          </button>
+        </div>
+      )}
+
       {phase === "quiz" && currentItem.type === "insight" && (
         <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
-              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
+              style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
           <div className="flex-1 flex flex-col justify-center animate-fade-in" key={itemIndex}>
@@ -385,7 +517,7 @@ export default function QuizPage() {
               <p className="text-sm text-[#8A8A8A] leading-relaxed">{currentItem.text}</p>
             </div>
             <button
-              onClick={advance}
+              onClick={() => goToNext()}
               className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
             >
               Continuar
@@ -399,7 +531,7 @@ export default function QuizPage() {
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
               className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
-              style={{ width: `${(questionNumber / QUESTIONS.length) * 100}%` }}
+              style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
           <div className="flex-1 flex flex-col justify-center items-center text-center animate-fade-in" key={itemIndex}>
@@ -437,7 +569,7 @@ export default function QuizPage() {
             </div>
 
             <button
-              onClick={advance}
+              onClick={() => goToNext()}
               className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
             >
               Continuar

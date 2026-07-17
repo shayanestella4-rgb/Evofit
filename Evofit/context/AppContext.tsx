@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { AnamneseData } from "@/lib/types";
-import { setProgramStartDate } from "@/lib/workoutLog";
+import { setProgramStartDate, getProgramStartDate } from "@/lib/workoutLog";
 import type { ManualSlot } from "@/lib/workout";
 
 const STORAGE_KEY_ANAMNESE = "evofit_anamnese";
@@ -47,7 +47,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const savedSlot      = localStorage.getItem(storageKeySlot());
     const savedPhoto     = localStorage.getItem(STORAGE_KEY_PHOTO);
 
-    if (savedAnamnese)  setAnamnese(JSON.parse(savedAnamnese));
+    if (savedAnamnese) {
+      setAnamnese(JSON.parse(savedAnamnese));
+      // Anamnese pode ter vindo pré-preenchida do quiz de vendas (antes da compra) —
+      // nesse caso o ciclo de 30 dias ainda não foi iniciado, então inicia agora.
+      if (!getProgramStartDate()) {
+        setProgramStartDate(new Date().toISOString());
+      }
+    }
     if (savedExercises) setCompletedExercises(JSON.parse(savedExercises));
     if (savedTask)      setTodayTaskDoneState(JSON.parse(savedTask));
     if (savedSlot)      setOverrideSlotState(JSON.parse(savedSlot));

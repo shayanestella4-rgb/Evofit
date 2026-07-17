@@ -168,15 +168,15 @@ export default function OfertaPage() {
         </div>
 
         {/* Depoimentos reais */}
-        <div className="mb-10 animate-slide-up -mx-6">
-          <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center px-6">
+        <div className="mb-10 animate-slide-up">
+          <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center">
             Quem já está usando
           </h2>
-          <div className="flex gap-3 overflow-x-auto px-6 pb-2 snap-x snap-mandatory scrollbar-hide">
+          <div className="grid grid-cols-2 gap-3">
             {DEPOIMENTOS_FOTOS.map((src) => (
               <div
                 key={src}
-                className="relative shrink-0 w-40 aspect-[3/4] rounded-[0.75rem] overflow-hidden border border-[#2D2D2D] snap-start"
+                className="relative aspect-[3/4] rounded-[0.75rem] overflow-hidden border border-[#2D2D2D]"
               >
                 <Image src={src} alt="Depoimento de um usuário do Evofit" fill className="object-cover object-top" />
               </div>

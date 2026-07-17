@@ -35,7 +35,15 @@ const PROGRESSO = [
 ];
 
 const RESULTADOS = ["/resultado-1.png", "/resultado-2.png", "/resultado-3.png"];
-const DEPOIMENTOS_FOTOS = ["/depoimento-1.png", "/depoimento-2.png", "/depoimento-3.png"];
+const DEPOIMENTOS_FOTOS = [
+  "/depoimento-1.png",
+  "/depoimento-2.png",
+  "/depoimento-3.png",
+  "/depoimento-4.png",
+  "/depoimento-5.png",
+  "/depoimento-6.png",
+  "/depoimento-7.png",
+];
 
 const COMPARACAO = [
   { item: "Personal trainer", custo: "R$ 300+/mês" },

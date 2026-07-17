@@ -43,6 +43,7 @@ const DEPOIMENTOS_FOTOS = [
   "/depoimento-5.png",
   "/depoimento-6.png",
   "/depoimento-7.png",
+  "/depoimento-8.png",
 ];
 
 const COMPARACAO = [

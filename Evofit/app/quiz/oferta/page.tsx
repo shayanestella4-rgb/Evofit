@@ -130,6 +130,14 @@ export default function OfertaPage() {
           </div>
         </div>
 
+        {/* CTA intermediário */}
+        <button
+          onClick={goToCakto}
+          className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 mb-10 animate-slide-up"
+        >
+          Escolher meu plano
+        </button>
+
         {/* Pra quem é */}
         <div className="mb-10 animate-slide-up">
           <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center">
@@ -160,13 +168,16 @@ export default function OfertaPage() {
         </div>
 
         {/* Depoimentos reais */}
-        <div className="mb-10 animate-slide-up">
-          <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center">
+        <div className="mb-10 animate-slide-up -mx-6">
+          <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center px-6">
             Quem já está usando
           </h2>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex gap-3 overflow-x-auto px-6 pb-2 snap-x snap-mandatory scrollbar-hide">
             {DEPOIMENTOS_FOTOS.map((src) => (
-              <div key={src} className="relative aspect-[3/4] rounded-[0.75rem] overflow-hidden border border-[#2D2D2D]">
+              <div
+                key={src}
+                className="relative shrink-0 w-40 aspect-[3/4] rounded-[0.75rem] overflow-hidden border border-[#2D2D2D] snap-start"
+              >
                 <Image src={src} alt="Depoimento de um usuário do Evofit" fill className="object-cover object-top" />
               </div>
             ))}

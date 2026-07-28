@@ -58,6 +58,8 @@ interface SplitSlot {
   groups: MuscleGroup[];
   /** Quantidade de exercícios a selecionar por grupo muscular */
   volumes: Partial<Record<MuscleGroup, number>>;
+  /** Se este dia inclui um finalizador de abdômen (2-3x/semana, fora da periodização) */
+  abs?: boolean;
 }
 
 // ─── Banco de exercícios ──────────────────────────────────────────────────────
@@ -87,9 +89,6 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── GLÚTEOS (12 exercícios — ~4 ciclos) ──────────────────────────────────
   // Ordenados para intercalar padrões de movimento — sem repetir o mesmo padrão
   // dentro do mesmo ciclo de picks.
-  // Ciclo 1 · volume=2 (homem): g6 + g7 → hip thrust + abdução na máquina ✓
-  // Ciclo 1 · volume=3 (glút+post feminino): g6 + g7 + g2 → hip thrust + abdução + sumô ✓
-  // Ciclo 1 · volume=6 (glút isolado feminino): g6 + g7 + g2 + g8 + g3 + g9 → padrões distintos ✓
 
   gluteos: [
     { id: "g6",  name: "Elevação pélvica (hip thrust)",   primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
@@ -107,9 +106,6 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   ],
 
   // ── POSTERIORES (10 exercícios) ───────────────────────────────────────────
-  // Cadeira flexora e mesa flexora promovidos para compound:true e posicionados
-  // logo no início → aparecem no ciclo 1 para todos os alunos.
-  // Terra romeno com halteres e RDL convencional removidos.
 
   posteriores: [
     { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"] },
@@ -233,23 +229,44 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "t4",  name: "Tríceps kickback com haltere",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
   ],
 
-  // ── CORE (6 exercícios — rotação completa em 2 ciclos) ───────────────────
+  // ── ABDÔMEN (14 exercícios — usados como finalizador fixo 4x15, não entram
+  //    na periodização — ver pickAbsExercises / buildAbsExercises) ───────────
 
   core: [
-    { id: "k1", name: "Prancha frontal (60s)",            primaryMuscle: "Core completo / Estabilização", compound: false, avoidFor: [] },
-    { id: "k4", name: "Prancha lateral",                  primaryMuscle: "Oblíquos",                      compound: false, avoidFor: [] },
-    { id: "k2", name: "Abdômen bicicleta",                primaryMuscle: "Oblíquos / Reto abdominal",     compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "k6", name: "Crunch inverso",                   primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: [] },
-    { id: "k3", name: "Elevação de pernas na barra",      primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "k5", name: "Crunch no cabo",                   primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab14", name: "Prancha isométrica",             primaryMuscle: "Core completo / Estabilização", compound: false, avoidFor: [] },
+    { id: "ab3",  name: "Abdominal crunch",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: [] },
+    { id: "ab7",  name: "Crunch na máquina",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: [] },
+    { id: "ab10", name: "Supra no banco declinado",        primaryMuscle: "Reto abdominal (superior)",      compound: false, avoidFor: [] },
+    { id: "ab13", name: "Crunch oblíquo",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: [] },
+    { id: "ab11", name: "Toque no calcanhar alternado",    primaryMuscle: "Oblíquos",                       compound: false, avoidFor: [] },
+    { id: "ab6",  name: "Abdominal infra",                 primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab1",  name: "Abdominal infra deitado",         primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab4",  name: "Tuck crunch",                     primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab2",  name: "Abdominal bicicleta",              primaryMuscle: "Oblíquos / Reto abdominal",      compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab5",  name: "Abdominal twisting",               primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab12", name: "Abdominal twist",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab9",  name: "Rotação de tronco",                primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab8",  name: "Abdominal remador",                primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar"] },
   ],
 };
+
+// ─── Cardio (finalizador fixo, todos os dias de treino) ───────────────────────
+
+const CARDIO_LIBRARY: { id: string; name: string }[] = [
+  { id: "ca3", name: "Esteira" },
+  { id: "ca1", name: "Bicicleta ergométrica" },
+  { id: "ca2", name: "Elíptico" },
+];
 
 // ─── Divisões semanais ────────────────────────────────────────────────────────
 // volumes: quantidade de exercícios por grupo naquele dia
 // Dia: 0=Seg … 6=Dom
+// abs: dia leva finalizador de abdômen (4x15, fixo) — 2-3x/semana por plano
+// Todo dia de treino leva cardio (20-30min) depois da musculação — ver getWorkoutForDay.
 
 // ── FEMININO ──────────────────────────────────────────────────────────────────
+// Mais volume de inferiores do que de superiores. Nos dias de superior:
+// peito com apenas 1 exercício, priorizando costas / bíceps / ombro / tríceps.
 const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
 
   "2 dias": {
@@ -259,13 +276,15 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       emoji: "🦵",
       groups: ["quadriceps", "gluteos", "panturrilha"],
       volumes: { quadriceps: 3, gluteos: 3, panturrilha: 1 },
+      abs: true,
     },
-    // Qui: posteriores + core
+    // Qui: posteriores
     3: {
-      name: "Posteriores + Core",
+      name: "Posteriores",
       emoji: "🍑",
-      groups: ["posteriores", "core"],
-      volumes: { posteriores: 3, core: 2 },
+      groups: ["posteriores"],
+      volumes: { posteriores: 3 },
+      abs: true,
     },
   },
 
@@ -276,13 +295,15 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       emoji: "🦵",
       groups: ["quadriceps", "posteriores", "panturrilha"],
       volumes: { quadriceps: 4, posteriores: 3, panturrilha: 1 },
+      abs: true,
     },
-    // Qua: superior completo condensado
+    // Qua: superior completo condensado — peito com só 1 exercício
     2: {
       name: "Superior Completo",
       emoji: "💪",
       groups: ["costas", "peito", "triceps", "ombros", "biceps"],
       volumes: { costas: 3, peito: 1, triceps: 1, ombros: 2, biceps: 1 },
+      abs: true,
     },
     // Sex: dia de glúteos (foco total)
     4: {
@@ -300,6 +321,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       emoji: "🦵",
       groups: ["quadriceps", "panturrilha"],
       volumes: { quadriceps: 4, panturrilha: 1 },
+      abs: true,
     },
     // Ter: glúteos
     1: {
@@ -308,29 +330,32 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["gluteos"],
       volumes: { gluteos: 6 },
     },
-    // Qui: posteriores + core
+    // Qui: posteriores
     3: {
-      name: "Posteriores + Core",
+      name: "Posteriores",
       emoji: "🔥",
-      groups: ["posteriores", "core"],
-      volumes: { posteriores: 3, core: 2 },
+      groups: ["posteriores"],
+      volumes: { posteriores: 3 },
+      abs: true,
     },
-    // Sex: superior — 8 exercícios
+    // Sex: superior — peito com só 1 exercício, mais costas
     4: {
       name: "Superior",
       emoji: "💪",
       groups: ["costas", "peito", "ombros", "biceps", "triceps"],
-      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1 },
+      volumes: { costas: 3, peito: 1, ombros: 2, biceps: 1, triceps: 1 },
+      abs: true,
     },
   },
 
   "5+ dias": {
-    // Seg: quadríceps
+    // Seg: quadríceps — volume extra pra reforçar o viés de inferiores
     0: {
       name: "Quadríceps",
       emoji: "🦵",
       groups: ["quadriceps", "panturrilha"],
-      volumes: { quadriceps: 4, panturrilha: 1 },
+      volumes: { quadriceps: 5, panturrilha: 1 },
+      abs: true,
     },
     // Ter: glúteos
     1: {
@@ -346,57 +371,65 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["costas", "biceps"],
       volumes: { costas: 4, biceps: 2 },
     },
-    // Qui: posteriores + core
+    // Qui: posteriores
     3: {
-      name: "Posteriores + Core",
+      name: "Posteriores",
       emoji: "🔥",
-      groups: ["posteriores", "core"],
-      volumes: { posteriores: 3, core: 2 },
+      groups: ["posteriores"],
+      volumes: { posteriores: 3 },
+      abs: true,
     },
-    // Sex: peito + ombros + tríceps
+    // Sex: peito + ombros + tríceps — peito com só 1 exercício
     4: {
       name: "Peito + Ombros + Tríceps",
       emoji: "💥",
       groups: ["peito", "ombros", "triceps"],
-      volumes: { peito: 2, ombros: 4, triceps: 2 },
+      volumes: { peito: 1, ombros: 3, triceps: 3 },
+      abs: true,
     },
   },
 };
 
 // ── MASCULINO ─────────────────────────────────────────────────────────────────
+// Inferiores treinado só 1x/semana (quadríceps + posterior + glúteo no mesmo dia).
+// Panturrilha sai do dia de perna e entra em algum dia de braço.
 const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
 
   "2 dias": {
-    // Seg: superior completo — 8 exercícios
+    // Seg: superior completo — 8 exercícios + panturrilha
     0: {
       name: "Superior Completo",
       emoji: "💪",
-      groups: ["costas", "peito", "ombros", "biceps", "triceps"],
-      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1 },
+      groups: ["costas", "peito", "ombros", "biceps", "triceps", "panturrilha"],
+      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1, panturrilha: 1 },
+      abs: true,
     },
-    // Qui: inferior + core — 8 exercícios
+    // Qui: inferior completo (quad + glúteo + posterior) — único dia de perna da semana
     3: {
-      name: "Inferior + Core",
+      name: "Inferior Completo",
       emoji: "🦵",
-      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha", "core"],
-      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 1 },
+      groups: ["quadriceps", "gluteos", "posteriores"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2 },
+      abs: true,
     },
   },
 
   "3 dias": {
-    // Seg: costas + bíceps
+    // Seg: costas + bíceps + panturrilha
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["costas", "biceps"],
-      volumes: { costas: 4, biceps: 2 },
+      groups: ["costas", "biceps", "panturrilha"],
+      volumes: { costas: 4, biceps: 2, panturrilha: 1 },
+      abs: true,
     },
-    // Qua: inferior completo
+    // Qua: inferior completo — único dia de perna da semana
     2: {
       name: "Inferior Completo",
       emoji: "🦵",
-      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
-      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+      groups: ["quadriceps", "gluteos", "posteriores"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2 },
+      abs: true,
     },
     // Sex: peito + tríceps + ombros
     4: {
@@ -408,12 +441,13 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
   },
 
   "4 dias": {
-    // Seg: costas + bíceps
+    // Seg: costas + bíceps + panturrilha
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["costas", "biceps"],
-      volumes: { costas: 4, biceps: 2 },
+      groups: ["costas", "biceps", "panturrilha"],
+      volumes: { costas: 4, biceps: 2, panturrilha: 1 },
+      abs: true,
     },
     // Ter: peito + tríceps
     1: {
@@ -422,19 +456,21 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["peito", "triceps"],
       volumes: { peito: 4, triceps: 3 },
     },
-    // Qui: pernas
+    // Qui: inferior completo — único dia de perna da semana
     3: {
       name: "Pernas",
       emoji: "🦵",
-      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
-      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+      groups: ["quadriceps", "gluteos", "posteriores"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2 },
+      abs: true,
     },
-    // Sex: ombros + core
+    // Sex: ombros
     4: {
-      name: "Ombros + Core",
+      name: "Ombros",
       emoji: "🔥",
-      groups: ["ombros", "core"],
-      volumes: { ombros: 3, core: 2 },
+      groups: ["ombros"],
+      volumes: { ombros: 3 },
+      abs: true,
     },
   },
 
@@ -452,27 +488,30 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       emoji: "🏋️",
       groups: ["costas", "biceps"],
       volumes: { costas: 4, biceps: 3 },
+      abs: true,
     },
-    // Qua: pernas
+    // Qua: inferior completo — único dia de perna da semana
     2: {
       name: "Pernas",
       emoji: "🦵",
-      groups: ["quadriceps", "gluteos", "posteriores", "panturrilha"],
-      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1 },
+      groups: ["quadriceps", "gluteos", "posteriores"],
+      volumes: { quadriceps: 2, gluteos: 2, posteriores: 2 },
+      abs: true,
     },
-    // Qui: ombros + core
+    // Qui: ombros
     3: {
-      name: "Ombros + Core",
+      name: "Ombros",
       emoji: "🔥",
-      groups: ["ombros", "core"],
-      volumes: { ombros: 3, core: 2 },
+      groups: ["ombros"],
+      volumes: { ombros: 3 },
+      abs: true,
     },
-    // Sex: braços — volume
+    // Sex: braços — volume + panturrilha
     4: {
       name: "Braços — Volume",
       emoji: "⚡",
-      groups: ["biceps", "triceps"],
-      volumes: { biceps: 4, triceps: 4 },
+      groups: ["biceps", "triceps", "panturrilha"],
+      volumes: { biceps: 4, triceps: 4, panturrilha: 1 },
     },
   },
 };
@@ -489,18 +528,18 @@ const GROUP_LABELS: Record<MuscleGroup, string> = {
   ombros:      "Ombros",
   biceps:      "Bíceps",
   triceps:     "Tríceps",
-  core:        "Core",
+  core:        "Abdômen",
 };
 
 /** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
 function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   const female: Record<MuscleGroup, number> = {
     costas: 4, peito: 3, ombros: 4, biceps: 2, triceps: 2,
-    quadriceps: 4, gluteos: 5, posteriores: 3, panturrilha: 1, core: 2,
+    quadriceps: 4, gluteos: 5, posteriores: 3, panturrilha: 1, core: 1,
   };
   const male: Record<MuscleGroup, number> = {
     costas: 4, peito: 4, ombros: 3, biceps: 3, triceps: 3,
-    quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 2,
+    quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 1,
   };
   return isFemale ? female[g] : male[g];
 }
@@ -599,6 +638,50 @@ function pickExercises(
   return result;
 }
 
+/** Escolhe 1 exercício de abdômen, rotacionando por ciclo e por dia (mais variedade na semana). */
+function pickAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: number, dayIdx: number): ExerciseDef[] {
+  const virtualCycle = cycleNumber * 10 + dayIdx;
+  return pickExercises(["core"], injuries, virtualCycle, { core: 1 }, isFemale);
+}
+
+/** Escolhe a máquina de cardio do dia, intercalando entre esteira / bike / elíptico. */
+function pickCardio(cycleNumber: number, dayIdx: number): { id: string; name: string } {
+  const idx = (cycleNumber + dayIdx) % CARDIO_LIBRARY.length;
+  return CARDIO_LIBRARY[idx];
+}
+
+function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: number, dayIdx: number): Exercise[] {
+  return pickAbsExercises(injuries, isFemale, cycleNumber, dayIdx).map((ex) => ({
+    id:     ex.id,
+    name:   ex.name,
+    muscle: "Abdômen",
+    sets:   "4x15",
+    rest:   "30s",
+    tip:    "Foco na contração do abdômen — evite puxar o pescoço, o movimento deve vir da barriga.",
+    gif:    GIF_MAP[ex.id] ?? undefined,
+  }));
+}
+
+function buildCardioExercise(cycleNumber: number, dayIdx: number): Exercise {
+  const c = pickCardio(cycleNumber, dayIdx);
+  return {
+    id:     c.id,
+    name:   c.name,
+    muscle: "Cardio",
+    sets:   "20-30 min",
+    rest:   "—",
+    tip:    "Ritmo moderado e constante — o objetivo é queimar calorias extras sem prejudicar a recuperação do treino de força.",
+    gif:    GIF_MAP[c.id] ?? undefined,
+  };
+}
+
+/** Estima a duração (min) somando o tempo dos exercícios de força + abdômen + cardio. */
+function estimateDuration(mainCount: number, timePerMain: number, absCount: number): number {
+  const absTime    = absCount * 4 * (1.5 + 30 / 60); // 4 séries, ~30s de descanso
+  const cardioTime = 25; // meio-termo de 20-30min
+  return Math.round(5 + mainCount * timePerMain + absTime + cardioTime);
+}
+
 // ─── API pública ──────────────────────────────────────────────────────────────
 
 /** Slots disponíveis para o aluno escolher manualmente */
@@ -614,15 +697,15 @@ export const MANUAL_SLOTS: ManualSlot[] = [
   { name: "Glúteos + Posteriores", emoji: "🍑", groups: ["gluteos", "posteriores"],                  volumes: { gluteos: 4, posteriores: 3 } },
   { name: "Peito + Tríceps",       emoji: "💪", groups: ["peito", "triceps"],                        volumes: { peito: 4, triceps: 3 } },
   { name: "Costas + Bíceps",       emoji: "🏋️", groups: ["costas", "biceps"],                        volumes: { costas: 4, biceps: 3 } },
-  { name: "Ombros + Core",         emoji: "🔥", groups: ["ombros", "core"],                          volumes: { ombros: 4, core: 3 } },
+  { name: "Ombros + Abdômen",      emoji: "🔥", groups: ["ombros", "core"],                          volumes: { ombros: 4, core: 3 } },
   { name: "Braços",                emoji: "⚡", groups: ["biceps", "triceps"],                       volumes: { biceps: 4, triceps: 4 } },
-  { name: "Core",                  emoji: "🎯", groups: ["core"],                                    volumes: { core: 5 } },
+  { name: "Abdômen",               emoji: "🎯", groups: ["core"],                                    volumes: { core: 5 } },
   { name: "Pernas Completo",       emoji: "🏃", groups: ["quadriceps", "posteriores", "panturrilha"], volumes: { quadriceps: 3, posteriores: 2, panturrilha: 2 } },
   { name: "Superior Completo",     emoji: "💥", groups: ["peito", "costas", "ombros"],               volumes: { peito: 3, costas: 2, ombros: 2 } },
   { name: "Glúteos Isolado",       emoji: "✨", groups: ["gluteos"],                                 volumes: { gluteos: 6 } },
 ];
 
-/** Monta um treino a partir de um slot manual escolhido pelo aluno */
+/** Monta um treino a partir de um slot manual escolhido pelo aluno (sempre com cardio no final) */
 export function getWorkoutBySlot(
   anamnese: AnamneseData,
   slot: ManualSlot,
@@ -650,9 +733,12 @@ export function getWorkoutBySlot(
     gif:    GIF_MAP[ex.id] ?? undefined,
   }));
 
+  const mainCount = exercises.length;
+  exercises.push(buildCardioExercise(cycleNumber, 0));
+
   const restSeconds = parseInt(rest) || 60;
   const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = Math.round(5 + exercises.length * timePerEx);
+  const duration    = estimateDuration(mainCount, timePerEx, 0);
 
   return {
     name:        slot.name,
@@ -714,10 +800,18 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
     tip,
     gif:    GIF_MAP[ex.id] ?? undefined,
   }));
+  const mainCount = exercises.length;
+
+  // Abdômen (2-3x/semana, conforme o slot) — sempre antes do cardio
+  const absExercises = slot.abs ? buildAbsExercises(injuries, isFemale, cycleNumber, dayIdx) : [];
+  exercises.push(...absExercises);
+
+  // Cardio — todo dia de treino, sempre por último
+  exercises.push(buildCardioExercise(cycleNumber, dayIdx));
 
   const restSeconds = parseInt(rest) || 60;
   const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = Math.round(5 + exercises.length * timePerEx);
+  const duration    = estimateDuration(mainCount, timePerEx, absExercises.length);
 
   return {
     name:        slot.name,

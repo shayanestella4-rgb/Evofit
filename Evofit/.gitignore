@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local dev-env backups
 .env.local.bak
+
+# gifs de exercicio ficam so no Vercel Blob (script upload-gifs.mjs), nunca no git
+/public/gifs/*.gif

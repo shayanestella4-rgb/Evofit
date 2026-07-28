@@ -13,7 +13,9 @@ export type MuscleGroup =
   | "ombros"
   | "biceps"
   | "triceps"
-  | "core";
+  | "core"
+  | "trapezio"
+  | "antebraco";
 
 export interface Exercise {
   id: string;
@@ -133,82 +135,89 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── PEITO (16 exercícios — ~5 ciclos) ────────────────────────────────────
 
   peito: [
-    { id: "p1",  name: "Supino reto com barra",           primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
-    { id: "p2",  name: "Supino inclinado com halteres",   primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "p7",  name: "Supino inclinado com barra",      primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "p15", name: "Supino com halteres",             primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
-    { id: "p3",  name: "Supino declinado com halteres",   primaryMuscle: "Peitoral inferior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "p8",  name: "Supino na máquina",               primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
-    { id: "p13", name: "Supino vertical (shoulder press)", primaryMuscle: "Peitoral / Ombros",          compound: true,  avoidFor: ["Ombro"] },
-    { id: "p6",  name: "Flexão de braço",                 primaryMuscle: "Peitoral / Tríceps",          compound: true,  avoidFor: [] },
-    { id: "p4",  name: "Crucifixo com halteres",          primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
-    { id: "p9",  name: "Crucifixo inclinado",             primaryMuscle: "Peitoral superior (abertura)", compound: false, avoidFor: ["Ombro"] },
-    { id: "p14", name: "Crucifixo com cabo deitado",      primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
-    { id: "p5",  name: "Crossover polia alta",            primaryMuscle: "Peitoral / Serrátil",         compound: false, avoidFor: ["Ombro"] },
-    { id: "p10", name: "Crossover polia baixa",           primaryMuscle: "Peitoral inferior",           compound: false, avoidFor: ["Ombro"] },
-    { id: "p16", name: "Crossover polia média",           primaryMuscle: "Peitoral (porção média)",     compound: false, avoidFor: ["Ombro"] },
-    { id: "p11", name: "Voador peitoral",                 primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
-    { id: "p12", name: "Pack deck (máquina)",             primaryMuscle: "Peitoral",                    compound: false, avoidFor: ["Ombro"] },
+    { id: "p28", name: "Supino reto na máquina",           primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p33", name: "Supino reto com barra",            primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p29", name: "Supino com halteres",              primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p27", name: "Supino inclinado com halteres",    primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p30", name: "Supino inclinado com barra",       primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p31", name: "Supino inclinado com barra (pegada fechada)", primaryMuscle: "Peitoral superior", compound: true,  avoidFor: ["Ombro"] },
+    { id: "p26", name: "Supino inclinado na máquina",      primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p32", name: "Supino inclinado no cabo",         primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p34", name: "Supino vertical (shoulder press)", primaryMuscle: "Peitoral / Ombros",           compound: true,  avoidFor: ["Ombro"] },
+    { id: "p20", name: "Crucifixo deitado com cabo",       primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p22", name: "Crucifixo inclinado com halteres", primaryMuscle: "Peitoral superior (abertura)", compound: false, avoidFor: ["Ombro"] },
+    { id: "p21", name: "Crucifixo inclinado no cross",     primaryMuscle: "Peitoral superior (abertura)", compound: false, avoidFor: ["Ombro"] },
+    { id: "p23", name: "Crucifixo com halteres",           primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p24", name: "Crucifixo na máquina",             primaryMuscle: "Peitoral (abertura)",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p25", name: "Peck deck (máquina)",              primaryMuscle: "Peitoral",                    compound: false, avoidFor: ["Ombro"] },
+    { id: "p17", name: "Crossover polia alta",             primaryMuscle: "Peitoral / Serrátil",         compound: false, avoidFor: ["Ombro"] },
+    { id: "p18", name: "Crossover polia baixa",            primaryMuscle: "Peitoral inferior",           compound: false, avoidFor: ["Ombro"] },
+    { id: "p19", name: "Crossover polia média",            primaryMuscle: "Peitoral (porção média)",     compound: false, avoidFor: ["Ombro"] },
   ],
 
-  // ── COSTAS (16 exercícios — ~5 ciclos) ───────────────────────────────────
+  // ── COSTAS (19 exercícios) ───────────────────────────────────────────────
 
   costas: [
-    { id: "c7",  name: "Barra fixa",                      primaryMuscle: "Dorsal / Bíceps",             compound: true,  avoidFor: ["Ombro"] },
-    { id: "c1",  name: "Puxada frontal na barra",         primaryMuscle: "Dorsal / Teres maior",        compound: true,  avoidFor: ["Ombro"] },
-    { id: "c13", name: "Puxada pegada fechada",           primaryMuscle: "Dorsal inferior",             compound: true,  avoidFor: [] },
-    { id: "c10", name: "Puxada unilateral",               primaryMuscle: "Dorsal (unilateral)",         compound: true,  avoidFor: [] },
-    { id: "c16", name: "Puxada inclinada com corda",      primaryMuscle: "Dorsal inferior / Serrátil",  compound: false, avoidFor: [] },
-    { id: "c5",  name: "Puxada com triângulo",            primaryMuscle: "Dorsal inferior",             compound: false, avoidFor: [] },
-    { id: "c2",  name: "Remada curvada com barra",        primaryMuscle: "Dorsal / Trapézio médio",     compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "c8",  name: "Remada curvada com halteres",     primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "c11", name: "Remada curvada invertida",        primaryMuscle: "Dorsal / Bíceps",             compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "c15", name: "Remada curvada na máquina",       primaryMuscle: "Dorsal / Trapézio",           compound: true,  avoidFor: [] },
-    { id: "c3",  name: "Remada unilateral (serrote)",     primaryMuscle: "Dorsal",                      compound: true,  avoidFor: [] },
-    { id: "c12", name: "Remada cavalinho",                primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
-    { id: "c14", name: "Remada articulada",               primaryMuscle: "Dorsal / Trapézio",           compound: true,  avoidFor: [] },
-    { id: "c9",  name: "Remada sentada na máquina",       primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
-    { id: "c4",  name: "Remada baixa no cabo",            primaryMuscle: "Dorsal / Rombóides",          compound: true,  avoidFor: [] },
-    { id: "c6",  name: "Levantamento terra convencional", primaryMuscle: "Costas completa / Glúteos",   compound: true,  avoidFor: ["Coluna/lombar", "Joelho"] },
+    { id: "c18", name: "Pulldown",                            primaryMuscle: "Dorsal",                     compound: true,  avoidFor: ["Ombro"] },
+    { id: "c25", name: "Puxada no graviton pegada neutra",    primaryMuscle: "Dorsal / Teres maior",       compound: true,  avoidFor: ["Ombro"] },
+    { id: "c19", name: "Pulley frente articulado pegada supinada", primaryMuscle: "Dorsal / Bíceps",       compound: true,  avoidFor: ["Ombro"] },
+    { id: "c21", name: "Pulley frente articulado",            primaryMuscle: "Dorsal",                     compound: true,  avoidFor: ["Ombro"] },
+    { id: "c20", name: "Pulley frente articulado unilateral", primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: ["Ombro"] },
+    { id: "c22", name: "Pulley frente pegada aberta",         primaryMuscle: "Dorsal",                     compound: false, avoidFor: ["Ombro"] },
+    { id: "c23", name: "Pulley frente triângulo",             primaryMuscle: "Dorsal inferior",            compound: false, avoidFor: ["Ombro"] },
+    { id: "c24", name: "Pulley frente unilateral",            primaryMuscle: "Dorsal (unilateral)",        compound: false, avoidFor: ["Ombro"] },
+    { id: "c32", name: "Remada curvada com barra livre",      primaryMuscle: "Dorsal / Trapézio médio",    compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c33", name: "Remada curvada na máquina",           primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
+    { id: "c35", name: "Remada unilateral com halteres",      primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c31", name: "Remada cavalinho na máquina",         primaryMuscle: "Dorsal / Rombóides",         compound: true,  avoidFor: [] },
+    { id: "c26", name: "Remada articulada pegada pronada",    primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
+    { id: "c34", name: "Remada articulada pegada neutra",     primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
+    { id: "c27", name: "Remada articulada unilateral pegada pronada", primaryMuscle: "Dorsal (unilateral)", compound: true, avoidFor: [] },
+    { id: "c28", name: "Remada baixa com barra",              primaryMuscle: "Dorsal / Rombóides",         compound: true,  avoidFor: [] },
+    { id: "c29", name: "Remada baixa triângulo",              primaryMuscle: "Dorsal inferior",            compound: true,  avoidFor: [] },
+    { id: "c30", name: "Remada baixa unilateral",             primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: [] },
+    { id: "c17", name: "Face pull",                           primaryMuscle: "Trapézio / Deltóide posterior", compound: false, avoidFor: [] },
   ],
 
-  // ── OMBROS (15 exercícios — ~5 ciclos) ───────────────────────────────────
+  // ── OMBROS (10 exercícios) ────────────────────────────────────────────────
 
   ombros: [
-    { id: "o1",  name: "Desenvolvimento com halteres",    primaryMuscle: "Deltóide anterior / lateral", compound: true,  avoidFor: ["Ombro"] },
-    { id: "o5",  name: "Arnold press",                    primaryMuscle: "Deltóide completo",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "o6",  name: "Desenvolvimento na máquina",      primaryMuscle: "Deltóide anterior / lateral", compound: true,  avoidFor: ["Ombro"] },
-    { id: "o10", name: "Desenvolvimento em pé alternado", primaryMuscle: "Deltóide anterior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "o2",  name: "Elevação lateral com halteres",   primaryMuscle: "Deltóide lateral",            compound: false, avoidFor: ["Ombro"] },
-    { id: "o7",  name: "Elevação lateral unilateral cabo", primaryMuscle: "Deltóide lateral",           compound: false, avoidFor: [] },
-    { id: "o8",  name: "Elevação lateral sentado",        primaryMuscle: "Deltóide lateral",            compound: false, avoidFor: ["Ombro"] },
-    { id: "o4",  name: "Elevação frontal com halteres",   primaryMuscle: "Deltóide anterior",           compound: false, avoidFor: ["Ombro"] },
-    { id: "o13", name: "Elevação frontal alternada",      primaryMuscle: "Deltóide anterior",           compound: false, avoidFor: ["Ombro"] },
-    { id: "o3",  name: "Face pull no cabo",               primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
-    { id: "o9",  name: "Posterior de ombro com halteres", primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
-    { id: "o14", name: "Voador para deltoides posterior", primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
-    { id: "o15", name: "Posterior de ombro sentado",      primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
-    { id: "o11", name: "Crucifixo inverso com cabo",      primaryMuscle: "Deltóide posterior",          compound: false, avoidFor: [] },
-    { id: "o12", name: "Voador invertido",                primaryMuscle: "Deltóide posterior / Rombóide", compound: false, avoidFor: [] },
+    { id: "o20", name: "Desenvolvimento no banco com halteres", primaryMuscle: "Deltóide anterior / lateral", compound: true, avoidFor: ["Ombro"] },
+    { id: "o19", name: "Desenvolvimento na máquina",          primaryMuscle: "Deltóide anterior / lateral", compound: true,  avoidFor: ["Ombro"] },
+    { id: "o18", name: "Desenvolvimento em pé pegada neutra", primaryMuscle: "Deltóide anterior",          compound: true,  avoidFor: ["Ombro"] },
+    { id: "o23", name: "Elevação lateral unilateral",         primaryMuscle: "Deltóide lateral",           compound: false, avoidFor: ["Ombro"] },
+    { id: "o21", name: "Elevação frontal no cabo",             primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
+    { id: "o22", name: "Elevação frontal unilateral no cabo", primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
+    { id: "o24", name: "Posterior de ombro sentado com halteres", primaryMuscle: "Deltóide posterior",     compound: false, avoidFor: [] },
+    { id: "o25", name: "Posterior de ombro em pé com halteres",  primaryMuscle: "Deltóide posterior",      compound: false, avoidFor: [] },
+    { id: "o16", name: "Crucifixo invertido na máquina",       primaryMuscle: "Deltóide posterior",         compound: false, avoidFor: [] },
+    { id: "o17", name: "Crucifixo invertido no cabo",          primaryMuscle: "Deltóide posterior",         compound: false, avoidFor: [] },
   ],
 
-  // ── BÍCEPS (14 exercícios — ~4 ciclos) ───────────────────────────────────
+  // ── BÍCEPS (21 exercícios) ────────────────────────────────────────────────
 
   biceps: [
-    { id: "b1",  name: "Rosca direta com barra",          primaryMuscle: "Bíceps (cabeça longa)",       compound: false, avoidFor: [] },
-    { id: "b11", name: "Rosca direta barra W",            primaryMuscle: "Bíceps (cabeça curta)",       compound: false, avoidFor: [] },
-    { id: "b6",  name: "Rosca Scott com barra W",         primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
-    { id: "b9",  name: "Rosca Scott na máquina",          primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
-    { id: "b2",  name: "Rosca alternada com halteres",    primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
-    { id: "b12", name: "Rosca alternada sentado",         primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
-    { id: "b13", name: "Rosca bíceps com halteres",       primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
-    { id: "b7",  name: "Rosca banco inclinado",           primaryMuscle: "Bíceps (alongado)",           compound: false, avoidFor: [] },
-    { id: "b3",  name: "Rosca martelo com halteres",      primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
-    { id: "b8",  name: "Rosca martelo com corda",         primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
-    { id: "b14", name: "Rosca martelo sentada",           primaryMuscle: "Bíceps / Braquial",           compound: false, avoidFor: [] },
-    { id: "b4",  name: "Rosca concentrada",               primaryMuscle: "Bíceps (pico)",               compound: false, avoidFor: [] },
-    { id: "b5",  name: "Rosca no cabo baixo",             primaryMuscle: "Bíceps",                      compound: false, avoidFor: [] },
-    { id: "b10", name: "Rosca unilateral no cabo",        primaryMuscle: "Bíceps (unilateral)",         compound: false, avoidFor: [] },
+    { id: "b28", name: "Rosca direta com barra W",             primaryMuscle: "Bíceps (cabeça curta)",      compound: false, avoidFor: [] },
+    { id: "b26", name: "Rosca direta alternada",                primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b25", name: "Rosca direta alternada com halteres",  primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b27", name: "Rosca direta alternada 45°",            primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b18", name: "Rosca alternada sentado",               primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b19", name: "Rosca bíceps com halteres",             primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b20", name: "Rosca bíceps na máquina",                primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b21", name: "Rosca bíceps sentado",                  primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b33", name: "Rosca no cabo",                          primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
+    { id: "b22", name: "Rosca unilateral pegada invertida no cabo", primaryMuscle: "Bíceps (unilateral)",   compound: false, avoidFor: [] },
+    { id: "b23", name: "Rosca unilateral no cabo alto",          primaryMuscle: "Bíceps (unilateral)",       compound: false, avoidFor: [] },
+    { id: "b16", name: "Rosca Scott com barra W",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b17", name: "Rosca Scott na máquina",                 primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b34", name: "Rosca Scott alternada com halteres",     primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b35", name: "Rosca Scott com halteres",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b15", name: "Rosca banco inclinado",                  primaryMuscle: "Bíceps (alongado)",         compound: false, avoidFor: [] },
+    { id: "b24", name: "Rosca concentrada",                      primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b29", name: "Rosca direta concentrada",               primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b32", name: "Rosca martelo com halteres",             primaryMuscle: "Bíceps / Braquial",         compound: false, avoidFor: [] },
+    { id: "b30", name: "Rosca martelo com corda",                primaryMuscle: "Bíceps / Braquial",         compound: false, avoidFor: [] },
+    { id: "b31", name: "Rosca martelo sentada",                  primaryMuscle: "Bíceps / Braquial",         compound: false, avoidFor: [] },
   ],
 
   // ── TRÍCEPS (13 exercícios — ~4 ciclos) ──────────────────────────────────
@@ -247,6 +256,32 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "ab12", name: "Abdominal twist",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
     { id: "ab9",  name: "Rotação de tronco",                primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
     { id: "ab8",  name: "Abdominal remador",                primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar"] },
+  ],
+
+  // ── TRAPÉZIO (4 exercícios — só treino masculino) ─────────────────────────
+
+  trapezio: [
+    { id: "tr3", name: "Encolhimento com barra",             primaryMuscle: "Trapézio",  compound: false, avoidFor: [] },
+    { id: "tr2", name: "Encolhimento com halteres",          primaryMuscle: "Trapézio",  compound: false, avoidFor: [] },
+    { id: "tr1", name: "Encolhimento no cabo",                primaryMuscle: "Trapézio",  compound: false, avoidFor: [] },
+    { id: "tr4", name: "Encolhimento no Smith",               primaryMuscle: "Trapézio",  compound: false, avoidFor: [] },
+  ],
+
+  // ── ANTEBRAÇO (12 exercícios — só treino masculino) ───────────────────────
+
+  antebraco: [
+    { id: "an4",  name: "Hand grip",                             primaryMuscle: "Antebraço (preensão)", compound: false, avoidFor: [] },
+    { id: "an5",  name: "Rolinho de antebraço",                  primaryMuscle: "Antebraço",             compound: false, avoidFor: [] },
+    { id: "an11", name: "Rosca de dedo com barra",                primaryMuscle: "Antebraço (flexores)",  compound: false, avoidFor: [] },
+    { id: "an7",  name: "Rosca de dedos com halteres",            primaryMuscle: "Antebraço (flexores)",  compound: false, avoidFor: [] },
+    { id: "an12", name: "Rosca de punho com barra",               primaryMuscle: "Antebraço (flexores)",  compound: false, avoidFor: [] },
+    { id: "an10", name: "Rosca de punho atrás das costas",        primaryMuscle: "Antebraço (flexores)",  compound: false, avoidFor: [] },
+    { id: "an8",  name: "Rosca de punho pegada neutra",            primaryMuscle: "Antebraço",             compound: false, avoidFor: [] },
+    { id: "an9",  name: "Rosca de punho reversa com barra",        primaryMuscle: "Antebraço (extensores)", compound: false, avoidFor: [] },
+    { id: "an6",  name: "Rosca inversa com barra",                 primaryMuscle: "Antebraço (extensores)", compound: false, avoidFor: [] },
+    { id: "an3",  name: "Flexão de punho com halteres",            primaryMuscle: "Antebraço (flexores)",  compound: false, avoidFor: [] },
+    { id: "an1",  name: "Flexão de pulso neutra sentado",           primaryMuscle: "Antebraço",             compound: false, avoidFor: [] },
+    { id: "an2",  name: "Flexão de punho reversa com anilha",       primaryMuscle: "Antebraço (extensores)", compound: false, avoidFor: [] },
   ],
 };
 
@@ -400,8 +435,8 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Superior Completo",
       emoji: "💪",
-      groups: ["panturrilha", "costas", "peito", "ombros", "biceps", "triceps"],
-      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1, panturrilha: 1 },
+      groups: ["panturrilha", "trapezio", "antebraco", "costas", "peito", "ombros", "biceps", "triceps"],
+      volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
     // Qui: inferior completo (quad + glúteo + posterior) — único dia de perna da semana
@@ -419,8 +454,8 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["panturrilha", "costas", "biceps"],
-      volumes: { costas: 4, biceps: 2, panturrilha: 1 },
+      groups: ["panturrilha", "trapezio", "antebraco", "costas", "biceps"],
+      volumes: { costas: 4, biceps: 2, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
     // Qua: inferior completo — único dia de perna da semana
@@ -445,8 +480,8 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["panturrilha", "costas", "biceps"],
-      volumes: { costas: 4, biceps: 2, panturrilha: 1 },
+      groups: ["panturrilha", "trapezio", "antebraco", "costas", "biceps"],
+      volumes: { costas: 4, biceps: 2, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
     // Ter: peito + tríceps
@@ -486,8 +521,8 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     1: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["costas", "biceps"],
-      volumes: { costas: 4, biceps: 3 },
+      groups: ["trapezio", "antebraco", "costas", "biceps"],
+      volumes: { costas: 4, biceps: 3, trapezio: 1, antebraco: 1 },
       abs: true,
     },
     // Qua: inferior completo — único dia de perna da semana
@@ -529,6 +564,8 @@ const GROUP_LABELS: Record<MuscleGroup, string> = {
   biceps:      "Bíceps",
   triceps:     "Tríceps",
   core:        "Abdômen",
+  trapezio:    "Trapézio",
+  antebraco:   "Antebraço",
 };
 
 /** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
@@ -536,10 +573,12 @@ function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   const female: Record<MuscleGroup, number> = {
     costas: 4, peito: 3, ombros: 4, biceps: 2, triceps: 2,
     quadriceps: 4, gluteos: 5, posteriores: 3, panturrilha: 1, core: 1,
+    trapezio: 1, antebraco: 1,
   };
   const male: Record<MuscleGroup, number> = {
     costas: 4, peito: 4, ombros: 3, biceps: 3, triceps: 3,
     quadriceps: 2, gluteos: 2, posteriores: 2, panturrilha: 1, core: 1,
+    trapezio: 1, antebraco: 1,
   };
   return isFemale ? female[g] : male[g];
 }

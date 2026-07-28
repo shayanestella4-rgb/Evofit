@@ -550,15 +550,20 @@ function defaultVol(g: MuscleGroup, isFemale: boolean): number {
  * Fase 1 — Hipertrofia base  (ciclos 1, 5, 9 …)
  * Fase 2 — Força             (ciclos 2, 6, 10 …)
  * Fase 3 — Volume alto       (ciclos 3, 7, 11 …)
- * Fase 4 — Técnicas avançadas (ciclos 4, 8, 12 …)  ← dropset / cluster set
+ * Fase 4 — Técnicas avançadas (ciclos 4, 8, 12 …)  ← dropset / bi-set / cluster set / rest-pause
+ *
+ * A fase 4 só existe para quem o quiz identificou como "Intermediário" —
+ * iniciante/básico giram só entre as fases 1-3 (nunca fazem técnicas avançadas,
+ * por segurança de execução).
  */
 function getSetsRest(
   goal: string,
   nivel: string,
   cycleNumber: number = 1,
 ): { sets: number; reps: string; rest: string; tip: string } {
-  const isInter = nivel?.includes("Intermediário");
-  const phase   = ((cycleNumber - 1) % 4) + 1; // 1 → 2 → 3 → 4 → 1 → …
+  const isInter    = nivel?.includes("Intermediário");
+  const totalPhases = isInter ? 4 : 3;
+  const phase        = ((cycleNumber - 1) % totalPhases) + 1; // 1 → 2 → 3 → (4) → 1 → …
 
   // ── Fase 1: Hipertrofia base ────────────────────────────────────────────────
   if (phase === 1) {

@@ -593,12 +593,25 @@ function getSetsRest(
   }
 
   // ── Fase 4: Técnicas avançadas ─────────────────────────────────────────────
+  // Alterna entre 2 técnicas por objetivo a cada nova rodada da fase 4
+  // (ciclo 4 → técnica A, ciclo 8 → técnica B, ciclo 12 → técnica A de novo…)
+  const advancedRound = Math.floor((cycleNumber - 1) / 4) % 2;
+
   if (goal?.includes("gordura") || goal?.includes("condicionamento")) {
-    return { sets: 3, reps: "12+8", rest: "60s",
-      tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico em cada série." };
+    if (advancedRound === 0) {
+      return { sets: 3, reps: "12+8", rest: "60s",
+        tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico em cada série." };
+    }
+    return { sets: isInter ? 4 : 3, reps: "10-12", rest: "sem pausa entre a dupla · 90s depois",
+      tip: "🔗 Bi-set: execute este exercício direto com o próximo da lista, sem descansar entre eles. Descanse só depois de completar a dupla. Eleva o gasto calórico e economiza tempo de treino." };
   }
-  return { sets: isInter ? 4 : 3, reps: "8+4", rest: "90s",
-    tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita." };
+
+  if (advancedRound === 0) {
+    return { sets: isInter ? 4 : 3, reps: "8+4", rest: "90s",
+      tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita." };
+  }
+  return { sets: isInter ? 4 : 3, reps: "6-8 + rest-pause", rest: "2min",
+    tip: "⏸️ Rest-pause: leve a série quase à falha, descanse só 15s sem soltar o peso, e faça mais 4-6 reps. Repita esse mini-descanso mais uma vez. Extrai mais estímulo da mesma carga, sem precisar aumentar o peso." };
 }
 
 /**

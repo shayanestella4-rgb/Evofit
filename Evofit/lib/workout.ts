@@ -274,7 +274,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Quadríceps + Glúteos",
       emoji: "🦵",
-      groups: ["quadriceps", "gluteos", "panturrilha"],
+      groups: ["panturrilha", "quadriceps", "gluteos"],
       volumes: { quadriceps: 3, gluteos: 3, panturrilha: 1 },
       abs: true,
     },
@@ -293,7 +293,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Pernas",
       emoji: "🦵",
-      groups: ["quadriceps", "posteriores", "panturrilha"],
+      groups: ["panturrilha", "quadriceps", "posteriores"],
       volumes: { quadriceps: 4, posteriores: 3, panturrilha: 1 },
       abs: true,
     },
@@ -319,7 +319,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Quadríceps",
       emoji: "🦵",
-      groups: ["quadriceps", "panturrilha"],
+      groups: ["panturrilha", "quadriceps"],
       volumes: { quadriceps: 4, panturrilha: 1 },
       abs: true,
     },
@@ -353,7 +353,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Quadríceps",
       emoji: "🦵",
-      groups: ["quadriceps", "panturrilha"],
+      groups: ["panturrilha", "quadriceps"],
       volumes: { quadriceps: 5, panturrilha: 1 },
       abs: true,
     },
@@ -400,7 +400,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Superior Completo",
       emoji: "💪",
-      groups: ["costas", "peito", "ombros", "biceps", "triceps", "panturrilha"],
+      groups: ["panturrilha", "costas", "peito", "ombros", "biceps", "triceps"],
       volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1, panturrilha: 1 },
       abs: true,
     },
@@ -419,7 +419,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["costas", "biceps", "panturrilha"],
+      groups: ["panturrilha", "costas", "biceps"],
       volumes: { costas: 4, biceps: 2, panturrilha: 1 },
       abs: true,
     },
@@ -445,7 +445,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["costas", "biceps", "panturrilha"],
+      groups: ["panturrilha", "costas", "biceps"],
       volumes: { costas: 4, biceps: 2, panturrilha: 1 },
       abs: true,
     },
@@ -510,7 +510,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     4: {
       name: "Braços — Volume",
       emoji: "⚡",
-      groups: ["biceps", "triceps", "panturrilha"],
+      groups: ["panturrilha", "biceps", "triceps"],
       volumes: { biceps: 4, triceps: 4, panturrilha: 1 },
     },
   },
@@ -544,26 +544,30 @@ function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   return isFemale ? female[g] : male[g];
 }
 
+type SetsRest = { sets: number; reps: string; rest: string; tip: string };
+
 /**
- * Periodização em 4 fases que rotacionam a cada ciclo de 30 dias.
+ * Periodização em 3 fases que rotacionam a cada ciclo de 30 dias — aplicada a
+ * todos os exercícios "normais" do treino.
  *
- * Fase 1 — Hipertrofia base  (ciclos 1, 5, 9 …)
- * Fase 2 — Força             (ciclos 2, 6, 10 …)
- * Fase 3 — Volume alto       (ciclos 3, 7, 11 …)
- * Fase 4 — Técnicas avançadas (ciclos 4, 8, 12 …)  ← dropset / bi-set / cluster set / rest-pause
+ * Fase 1 — Hipertrofia base  (ciclos 1, 4, 7 … para iniciante/básico | 1, 5, 9 … para intermediário)
+ * Fase 2 — Força
+ * Fase 3 — Volume alto
  *
- * A fase 4 só existe para quem o quiz identificou como "Intermediário" —
- * iniciante/básico giram só entre as fases 1-3 (nunca fazem técnicas avançadas,
- * por segurança de execução).
+ * Para intermediário, o ciclo tem uma 4ª posição (ver getAdvancedTechnique) que
+ * não substitui o treino inteiro — só adiciona um finalizador em 1-2 dias da
+ * semana (ver isFinisherDay). Nessa posição, os exercícios normais usam a
+ * mesma prescrição da fase 3 (volume alto).
  */
-function getSetsRest(
+function getBaseSetsRest(
   goal: string,
   nivel: string,
   cycleNumber: number = 1,
-): { sets: number; reps: string; rest: string; tip: string } {
+): SetsRest {
   const isInter    = nivel?.includes("Intermediário");
   const totalPhases = isInter ? 4 : 3;
-  const phase        = ((cycleNumber - 1) % totalPhases) + 1; // 1 → 2 → 3 → (4) → 1 → …
+  let phase          = ((cycleNumber - 1) % totalPhases) + 1; // 1 → 2 → 3 → (4) → 1 → …
+  if (phase === 4) phase = 3; // fase 4 usa a base da fase 3 — só o finalizador muda (ver getAdvancedTechnique)
 
   // ── Fase 1: Hipertrofia base ────────────────────────────────────────────────
   if (phase === 1) {
@@ -591,13 +595,27 @@ function getSetsRest(
   }
 
   // ── Fase 3: Volume alto ─────────────────────────────────────────────────────
-  if (phase === 3) {
-    const sets = isInter ? 5 : 4;
-    return { sets, reps: goal?.includes("músculo") ? "12-15" : "15", rest: "40s",
-      tip: "💦 Fase de volume: carga moderada, muitas repetições, descanso curto. Foco em pump e resistência. Seu músculo vai crescer nas micro-pausas." };
-  }
+  const sets = isInter ? 5 : 4;
+  return { sets, reps: goal?.includes("músculo") ? "12-15" : "15", rest: "40s",
+    tip: "💦 Fase de volume: carga moderada, muitas repetições, descanso curto. Foco em pump e resistência. Seu músculo vai crescer nas micro-pausas." };
+}
 
-  // ── Fase 4: Técnicas avançadas ─────────────────────────────────────────────
+/**
+ * Técnica avançada do finalizador (dropset / bi-set / cluster set / rest-pause).
+ * Retorna null se o aluno não é intermediário, ou se o ciclo atual não está na
+ * "rodada" de fase 4 — nesses casos o dia inteiro usa só getBaseSetsRest.
+ *
+ * Quando não-nulo, aplica-se a UM ÚNICO exercício (o último/finalizador do
+ * treino), e só em 1-2 dias de treino da semana (ver isFinisherDay) — nunca no
+ * treino inteiro.
+ */
+function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number): SetsRest | null {
+  const isInter = nivel?.includes("Intermediário");
+  if (!isInter) return null;
+
+  const phase = ((cycleNumber - 1) % 4) + 1;
+  if (phase !== 4) return null;
+
   // Alterna entre 2 técnicas por objetivo a cada nova rodada da fase 4
   // (ciclo 4 → técnica A, ciclo 8 → técnica B, ciclo 12 → técnica A de novo…)
   const advancedRound = Math.floor((cycleNumber - 1) / 4) % 2;
@@ -605,18 +623,32 @@ function getSetsRest(
   if (goal?.includes("gordura") || goal?.includes("condicionamento")) {
     if (advancedRound === 0) {
       return { sets: 3, reps: "12+8", rest: "60s",
-        tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico em cada série." };
+        tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico nessa série." };
     }
-    return { sets: isInter ? 4 : 3, reps: "10-12", rest: "sem pausa entre a dupla · 90s depois",
-      tip: "🔗 Bi-set: execute este exercício direto com o próximo da lista, sem descansar entre eles. Descanse só depois de completar a dupla. Eleva o gasto calórico e economiza tempo de treino." };
+    return { sets: 4, reps: "10-12", rest: "sem pausa entre a dupla · 90s depois",
+      tip: "🔗 Bi-set: execute este exercício direto com o próximo, sem descansar entre eles. Descanse só depois de completar a dupla." };
   }
 
   if (advancedRound === 0) {
-    return { sets: isInter ? 4 : 3, reps: "8+4", rest: "90s",
+    return { sets: 4, reps: "8+4", rest: "90s",
       tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita." };
   }
-  return { sets: isInter ? 4 : 3, reps: "6-8 + rest-pause", rest: "2min",
-    tip: "⏸️ Rest-pause: leve a série quase à falha, descanse só 15s sem soltar o peso, e faça mais 4-6 reps. Repita esse mini-descanso mais uma vez. Extrai mais estímulo da mesma carga, sem precisar aumentar o peso." };
+  return { sets: 4, reps: "6-8 + rest-pause", rest: "2min",
+    tip: "⏸️ Rest-pause: leve a série quase à falha, descanse só 15s sem soltar o peso, e faça mais 4-6 reps. Repita esse mini-descanso mais uma vez." };
+}
+
+/**
+ * Escolhe 1-2 dias de treino da semana (do split já filtrado por sexo/frequência)
+ * que recebem o finalizador de técnica avançada. Determinístico por split — não
+ * muda de mês pra mês, só o `advancedRound` (dropset↔bi-set, cluster↔rest-pause) muda.
+ */
+function getFinisherDays(split: Record<number, SplitSlot>): Set<number> {
+  const days = Object.keys(split).map(Number).sort((a, b) => a - b);
+  const chosen = new Set<number>();
+  if (days.length === 0) return chosen;
+  chosen.add(days[0]);
+  if (days.length >= 4) chosen.add(days[Math.floor(days.length / 2)]);
+  return chosen;
 }
 
 /**
@@ -738,7 +770,7 @@ export function getWorkoutBySlot(
 
   const isFemale = sexo === "Feminino";
   const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
-  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel, cycleNumber);
+  const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale);
 
   const exercises: Exercise[] = defs.map((ex) => ({
@@ -806,18 +838,26 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   }
 
   const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
-  const { sets, reps, rest, tip } = getSetsRest(objetivo, nivel, cycleNumber);
+  const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
+  const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
+  const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale);
 
-  const exercises: Exercise[] = defs.map((ex) => ({
-    id:     ex.id,
-    name:   ex.name,
-    muscle: ex.primaryMuscle,
-    sets:   `${sets}x${reps}`,
-    rest,
-    tip,
-    gif:    GIF_MAP[ex.id] ?? undefined,
-  }));
+  // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
+  // e só nos dias marcados como finalizador — nunca no treino inteiro.
+  const exercises: Exercise[] = defs.map((ex, i) => {
+    const isFinisherExercise = isFinisherDay && i === defs.length - 1;
+    const presc = isFinisherExercise ? advanced! : base;
+    return {
+      id:     ex.id,
+      name:   ex.name,
+      muscle: ex.primaryMuscle,
+      sets:   `${presc.sets}x${presc.reps}`,
+      rest:   presc.rest,
+      tip:    presc.tip,
+      gif:    GIF_MAP[ex.id] ?? undefined,
+    };
+  });
   const mainCount = exercises.length;
 
   // Abdômen (2-3x/semana, conforme o slot) — sempre antes do cardio
@@ -827,9 +867,15 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   // Cardio — todo dia de treino, sempre por último
   exercises.push(buildCardioExercise(cycleNumber, dayIdx));
 
-  const restSeconds = parseInt(rest) || 60;
-  const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = estimateDuration(mainCount, timePerEx, absExercises.length);
+  const baseRestSeconds = parseInt(base.rest) || 60;
+  const timePerMain      = base.sets * (1.5 + baseRestSeconds / 60);
+  let duration = estimateDuration(mainCount, timePerMain, absExercises.length);
+  if (isFinisherDay) {
+    // O último exercício usa a prescrição avançada em vez da base — ajusta a diferença
+    const advRestSeconds = parseInt(advanced!.rest) || 60;
+    const timePerAdvanced = advanced!.sets * (1.5 + advRestSeconds / 60);
+    duration += Math.round(timePerAdvanced - timePerMain);
+  }
 
   return {
     name:        slot.name,

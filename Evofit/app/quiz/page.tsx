@@ -3,6 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Script from "next/script";
+
+const META_PIXEL_ID = "1764648114711259";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 type Phase = "hook" | "quiz" | "analyzing" | "chat";
 
@@ -352,6 +361,7 @@ export default function QuizPage() {
   // Tela de "analisando"
   useEffect(() => {
     if (phase !== "analyzing") return;
+    window.fbq?.("track", "Lead");
     const t = setTimeout(() => setPhase("chat"), 1800);
     return () => clearTimeout(t);
   }, [phase]);
@@ -393,6 +403,30 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
+      <Script id="meta-pixel" strategy="afterInteractive">
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${META_PIXEL_ID}');
+          fbq('track', 'PageView');
+        `}
+      </Script>
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style={{ display: "none" }}
+          src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          alt=""
+        />
+      </noscript>
+
       {phase === "hook" && (
         <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full px-6 py-16 text-center animate-fade-in">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F0F0F0] leading-tight mb-4">

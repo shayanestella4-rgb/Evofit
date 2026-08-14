@@ -1,5 +1,6 @@
 import type { AnamneseData } from "./types";
 import GIF_URLS from "./gif-urls.json";
+import VIDEO_URLS from "./video-urls.json";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -24,11 +25,14 @@ export interface Exercise {
   sets: string;
   rest: string;
   tip: string;
-  gif?: string; // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
+  gif?: string;   // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
+  video?: string; // vídeo de demonstração — undefined se ainda não gravado (usa gif como fallback)
 }
 
 // Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
 const GIF_MAP = GIF_URLS as Record<string, string>;
+// Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-videos.mjs)
+const VIDEO_MAP = VIDEO_URLS as Record<string, string>;
 
 export interface DayWorkout {
   name: string;
@@ -768,6 +772,7 @@ function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: n
     rest:   "30s",
     tip:    "Foco na contração do abdômen — evite puxar o pescoço, o movimento deve vir da barriga.",
     gif:    GIF_MAP[ex.id] ?? undefined,
+    video:  VIDEO_MAP[ex.id] ?? undefined,
   }));
 }
 
@@ -781,6 +786,7 @@ function buildCardioExercise(cycleNumber: number, dayIdx: number): Exercise {
     rest:   "—",
     tip:    "Ritmo moderado e constante — o objetivo é queimar calorias extras sem prejudicar a recuperação do treino de força.",
     gif:    GIF_MAP[c.id] ?? undefined,
+    video:  VIDEO_MAP[c.id] ?? undefined,
   };
 }
 
@@ -841,6 +847,7 @@ export function getWorkoutBySlot(
     rest,
     tip,
     gif:    GIF_MAP[ex.id] ?? undefined,
+    video:  VIDEO_MAP[ex.id] ?? undefined,
   }));
 
   const mainCount = exercises.length;
@@ -917,6 +924,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
       rest:   presc.rest,
       tip:    presc.tip,
       gif:    GIF_MAP[ex.id] ?? undefined,
+      video:  VIDEO_MAP[ex.id] ?? undefined,
     };
   });
   const mainCount = exercises.length;

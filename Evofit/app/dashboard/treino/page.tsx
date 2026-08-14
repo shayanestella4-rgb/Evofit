@@ -282,7 +282,7 @@ export default function TreinoPage() {
                       </div>
                     </button>
 
-                    {ex.gif && (
+                    {(ex.video || ex.gif) && (
                       <button
                         onClick={() => setGifModal(ex)}
                         className="w-full flex items-center justify-center gap-1.5 py-2 border-t border-[#252525] text-[10px] font-semibold text-[#C084FC] hover:bg-[#1E1035] transition-colors rounded-b-[1rem]"
@@ -355,13 +355,25 @@ export default function TreinoPage() {
             className="bg-[#1A1A1A] rounded-[1.5rem] w-full max-w-sm overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={gifModal.gif}
-              alt={gifModal.name}
-              className="w-full object-cover"
-              style={{ maxHeight: "280px" }}
-            />
+            {gifModal.video ? (
+              <video
+                src={gifModal.video}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full object-cover"
+                style={{ maxHeight: "280px" }}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={gifModal.gif}
+                alt={gifModal.name}
+                className="w-full object-cover"
+                style={{ maxHeight: "280px" }}
+              />
+            )}
 
             <div className="p-4">
               <p className="text-base font-extrabold text-[#F0F0F0] mb-0.5">{gifModal.name}</p>

@@ -45,3 +45,7 @@ next-env.d.ts
 
 # gifs de exercicio ficam so no Vercel Blob (script upload-gifs.mjs), nunca no git
 /public/gifs/*.gif
+
+# videos de demonstracao ficam so no Vercel Blob (script upload-videos.mjs), nunca no git
+/public/videos/*.mp4
+/public/videos/*.mov

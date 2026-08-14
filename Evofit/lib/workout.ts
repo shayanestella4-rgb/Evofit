@@ -573,6 +573,15 @@ const GROUP_LABELS: Record<MuscleGroup, string> = {
   antebraco:   "Antebraço",
 };
 
+/**
+ * Trapézio: só para homens em nível avançado (Intermediário) — iniciante e
+ * básico não precisam desse volume extra, e não faz parte do treino feminino.
+ */
+function isGroupAllowed(g: MuscleGroup, isFemale: boolean, isBeginner: boolean): boolean {
+  if (g === "trapezio") return !isFemale && !isBeginner;
+  return true;
+}
+
 /** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
 function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   const female: Record<MuscleGroup, number> = {
@@ -722,6 +731,8 @@ function pickExercises(
   const result: ExerciseDef[] = [];
 
   for (const g of groups) {
+    if (!isGroupAllowed(g, isFemale, isBeginner)) continue;
+
     const pool = LIBRARY[g].filter((ex) => {
       const injuryOk = injuries.includes("Outra") ? ex.avoidFor.length === 0 : !ex.avoidFor.some((a) => injuries.includes(a));
       if (!injuryOk) return false;
@@ -860,7 +871,7 @@ export function getWorkoutBySlot(
   return {
     name:        slot.name,
     emoji:       slot.emoji,
-    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
+    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner)).map((g) => GROUP_LABELS[g]).join(" · "),
     duration,
     exercises,
     isRest: false,
@@ -949,7 +960,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   return {
     name:        slot.name,
     emoji:       slot.emoji,
-    muscleLabel: slot.groups.map((g) => GROUP_LABELS[g]).join(" · "),
+    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner)).map((g) => GROUP_LABELS[g]).join(" · "),
     duration,
     exercises,
     isRest: false,

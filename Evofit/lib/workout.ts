@@ -52,6 +52,7 @@ interface ExerciseDef {
   primaryMuscle: string;
   compound: boolean;       // compostos primeiro na ordenação
   avoidFor: string[];      // lesões que contra-indicam
+  avoidForBeginner?: boolean; // tecnicamente exigente — fora do pool para nível Iniciante
 }
 
 interface SplitSlot {
@@ -71,11 +72,11 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── QUADRÍCEPS (15 exercícios — ~5 ciclos) ────────────────────────────────
 
   quadriceps: [
-    { id: "q1",  name: "Agachamento livre",               primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
+    { id: "q1",  name: "Agachamento livre",               primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [], avoidForBeginner: true },
     { id: "q2",  name: "Leg press 45°",                   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q9",  name: "Leg press horizontal",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q6",  name: "Hack squat (máquina)",            primaryMuscle: "Quadríceps / Vasto lateral",  compound: true,  avoidFor: ["Joelho"] },
-    { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: [] },
+    { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: [], avoidForBeginner: true },
     { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q13", name: "Agachamento com trava",           primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q14", name: "Agachamento taça",                primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
@@ -110,14 +111,14 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── POSTERIORES (10 exercícios) ───────────────────────────────────────────
 
   posteriores: [
-    { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
     { id: "po3",  name: "Cadeira flexora",                primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
     { id: "po4",  name: "Mesa flexora",                   primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
-    { id: "po9",  name: "Stiff com haltere",              primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "po6",  name: "Stiff unilateral com halteres",  primaryMuscle: "Isquiotibiais (unilateral)",  compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "po5",  name: "Bom dia (good morning)",         primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "po11", name: "Bom dia no Smith",               primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"] },
-    { id: "po12", name: "Levantamento terra sumô",        primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho"] },
+    { id: "po9",  name: "Stiff com haltere",              primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
+    { id: "po6",  name: "Stiff unilateral com halteres",  primaryMuscle: "Isquiotibiais (unilateral)",  compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
+    { id: "po5",  name: "Bom dia (good morning)",         primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
+    { id: "po11", name: "Bom dia no Smith",               primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
+    { id: "po12", name: "Levantamento terra sumô",        primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho"], avoidForBeginner: true },
     { id: "po8",  name: "Flexora em pé",                  primaryMuscle: "Isquiotibiais (isolamento)",  compound: false, avoidFor: ["Joelho"] },
     { id: "po10", name: "Flexão nórdica",                 primaryMuscle: "Isquiotibiais (excêntrico)",  compound: false, avoidFor: ["Joelho"] },
   ],
@@ -690,9 +691,19 @@ function getFinisherDays(split: Record<number, SplitSlot>): Set<number> {
   return chosen;
 }
 
+// Exercícios guiados (máquina, Smith, cabo/polia) — priorizados para iniciantes
+// por exigirem menos controle técnico de trajetória/estabilização que o peso livre.
+const MACHINE_KEYWORDS = ["máquina", "smith", "cabo", "polia", "pulley", "graviton", "leg press", "cadeira", "mesa", "peck deck"];
+
+function isMachineFriendly(name: string): boolean {
+  const lower = name.toLowerCase();
+  return MACHINE_KEYWORDS.some((k) => lower.includes(k));
+}
+
 /**
- * Monta a lista de exercícios filtrada por lesão, ordenada (compostos primeiro)
- * e rotacionada pelo número do ciclo — exercícios diferentes a cada mês.
+ * Monta a lista de exercícios filtrada por lesão, ordenada (compostos primeiro,
+ * com máquinas priorizadas para iniciantes) e rotacionada pelo número do ciclo —
+ * exercícios diferentes a cada mês.
  *
  * @param volumes  Quantidade de exercícios por grupo (usa defaultVol como fallback)
  */
@@ -701,19 +712,28 @@ function pickExercises(
   injuries: string[],
   cycleNumber: number = 1,
   volumes: Partial<Record<MuscleGroup, number>> = {},
-  isFemale: boolean = true
+  isFemale: boolean = true,
+  isBeginner: boolean = false
 ): ExerciseDef[] {
   const result: ExerciseDef[] = [];
 
   for (const g of groups) {
     const pool = LIBRARY[g].filter((ex) => {
-      if (injuries.includes("Outra")) return ex.avoidFor.length === 0;
-      return !ex.avoidFor.some((a) => injuries.includes(a));
+      const injuryOk = injuries.includes("Outra") ? ex.avoidFor.length === 0 : !ex.avoidFor.some((a) => injuries.includes(a));
+      if (!injuryOk) return false;
+      return !(isBeginner && ex.avoidForBeginner);
     });
 
-    // Compostos primeiro
-    const sorted = [...pool].sort((a, b) => +b.compound - +a.compound);
-    const cap = volumes[g] ?? defaultVol(g, isFemale);
+    // Compostos primeiro; para iniciantes, máquinas antes de peso livre dentro do mesmo grupo
+    const sorted = [...pool].sort((a, b) => {
+      if (isBeginner) {
+        const machineDiff = +isMachineFriendly(b.name) - +isMachineFriendly(a.name);
+        if (machineDiff !== 0) return machineDiff;
+      }
+      return +b.compound - +a.compound;
+    });
+    let cap = volumes[g] ?? defaultVol(g, isFemale);
+    if (isFemale && g === "peito") cap = Math.min(cap, 2);
 
     if (sorted.length === 0) continue;
 
@@ -808,9 +828,10 @@ export function getWorkoutBySlot(
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
+  const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
   const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner);
 
   const exercises: Exercise[] = defs.map((ex) => ({
     id:     ex.id,
@@ -861,6 +882,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
+  const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
   const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
   const split    = splits[diasTreino] ?? splits["3 dias"];
   const slot     = split[dayIdx];
@@ -880,7 +902,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
   const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner);
 
   // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
   // e só nos dias marcados como finalizador — nunca no treino inteiro.

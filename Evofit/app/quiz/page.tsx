@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Script from "next/script";
 
-const META_PIXEL_ID = "1764648114711259";
+const META_PIXEL_ID = "1481794462680728";
 
 declare global {
   interface Window {

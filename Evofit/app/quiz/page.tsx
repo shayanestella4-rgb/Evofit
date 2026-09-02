@@ -16,9 +16,11 @@ declare global {
 type Phase = "hook" | "quiz" | "analyzing" | "chat";
 
 type Option = { label: string; icon: string };
+type MultiOption = { label: string; value: string; icon: string };
 
 type QuizItem =
   | { type: "question"; key: string; question: string; options: Option[] }
+  | { type: "multi"; key: string; question: string; subtitle?: string; options: MultiOption[] }
   | { type: "insight"; title: string; text: string }
   | { type: "social"; title: string; subtitle: string }
   | { type: "input"; key: string; question: string; inputType: "text" | "number"; placeholder: string; suffix?: string };
@@ -81,17 +83,6 @@ const QUIZ_ITEMS: QuizItem[] = [
       { label: "Ganhar músculo", icon: "💪" },
       { label: "Melhorar disposição e saúde", icon: "⚡" },
       { label: "Só sair do sedentarismo", icon: "🚶" },
-    ],
-  },
-  {
-    type: "question",
-    key: "foco",
-    question: "Qual área você mais quer trabalhar?",
-    options: [
-      { label: "Barriga", icon: "🎯" },
-      { label: "Braços e costas", icon: "💪" },
-      { label: "Pernas e glúteos", icon: "🦵" },
-      { label: "Corpo todo", icon: "🔥" },
     ],
   },
   {
@@ -259,15 +250,21 @@ const QUIZ_ITEMS: QuizItem[] = [
     suffix: "cm",
   },
   {
-    type: "question",
+    type: "multi",
     key: "lesoes",
-    question: "Você tem alguma lesão ou limitação física?",
+    question: "Você tem alguma dessas condições?",
+    subtitle: "Selecione todas que se aplicam — seu treino é montado evitando o que puder piorar cada uma delas.",
     options: [
-      { label: "Não tenho", icon: "✅" },
-      { label: "Joelho", icon: "🦵" },
-      { label: "Coluna ou lombar", icon: "🧍" },
-      { label: "Ombro", icon: "💪" },
-      { label: "Outra", icon: "❓" },
+      { label: "Condromalácia (desgaste da cartilagem do joelho)", value: "Condromalácia", icon: "🦵" },
+      { label: "Outra lesão no joelho (menisco, ligamento, tendinite patelar)", value: "Joelho", icon: "🦵" },
+      { label: "Dor lombar ou hérnia de disco", value: "Coluna/lombar", icon: "🧍" },
+      { label: "Dor no ombro (tendinite, bursite, luxação)", value: "Ombro", icon: "💪" },
+      { label: "Tendinite ou dor no punho/cotovelo", value: "Punho/Cotovelo", icon: "✋" },
+      { label: "Dor no quadril (bursite, impacto femoroacetabular)", value: "Quadril", icon: "🦴" },
+      { label: "Entorses frequentes ou instabilidade no tornozelo", value: "Tornozelo", icon: "🦶" },
+      { label: "Osteoporose ou osteopenia", value: "Osteoporose", icon: "🩻" },
+      { label: "Outra condição não listada", value: "Outra", icon: "❓" },
+      { label: "Nenhuma dessas", value: "Nenhuma", icon: "✅" },
     ],
   },
   {
@@ -284,7 +281,8 @@ const QUIZ_ITEMS: QuizItem[] = [
 ];
 
 const ANSWERABLE = QUIZ_ITEMS.filter(
-  (i): i is Extract<QuizItem, { type: "question" | "input" }> => i.type === "question" || i.type === "input",
+  (i): i is Extract<QuizItem, { type: "question" | "input" | "multi" }> =>
+    i.type === "question" || i.type === "input" || i.type === "multi",
 );
 
 const BLOQUEIO_INSIGHT: Record<string, string> = {
@@ -317,7 +315,7 @@ function mapNivel(experiencia: string | undefined): string {
   return "Iniciante (nunca treinei)";
 }
 
-function buildAnamnese(answers: Record<string, string>) {
+function buildAnamnese(answers: Record<string, string>, multi: Record<string, string[]>) {
   return {
     idade: answers.idadeExata,
     sexo: answers.sexo,
@@ -327,7 +325,7 @@ function buildAnamnese(answers: Record<string, string>) {
     nivel: mapNivel(answers.experiencia),
     diasTreino: answers.diasTreino,
     periodo: answers.periodo,
-    lesoes: answers.lesoes,
+    lesoes: multi.lesoes ?? [],
     sono: answers.sono,
   };
 }
@@ -337,13 +335,14 @@ export default function QuizPage() {
   const [phase, setPhase] = useState<Phase>("hook");
   const [itemIndex, setItemIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [multiAnswers, setMultiAnswers] = useState<Record<string, string[]>>({});
   const [inputValue, setInputValue] = useState("");
   const [chatCount, setChatCount] = useState(0);
 
   const messages = buildChatMessages(answers.bloqueio);
   const currentItem = QUIZ_ITEMS[itemIndex];
   const answerNumber = QUIZ_ITEMS.slice(0, itemIndex + 1).filter(
-    (i) => i.type === "question" || i.type === "input",
+    (i) => i.type === "question" || i.type === "input" || i.type === "multi",
   ).length;
 
   useEffect(() => {
@@ -371,7 +370,7 @@ export default function QuizPage() {
       setItemIndex((i) => i + 1);
     } else {
       if (typeof window !== "undefined") {
-        localStorage.setItem("evofit_anamnese", JSON.stringify(buildAnamnese(latestAnswers)));
+        localStorage.setItem("evofit_anamnese", JSON.stringify(buildAnamnese(latestAnswers, multiAnswers)));
       }
       setPhase("analyzing");
     }
@@ -381,6 +380,21 @@ export default function QuizPage() {
     const next = { ...answers, [key]: value };
     setAnswers(next);
     goToNext(next);
+  }
+
+  function toggleMultiOption(key: string, value: string) {
+    setMultiAnswers((prev) => {
+      const current = prev[key] ?? [];
+      let next: string[];
+      if (value === "Nenhuma") {
+        next = current.includes("Nenhuma") ? [] : ["Nenhuma"];
+      } else if (current.includes(value)) {
+        next = current.filter((v) => v !== value);
+      } else {
+        next = [...current.filter((v) => v !== "Nenhuma"), value];
+      }
+      return { ...prev, [key]: next };
+    });
   }
 
   function goBack() {
@@ -549,6 +563,71 @@ export default function QuizPage() {
             onClick={() => selectAnswer(currentItem.key, inputValue.trim())}
             disabled={!inputValue.trim()}
             className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
+          >
+            Continuar
+          </button>
+        </div>
+      )}
+
+      {phase === "quiz" && currentItem.type === "multi" && (
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+          {BackButton}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+            <span className="text-xs text-[#8A8A8A]">
+              {answerNumber} de {ANSWERABLE.length}
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+            <div
+              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
+            />
+          </div>
+
+          <div className="flex-1 animate-fade-in overflow-y-auto" key={itemIndex}>
+            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-2 leading-snug">
+              {currentItem.question}
+            </h2>
+            {currentItem.subtitle && (
+              <p className="text-xs text-[#8A8A8A] mb-6 leading-relaxed">{currentItem.subtitle}</p>
+            )}
+            <div className="space-y-3">
+              {currentItem.options.map((opt) => {
+                const selected = (multiAnswers[currentItem.key] ?? []).includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => toggleMultiOption(currentItem.key, opt.value)}
+                    className={`w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border transition-all ${
+                      selected
+                        ? "border-[#A855F7] bg-[#1E1035] text-[#F0F0F0]"
+                        : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#A855F7] hover:text-[#F0F0F0]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span
+                        className={`w-5 h-5 rounded-[0.375rem] border-2 shrink-0 flex items-center justify-center ${
+                          selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                        }`}
+                      >
+                        {selected && <span className="text-white text-xs">✓</span>}
+                      </span>
+                      {opt.label}
+                    </span>
+                    <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
+                      {opt.icon}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            onClick={() => goToNext()}
+            disabled={(multiAnswers[currentItem.key] ?? []).length === 0}
+            className="w-full mt-6 bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
           >
             Continuar
           </button>

@@ -3,8 +3,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import type { AnamneseData } from "@/lib/types";
 
-const STEPS = [
+type Field = {
+  key: string;
+  label: string;
+  type: "text" | "number" | "select" | "radio" | "checkbox";
+  placeholder?: string;
+  options?: string[];
+  optionValues?: string[];
+};
+
+type Step = {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  fields: Field[];
+};
+
+const STEPS: Step[] = [
   {
     id: "perfil",
     title: "Seu perfil",
@@ -74,9 +92,21 @@ const STEPS = [
     fields: [
       {
         key: "lesoes",
-        label: "Você tem alguma lesão ou limitação física?",
-        type: "radio",
-        options: ["Não tenho", "Joelho", "Coluna/lombar", "Ombro", "Outra"],
+        label: "Você tem alguma dessas condições? Selecione todas que se aplicam.",
+        type: "checkbox",
+        options: [
+          "Condromalácia (desgaste da cartilagem do joelho)",
+          "Outra lesão no joelho (menisco, ligamento, tendinite patelar)",
+          "Dor lombar ou hérnia de disco",
+          "Dor no ombro (tendinite, bursite, luxação)",
+          "Tendinite ou dor no punho/cotovelo",
+          "Dor no quadril (bursite, impacto femoroacetabular)",
+          "Entorses frequentes ou instabilidade no tornozelo",
+          "Osteoporose ou osteopenia",
+          "Outra condição não listada",
+          "Nenhuma dessas",
+        ],
+        optionValues: ["Condromalácia", "Joelho", "Coluna/lombar", "Ombro", "Punho/Cotovelo", "Quadril", "Tornozelo", "Osteoporose", "Outra", "Nenhuma"],
       },
       {
         key: "sono",
@@ -88,7 +118,7 @@ const STEPS = [
   },
 ];
 
-type FormData = Record<string, string>;
+type FormData = Record<string, string | string[]>;
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(0);
@@ -103,12 +133,27 @@ export default function OnboardingPage() {
     setData((prev) => ({ ...prev, [key]: value }));
   }
 
+  function toggleCheckbox(key: string, value: string) {
+    setData((prev) => {
+      const current = Array.isArray(prev[key]) ? (prev[key] as string[]) : [];
+      let next: string[];
+      if (value === "Nenhuma") {
+        next = current.includes("Nenhuma") ? [] : ["Nenhuma"];
+      } else if (current.includes(value)) {
+        next = current.filter((v) => v !== value);
+      } else {
+        next = [...current.filter((v) => v !== "Nenhuma"), value];
+      }
+      return { ...prev, [key]: next };
+    });
+  }
+
   function next() {
     if (step < STEPS.length - 1) {
       setStep((s) => s + 1);
     } else {
       // Último passo: salva tudo no contexto (localStorage) e vai pro dashboard
-      saveAnamnese(data);
+      saveAnamnese(data as unknown as AnamneseData);
       router.push("/dashboard");
     }
   }
@@ -198,6 +243,33 @@ export default function OnboardingPage() {
                         {opt}
                       </button>
                     ))}
+                  </div>
+                ) : field.type === "checkbox" ? (
+                  <div className="space-y-2">
+                    {field.options!.map((opt, i) => {
+                      const value = field.optionValues ? field.optionValues[i] : opt;
+                      const selected = Array.isArray(data[field.key]) && (data[field.key] as string[]).includes(value);
+                      return (
+                        <button
+                          key={value}
+                          onClick={() => toggleCheckbox(field.key, value)}
+                          className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
+                            selected
+                              ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
+                              : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${
+                              selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                            }`}
+                          >
+                            {selected && <span className="text-white text-[10px]">✓</span>}
+                          </span>
+                          {opt}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : null}
               </div>

@@ -76,18 +76,18 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── QUADRÍCEPS (15 exercícios — ~5 ciclos) ────────────────────────────────
 
   quadriceps: [
-    { id: "q1",  name: "Agachamento livre",               primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [], avoidForBeginner: true },
+    { id: "q1",  name: "Agachamento livre",               primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril"], avoidForBeginner: true },
     { id: "q2",  name: "Leg press 45°",                   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q9",  name: "Leg press horizontal",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q6",  name: "Hack squat (máquina)",            primaryMuscle: "Quadríceps / Vasto lateral",  compound: true,  avoidFor: ["Joelho"] },
-    { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: [], avoidForBeginner: true },
-    { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
-    { id: "q13", name: "Agachamento com trava",           primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
-    { id: "q14", name: "Agachamento taça",                primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
-    { id: "q3",  name: "Agachamento búlgaro",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
-    { id: "q4",  name: "Afundo com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
-    { id: "q7",  name: "Agachamento búlgaro com barra",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
-    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: ["Quadril", "Coluna/lombar"], avoidForBeginner: true },
+    { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril", "Coluna/lombar"] },
+    { id: "q13", name: "Agachamento com trava",           primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "q14", name: "Agachamento taça",                primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril"] },
+    { id: "q3",  name: "Agachamento búlgaro",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia"] },
+    { id: "q4",  name: "Afundo com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
+    { id: "q7",  name: "Agachamento búlgaro com barra",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia", "Coluna/lombar"] },
+    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"], avoidForBeginner: true },
     { id: "q15", name: "Leg press 45° unilateral",        primaryMuscle: "Quadríceps (unilateral)",     compound: true,  avoidFor: [] },
     { id: "q5",  name: "Cadeira extensora",               primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
     { id: "q12", name: "Cadeira extensora unilateral",    primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
@@ -100,13 +100,13 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   gluteos: [
     { id: "g6",  name: "Elevação pélvica (hip thrust)",   primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
     { id: "g7",  name: "Abdução sentada na máquina",      primaryMuscle: "Glúteo médio",                compound: true,  avoidFor: [] },
-    { id: "g2",  name: "Agachamento sumô com haltere",    primaryMuscle: "Glúteos / Adutores",          compound: true,  avoidFor: [] },
-    { id: "g8",  name: "Recuo com halteres",              primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: [] },
-    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "g2",  name: "Agachamento sumô com haltere",    primaryMuscle: "Glúteos / Adutores",          compound: true,  avoidFor: ["Quadril"] },
+    { id: "g8",  name: "Recuo com halteres",              primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Quadril"], avoidForBeginner: true },
+    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"] },
     { id: "g9",  name: "Elevação de perna em pé",         primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
-    { id: "g12", name: "Step-up com barra",               primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho"] },
+    { id: "g12", name: "Step-up com barra",               primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"] },
     { id: "g10", name: "Elevação pélvica unilateral",     primaryMuscle: "Glúteo máximo (unilateral)",  compound: true,  avoidFor: [] },
-    { id: "g1",  name: "Hip thrust com barra",            primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "g1",  name: "Hip thrust com barra",            primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: ["Coluna/lombar", "Quadril"] },
     { id: "g11", name: "Coice de glúteo no cabo",         primaryMuscle: "Glúteo máximo",               compound: false, avoidFor: [] },
     { id: "g4",  name: "Glúteo no cabo (kickback)",       primaryMuscle: "Glúteo máximo",               compound: false, avoidFor: [] },
     { id: "g5",  name: "Abdução no cabo baixo",           primaryMuscle: "Glúteo médio",                compound: false, avoidFor: [] },
@@ -115,14 +115,14 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
   // ── POSTERIORES (10 exercícios) ───────────────────────────────────────────
 
   posteriores: [
-    { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
+    { id: "po1",  name: "Stiff com barra",                primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Quadril", "Osteoporose"], avoidForBeginner: true },
     { id: "po3",  name: "Cadeira flexora",                primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
     { id: "po4",  name: "Mesa flexora",                   primaryMuscle: "Isquiotibiais",               compound: true,  avoidFor: ["Joelho"] },
-    { id: "po9",  name: "Stiff com haltere",              primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
-    { id: "po6",  name: "Stiff unilateral com halteres",  primaryMuscle: "Isquiotibiais (unilateral)",  compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
-    { id: "po5",  name: "Bom dia (good morning)",         primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
-    { id: "po11", name: "Bom dia no Smith",               primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar"], avoidForBeginner: true },
-    { id: "po12", name: "Levantamento terra sumô",        primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho"], avoidForBeginner: true },
+    { id: "po9",  name: "Stiff com haltere",              primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Quadril", "Osteoporose"], avoidForBeginner: true },
+    { id: "po6",  name: "Stiff unilateral com halteres",  primaryMuscle: "Isquiotibiais (unilateral)",  compound: true,  avoidFor: ["Coluna/lombar", "Quadril", "Tornozelo", "Osteoporose"], avoidForBeginner: true },
+    { id: "po5",  name: "Bom dia (good morning)",         primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar", "Quadril", "Osteoporose"], avoidForBeginner: true },
+    { id: "po11", name: "Bom dia no Smith",               primaryMuscle: "Isquiotibiais / Lombar",      compound: true,  avoidFor: ["Coluna/lombar", "Quadril", "Osteoporose"], avoidForBeginner: true },
+    { id: "po12", name: "Levantamento terra sumô",        primaryMuscle: "Isquiotibiais / Glúteos",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho", "Quadril"], avoidForBeginner: true },
     { id: "po8",  name: "Flexora em pé",                  primaryMuscle: "Isquiotibiais (isolamento)",  compound: false, avoidFor: ["Joelho"] },
     { id: "po10", name: "Flexão nórdica",                 primaryMuscle: "Isquiotibiais (excêntrico)",  compound: false, avoidFor: ["Joelho"] },
   ],
@@ -141,11 +141,11 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
 
   peito: [
     { id: "p28", name: "Supino reto na máquina",           primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
-    { id: "p33", name: "Supino reto com barra",            primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
+    { id: "p33", name: "Supino reto com barra",            primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro", "Punho/Cotovelo"] },
     { id: "p29", name: "Supino com halteres",              primaryMuscle: "Peitoral",                    compound: true,  avoidFor: ["Ombro"] },
     { id: "p27", name: "Supino inclinado com halteres",    primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "p30", name: "Supino inclinado com barra",       primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
-    { id: "p31", name: "Supino inclinado com barra (pegada fechada)", primaryMuscle: "Peitoral superior", compound: true,  avoidFor: ["Ombro"] },
+    { id: "p30", name: "Supino inclinado com barra",       primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro", "Punho/Cotovelo"] },
+    { id: "p31", name: "Supino inclinado com barra (pegada fechada)", primaryMuscle: "Peitoral superior", compound: true,  avoidFor: ["Punho/Cotovelo"] },
     { id: "p26", name: "Supino inclinado na máquina",      primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
     { id: "p32", name: "Supino inclinado no cabo",         primaryMuscle: "Peitoral superior",           compound: true,  avoidFor: ["Ombro"] },
     { id: "p34", name: "Supino vertical (shoulder press)", primaryMuscle: "Peitoral / Ombros",           compound: true,  avoidFor: ["Ombro"] },
@@ -171,7 +171,7 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "c22", name: "Pulley frente pegada aberta",         primaryMuscle: "Dorsal",                     compound: false, avoidFor: ["Ombro"] },
     { id: "c23", name: "Pulley frente triângulo",             primaryMuscle: "Dorsal inferior",            compound: false, avoidFor: ["Ombro"] },
     { id: "c24", name: "Pulley frente unilateral",            primaryMuscle: "Dorsal (unilateral)",        compound: false, avoidFor: ["Ombro"] },
-    { id: "c32", name: "Remada curvada com barra livre",      primaryMuscle: "Dorsal / Trapézio médio",    compound: true,  avoidFor: ["Coluna/lombar"] },
+    { id: "c32", name: "Remada curvada com barra livre",      primaryMuscle: "Dorsal / Trapézio médio",    compound: true,  avoidFor: ["Coluna/lombar", "Punho/Cotovelo", "Osteoporose"] },
     { id: "c33", name: "Remada curvada na máquina",           primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
     { id: "c35", name: "Remada unilateral com halteres",      primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: ["Coluna/lombar"] },
     { id: "c31", name: "Remada cavalinho na máquina",         primaryMuscle: "Dorsal / Rombóides",         compound: true,  avoidFor: [] },
@@ -213,10 +213,10 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "b33", name: "Rosca no cabo",                          primaryMuscle: "Bíceps",                     compound: false, avoidFor: [] },
     { id: "b22", name: "Rosca unilateral pegada invertida no cabo", primaryMuscle: "Bíceps (unilateral)",   compound: false, avoidFor: [] },
     { id: "b23", name: "Rosca unilateral no cabo alto",          primaryMuscle: "Bíceps (unilateral)",       compound: false, avoidFor: [] },
-    { id: "b16", name: "Rosca Scott com barra W",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
-    { id: "b17", name: "Rosca Scott na máquina",                 primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
-    { id: "b34", name: "Rosca Scott alternada com halteres",     primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
-    { id: "b35", name: "Rosca Scott com halteres",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
+    { id: "b16", name: "Rosca Scott com barra W",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: ["Punho/Cotovelo"] },
+    { id: "b17", name: "Rosca Scott na máquina",                 primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: ["Punho/Cotovelo"] },
+    { id: "b34", name: "Rosca Scott alternada com halteres",     primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: ["Punho/Cotovelo"] },
+    { id: "b35", name: "Rosca Scott com halteres",                primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: ["Punho/Cotovelo"] },
     { id: "b15", name: "Rosca banco inclinado",                  primaryMuscle: "Bíceps (alongado)",         compound: false, avoidFor: [] },
     { id: "b24", name: "Rosca concentrada",                      primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
     { id: "b29", name: "Rosca direta concentrada",               primaryMuscle: "Bíceps (pico)",             compound: false, avoidFor: [] },
@@ -233,13 +233,13 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "t6",  name: "Tríceps pulley com corda",        primaryMuscle: "Tríceps (porção lateral)",    compound: false, avoidFor: [] },
     { id: "t9",  name: "Tríceps pulley invertido",        primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
     { id: "t11", name: "Tríceps pulley barra V",          primaryMuscle: "Tríceps (porção lateral)",    compound: false, avoidFor: [] },
-    { id: "t2",  name: "Tríceps testa (skullcrusher)",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
-    { id: "t8",  name: "Tríceps testa unilateral",        primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t2",  name: "Tríceps testa (skullcrusher)",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro", "Punho/Cotovelo"] },
+    { id: "t8",  name: "Tríceps testa unilateral",        primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro", "Punho/Cotovelo"] },
     { id: "t13", name: "Tríceps no cabo alto",            primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
-    { id: "t10", name: "Tríceps deitado barra W",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
-    { id: "t5",  name: "Tríceps francês com haltere",     primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
-    { id: "t7",  name: "Tríceps francês unilateral cabo", primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
-    { id: "t12", name: "Tríceps francês sentado",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro"] },
+    { id: "t10", name: "Tríceps deitado barra W",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro", "Punho/Cotovelo"] },
+    { id: "t5",  name: "Tríceps francês com haltere",     primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro", "Punho/Cotovelo"] },
+    { id: "t7",  name: "Tríceps francês unilateral cabo", primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Punho/Cotovelo"] },
+    { id: "t12", name: "Tríceps francês sentado",         primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: ["Ombro", "Punho/Cotovelo"] },
     { id: "t4",  name: "Tríceps kickback com haltere",    primaryMuscle: "Tríceps (porção longa)",      compound: false, avoidFor: [] },
   ],
 
@@ -248,19 +248,19 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
 
   core: [
     { id: "ab14", name: "Prancha isométrica",             primaryMuscle: "Core completo / Estabilização", compound: false, avoidFor: [] },
-    { id: "ab3",  name: "Abdominal crunch",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: [] },
-    { id: "ab7",  name: "Crunch na máquina",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: [] },
-    { id: "ab10", name: "Supra no banco declinado",        primaryMuscle: "Reto abdominal (superior)",      compound: false, avoidFor: [] },
-    { id: "ab13", name: "Crunch oblíquo",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: [] },
-    { id: "ab11", name: "Toque no calcanhar alternado",    primaryMuscle: "Oblíquos",                       compound: false, avoidFor: [] },
-    { id: "ab6",  name: "Abdominal infra",                 primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab1",  name: "Abdominal infra deitado",         primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab4",  name: "Tuck crunch",                     primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab2",  name: "Abdominal bicicleta",              primaryMuscle: "Oblíquos / Reto abdominal",      compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab5",  name: "Abdominal twisting",               primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab12", name: "Abdominal twist",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab9",  name: "Rotação de tronco",                primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar"] },
-    { id: "ab8",  name: "Abdominal remador",                primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar"] },
+    { id: "ab3",  name: "Abdominal crunch",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: ["Osteoporose"] },
+    { id: "ab7",  name: "Crunch na máquina",               primaryMuscle: "Reto abdominal",                 compound: false, avoidFor: ["Osteoporose"] },
+    { id: "ab10", name: "Supra no banco declinado",        primaryMuscle: "Reto abdominal (superior)",      compound: false, avoidFor: ["Osteoporose"] },
+    { id: "ab13", name: "Crunch oblíquo",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Osteoporose"] },
+    { id: "ab11", name: "Toque no calcanhar alternado",    primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Osteoporose"] },
+    { id: "ab6",  name: "Abdominal infra",                 primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab1",  name: "Abdominal infra deitado",         primaryMuscle: "Abdômen inferior",               compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab4",  name: "Tuck crunch",                     primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab2",  name: "Abdominal bicicleta",              primaryMuscle: "Oblíquos / Reto abdominal",      compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab5",  name: "Abdominal twisting",               primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab12", name: "Abdominal twist",                  primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab9",  name: "Rotação de tronco",                primaryMuscle: "Oblíquos",                       compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
+    { id: "ab8",  name: "Abdominal remador",                primaryMuscle: "Abdômen completo",                compound: false, avoidFor: ["Coluna/lombar", "Osteoporose"] },
   ],
 
   // ── TRAPÉZIO (4 exercícios — só treino masculino) ─────────────────────────
@@ -841,12 +841,12 @@ export function getWorkoutBySlot(
     sexo      = "Feminino",
     objetivo  = "Mais disposição e saúde",
     nivel     = "Iniciante (nunca treinei)",
-    lesoes    = "Não tenho",
+    lesoes    = [],
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
   const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
-  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
+  const injuries = lesoes.filter((l) => l !== "Nenhuma");
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner);
 
@@ -896,7 +896,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
     objetivo   = "Mais disposição e saúde",
     nivel      = "Iniciante (nunca treinei)",
     diasTreino = "3 dias",
-    lesoes     = "Não tenho",
+    lesoes     = [],
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
@@ -916,7 +916,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
     };
   }
 
-  const injuries = lesoes !== "Não tenho" ? [lesoes] : [];
+  const injuries = lesoes.filter((l) => l !== "Nenhuma");
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
   const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);

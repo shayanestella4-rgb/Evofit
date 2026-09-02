@@ -14,6 +14,6 @@ export interface AnamneseData {
   diasTreino?: string;
   periodo?: string;
   // Saúde
-  lesoes?: string;
+  lesoes?: string[];
   sono?: string;
 }

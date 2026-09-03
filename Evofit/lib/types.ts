@@ -12,6 +12,7 @@ export interface AnamneseData {
   nivel?: string;
   // Rotina
   diasTreino?: string;
+  tempoTreino?: string;
   periodo?: string;
   // Saúde
   lesoes?: string[];

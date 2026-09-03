@@ -141,6 +141,16 @@ const QUIZ_ITEMS: QuizItem[] = [
   },
   {
     type: "question",
+    key: "tempoTreino",
+    question: "Quanto tempo você tem disponível por treino?",
+    options: [
+      { label: "40 min", icon: "⏱️" },
+      { label: "1h", icon: "⏰" },
+      { label: "1h30", icon: "🕐" },
+    ],
+  },
+  {
+    type: "question",
     key: "local",
     question: "Prefere treinar em casa ou na academia?",
     options: [
@@ -324,6 +334,7 @@ function buildAnamnese(answers: Record<string, string>, multi: Record<string, st
     objetivo: answers.objetivo,
     nivel: mapNivel(answers.experiencia),
     diasTreino: answers.diasTreino,
+    tempoTreino: answers.tempoTreino,
     periodo: answers.periodo,
     lesoes: multi.lesoes ?? [],
     lesoesDetalhe: (multi.lesoes ?? []).includes("Outra") ? outraDetalhe.trim() : undefined,

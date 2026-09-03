@@ -799,7 +799,8 @@ function pickExercises(
   cycleNumber: number = 1,
   volumes: Partial<Record<MuscleGroup, number>> = {},
   isFemale: boolean = true,
-  isBeginner: boolean = false
+  isBeginner: boolean = false,
+  timeScale: number = 1
 ): (ExerciseDef & { group: MuscleGroup })[] {
   const result: (ExerciseDef & { group: MuscleGroup })[] = [];
 
@@ -821,6 +822,7 @@ function pickExercises(
       return +b.compound - +a.compound;
     });
     let cap = volumes[g] ?? defaultVol(g, isFemale);
+    cap = Math.max(1, Math.round(cap * timeScale));
     if (isFemale && g === "peito") cap = Math.min(cap, 2);
 
     if (sorted.length === 0) continue;
@@ -862,13 +864,30 @@ function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: n
   }));
 }
 
-function buildCardioExercise(cycleNumber: number, dayIdx: number): Exercise {
+/**
+ * Perfil de tempo disponível — escala o volume de exercícios por grupo
+ * (aplicado ao cap em pickExercises) e ajusta o cardio final.
+ * "1h30" é o baseline em que os volumes dos splits foram desenhados (volumeScale 1).
+ * Em "40 min" o cardio fixo sai do treino — não cabe no tempo e vira opcional,
+ * a fazer num dia com mais disponibilidade.
+ */
+const TIME_PROFILES: Record<string, { volumeScale: number; includeCardio: boolean; cardioMinutes: number; cardioLabel: string }> = {
+  "40 min": { volumeScale: 0.55, includeCardio: false, cardioMinutes: 0,  cardioLabel: "" },
+  "1h":     { volumeScale: 0.8,  includeCardio: true,  cardioMinutes: 15, cardioLabel: "10-15 min" },
+  "1h30":   { volumeScale: 1,    includeCardio: true,  cardioMinutes: 25, cardioLabel: "20-30 min" },
+};
+
+function getTimeProfile(tempoTreino?: string) {
+  return TIME_PROFILES[tempoTreino ?? "1h30"] ?? TIME_PROFILES["1h30"];
+}
+
+function buildCardioExercise(cycleNumber: number, dayIdx: number, cardioLabel: string = "20-30 min"): Exercise {
   const c = pickCardio(cycleNumber, dayIdx);
   return {
     id:     c.id,
     name:   c.name,
     muscle: "Cardio",
-    sets:   "20-30 min",
+    sets:   cardioLabel,
     rest:   "—",
     tip:    "Ritmo moderado e constante — o objetivo é queimar calorias extras sem prejudicar a recuperação do treino de força.",
     gif:    GIF_MAP[c.id] ?? undefined,
@@ -877,10 +896,9 @@ function buildCardioExercise(cycleNumber: number, dayIdx: number): Exercise {
 }
 
 /** Estima a duração (min) somando o tempo dos exercícios de força + abdômen + cardio. */
-function estimateDuration(mainCount: number, timePerMain: number, absCount: number): number {
-  const absTime    = absCount * 4 * (1.5 + 30 / 60); // 4 séries, ~30s de descanso
-  const cardioTime = 25; // meio-termo de 20-30min
-  return Math.round(5 + mainCount * timePerMain + absTime + cardioTime);
+function estimateDuration(mainCount: number, timePerMain: number, absCount: number, cardioMinutes: number = 25): number {
+  const absTime = absCount * 4 * (1.5 + 30 / 60); // 4 séries, ~30s de descanso
+  return Math.round(5 + mainCount * timePerMain + absTime + cardioMinutes);
 }
 
 // ─── API pública ──────────────────────────────────────────────────────────────
@@ -918,13 +936,15 @@ export function getWorkoutBySlot(
     nivel         = "Iniciante (nunca treinei)",
     lesoes        = [],
     lesoesDetalhe,
+    tempoTreino,
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
   const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
+  const timeProfile = getTimeProfile(tempoTreino);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner, timeProfile.volumeScale);
   const cautionGroups = getCautionGroups(injuries);
 
   const exercises: Exercise[] = defs.map((ex) => ({
@@ -940,11 +960,11 @@ export function getWorkoutBySlot(
   }));
 
   const mainCount = exercises.length;
-  exercises.push(buildCardioExercise(cycleNumber, 0));
+  if (timeProfile.includeCardio) exercises.push(buildCardioExercise(cycleNumber, 0, timeProfile.cardioLabel));
 
   const restSeconds = parseInt(rest) || 60;
   const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = estimateDuration(mainCount, timePerEx, 0);
+  const duration    = estimateDuration(mainCount, timePerEx, 0, timeProfile.cardioMinutes);
 
   return {
     name:        slot.name,
@@ -976,6 +996,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
     diasTreino    = "3 dias",
     lesoes        = [],
     lesoesDetalhe,
+    tempoTreino,
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
@@ -996,10 +1017,11 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   }
 
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
+  const timeProfile = getTimeProfile(tempoTreino);
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
   const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner);
+  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
   const cautionGroups = getCautionGroups(injuries);
 
   // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
@@ -1025,12 +1047,12 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const absExercises = slot.abs ? buildAbsExercises(injuries, isFemale, cycleNumber, dayIdx) : [];
   exercises.push(...absExercises);
 
-  // Cardio — todo dia de treino, sempre por último
-  exercises.push(buildCardioExercise(cycleNumber, dayIdx));
+  // Cardio — todo dia de treino, sempre por último (exceto em treinos de 40min, ver TIME_PROFILES)
+  if (timeProfile.includeCardio) exercises.push(buildCardioExercise(cycleNumber, dayIdx, timeProfile.cardioLabel));
 
   const baseRestSeconds = parseInt(base.rest) || 60;
   const timePerMain      = base.sets * (1.5 + baseRestSeconds / 60);
-  let duration = estimateDuration(mainCount, timePerMain, absExercises.length);
+  let duration = estimateDuration(mainCount, timePerMain, absExercises.length, timeProfile.cardioMinutes);
   if (isFinisherDay) {
     // O último exercício usa a prescrição avançada em vez da base — ajusta a diferença
     const advRestSeconds = parseInt(advanced!.rest) || 60;

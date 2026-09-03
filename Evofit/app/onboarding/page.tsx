@@ -77,6 +77,12 @@ const STEPS: Step[] = [
         options: ["2 dias", "3 dias", "4 dias", "5+ dias"],
       },
       {
+        key: "tempoTreino",
+        label: "Quanto tempo você tem disponível por treino?",
+        type: "radio",
+        options: ["40 min", "1h", "1h30"],
+      },
+      {
         key: "periodo",
         label: "Qual período você prefere treinar?",
         type: "radio",

@@ -32,6 +32,7 @@ export default function TreinoPage() {
 
   const todayIdx = toAppDay(new Date().getDay());
   const [selectedDay, setSelectedDay] = useState<number>(todayIdx);
+  const [timeOverride, setTimeOverride] = useState<Record<number, string>>({});
 
   // Se hoje é descanso, pré-seleciona o primeiro dia de treino da semana
   useEffect(() => {
@@ -48,7 +49,9 @@ export default function TreinoPage() {
     .map((d, i) => ({ ...d, idx: i }))
     .filter((d) => d.isTraining);
 
-  const workout    = getWorkoutForDay(anamnese, selectedDay, cycleNumber);
+  const selectedTempo = timeOverride[selectedDay] ?? anamnese?.tempoTreino ?? "1h30";
+  const effectiveAnamnese = anamnese ? { ...anamnese, tempoTreino: selectedTempo } : null;
+  const workout    = getWorkoutForDay(effectiveAnamnese, selectedDay, cycleNumber);
   const isViewing  = selectedDay !== todayIdx;
 
   const doneCount = workout.exercises.filter((ex) =>
@@ -199,6 +202,28 @@ export default function TreinoPage() {
           </div>
         ) : (
           <>
+            {/* Seletor de tempo disponível — recalcula o treino do dia selecionado */}
+            <div className="mb-5">
+              <p className="text-[10px] text-[#CBD5E0] font-semibold uppercase tracking-wide mb-2">
+                Quanto tempo você tem hoje?
+              </p>
+              <div className="flex gap-2">
+                {["40 min", "1h", "1h30"].map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => setTimeOverride((prev) => ({ ...prev, [selectedDay]: opt }))}
+                    className={`flex-1 py-2 rounded-[0.75rem] text-xs font-bold border transition-all ${
+                      selectedTempo === opt
+                        ? "bg-[#A855F7] text-white border-[#A855F7]"
+                        : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A855F7]"
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Header */}
             <div className="mb-5">
               <p className="text-xs text-[#C084FC] font-semibold uppercase tracking-wide mb-1">
@@ -256,6 +281,16 @@ export default function TreinoPage() {
                 <li>Priorize a execução correta.</li>
               </ul>
             </div>
+
+            {/* Aviso de cardio opcional — treinos de 40min priorizam só a musculação */}
+            {selectedTempo === "40 min" && !workout.isRest && (
+              <div className="bg-[#1E1035] rounded-[1rem] p-3 border border-[#2D1B4E] mb-4 flex gap-2 items-start">
+                <span className="text-sm shrink-0">🏃</span>
+                <p className="text-xs text-[#C0C0C0] leading-relaxed">
+                  Como seu tempo hoje é mais curto, esse treino não inclui cardio fixo — priorizamos a musculação. Se quiser, faça o cardio num dia em que tiver mais tempo disponível.
+                </p>
+              </div>
+            )}
 
             {/* Lista de exercícios */}
             <div className="space-y-3">

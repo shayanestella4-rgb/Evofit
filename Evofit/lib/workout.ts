@@ -27,6 +27,7 @@ export interface Exercise {
   tip: string;
   gif?: string;   // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
   video?: string; // vídeo de demonstração — undefined se ainda não gravado (usa gif como fallback)
+  jointCaution?: string; // aviso extra quando o exercício está na mesma região de uma condição articular da aluna
 }
 
 // Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
@@ -629,6 +630,31 @@ function resolveInjuries(lesoes: string[], lesoesDetalhe?: string): string[] {
   return [...new Set([...semOutra, ...matched])];
 }
 
+// ─── Aviso de amplitude/intensidade por região articular ─────────────────────
+// Condições de sobrecarga óssea (osteoporose) pedem o oposto ("mantenha a
+// carga, evite é flexão/torção") — não entram nesse aviso de amplitude.
+const JOINT_CAUTION_TEXT = "Neste exercício diminua a amplitude e intensidade, vá até o seu limite.";
+const JOINT_CAUTION_EXCLUDED_TAGS = ["Osteoporose", "Nenhuma", "Outra"];
+
+/** Grupos musculares onde essa tag tem pelo menos um exercício restrito — ou seja, a região que a condição afeta. */
+function affectedGroupsForTag(tag: string): Set<MuscleGroup> {
+  const groups = new Set<MuscleGroup>();
+  for (const group of Object.keys(LIBRARY) as MuscleGroup[]) {
+    if (LIBRARY[group].some((ex) => ex.avoidFor.includes(tag))) groups.add(group);
+  }
+  return groups;
+}
+
+/** Une as regiões afetadas por todas as condições relevantes da aluna (exceto osteoporose/nenhuma/outra). */
+function getCautionGroups(injuries: string[]): Set<MuscleGroup> {
+  const relevant = injuries.filter((i) => !JOINT_CAUTION_EXCLUDED_TAGS.includes(i));
+  const groups = new Set<MuscleGroup>();
+  for (const tag of relevant) {
+    for (const g of affectedGroupsForTag(tag)) groups.add(g);
+  }
+  return groups;
+}
+
 /** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
 function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   const female: Record<MuscleGroup, number> = {
@@ -774,8 +800,8 @@ function pickExercises(
   volumes: Partial<Record<MuscleGroup, number>> = {},
   isFemale: boolean = true,
   isBeginner: boolean = false
-): ExerciseDef[] {
-  const result: ExerciseDef[] = [];
+): (ExerciseDef & { group: MuscleGroup })[] {
+  const result: (ExerciseDef & { group: MuscleGroup })[] = [];
 
   for (const g of groups) {
     if (!isGroupAllowed(g, isFemale, isBeginner)) continue;
@@ -802,7 +828,7 @@ function pickExercises(
     // Rotação: cada ciclo avança `cap` posições → exercícios novos a cada mês
     const offset = ((cycleNumber - 1) * cap) % sorted.length;
     for (let i = 0; i < cap && i < sorted.length; i++) {
-      result.push(sorted[(offset + i) % sorted.length]);
+      result.push({ ...sorted[(offset + i) % sorted.length], group: g });
     }
   }
 
@@ -810,7 +836,7 @@ function pickExercises(
 }
 
 /** Escolhe 1 exercício de abdômen, rotacionando por ciclo e por dia (mais variedade na semana). */
-function pickAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: number, dayIdx: number): ExerciseDef[] {
+function pickAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: number, dayIdx: number): (ExerciseDef & { group: MuscleGroup })[] {
   const virtualCycle = cycleNumber * 10 + dayIdx;
   return pickExercises(["core"], injuries, virtualCycle, { core: 1 }, isFemale);
 }
@@ -822,6 +848,7 @@ function pickCardio(cycleNumber: number, dayIdx: number): { id: string; name: st
 }
 
 function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: number, dayIdx: number): Exercise[] {
+  const cautionGroups = getCautionGroups(injuries);
   return pickAbsExercises(injuries, isFemale, cycleNumber, dayIdx).map((ex) => ({
     id:     ex.id,
     name:   ex.name,
@@ -831,6 +858,7 @@ function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: n
     tip:    "Foco na contração do abdômen — evite puxar o pescoço, o movimento deve vir da barriga.",
     gif:    GIF_MAP[ex.id] ?? undefined,
     video:  VIDEO_MAP[ex.id] ?? undefined,
+    jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
   }));
 }
 
@@ -897,6 +925,7 @@ export function getWorkoutBySlot(
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner);
+  const cautionGroups = getCautionGroups(injuries);
 
   const exercises: Exercise[] = defs.map((ex) => ({
     id:     ex.id,
@@ -907,6 +936,7 @@ export function getWorkoutBySlot(
     tip,
     gif:    GIF_MAP[ex.id] ?? undefined,
     video:  VIDEO_MAP[ex.id] ?? undefined,
+    jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
   }));
 
   const mainCount = exercises.length;
@@ -970,6 +1000,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
   const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner);
+  const cautionGroups = getCautionGroups(injuries);
 
   // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
   // e só nos dias marcados como finalizador — nunca no treino inteiro.
@@ -985,6 +1016,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
       tip:    presc.tip,
       gif:    GIF_MAP[ex.id] ?? undefined,
       video:  VIDEO_MAP[ex.id] ?? undefined,
+      jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
     };
   });
   const mainCount = exercises.length;

@@ -247,6 +247,16 @@ export default function TreinoPage() {
               </div>
             )}
 
+            {/* Observações gerais */}
+            <div className="bg-[#1A1A1A] rounded-[1rem] p-3 border border-[#2D2D2D] mb-4">
+              <p className="text-xs font-bold text-[#C0C0C0] mb-2">📋 Antes de começar</p>
+              <ul className="text-xs text-[#CBD5E0] leading-relaxed space-y-1 list-disc list-inside">
+                <li>Se não tiver a mesma máquina na sua academia, procure uma similar.</li>
+                <li>Se for a primeira vez que estiver fazendo o exercício, faça sem carga alta na primeira série.</li>
+                <li>Priorize a execução correta.</li>
+              </ul>
+            </div>
+
             {/* Lista de exercícios */}
             <div className="space-y-3">
               {workout.exercises.map((ex, i) => {
@@ -393,6 +403,14 @@ export default function TreinoPage() {
                   💡 {gifModal.tip}
                 </p>
               </div>
+
+              {gifModal.jointCaution && (
+                <div className="bg-[#2D1B00] border border-[#7C4A03] rounded-[0.75rem] p-3 mb-4">
+                  <p className="text-[11px] text-[#FBBF24] leading-relaxed">
+                    ⚠️ {gifModal.jointCaution}
+                  </p>
+                </div>
+              )}
 
               {/* Registro de carga */}
               <div className="bg-[#252525] rounded-[0.75rem] p-3 mb-4">

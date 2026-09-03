@@ -315,7 +315,7 @@ function mapNivel(experiencia: string | undefined): string {
   return "Iniciante (nunca treinei)";
 }
 
-function buildAnamnese(answers: Record<string, string>, multi: Record<string, string[]>) {
+function buildAnamnese(answers: Record<string, string>, multi: Record<string, string[]>, outraDetalhe: string) {
   return {
     idade: answers.idadeExata,
     sexo: answers.sexo,
@@ -326,6 +326,7 @@ function buildAnamnese(answers: Record<string, string>, multi: Record<string, st
     diasTreino: answers.diasTreino,
     periodo: answers.periodo,
     lesoes: multi.lesoes ?? [],
+    lesoesDetalhe: (multi.lesoes ?? []).includes("Outra") ? outraDetalhe.trim() : undefined,
     sono: answers.sono,
   };
 }
@@ -336,6 +337,7 @@ export default function QuizPage() {
   const [itemIndex, setItemIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [multiAnswers, setMultiAnswers] = useState<Record<string, string[]>>({});
+  const [outraDetalhe, setOutraDetalhe] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [chatCount, setChatCount] = useState(0);
 
@@ -370,7 +372,7 @@ export default function QuizPage() {
       setItemIndex((i) => i + 1);
     } else {
       if (typeof window !== "undefined") {
-        localStorage.setItem("evofit_anamnese", JSON.stringify(buildAnamnese(latestAnswers, multiAnswers)));
+        localStorage.setItem("evofit_anamnese", JSON.stringify(buildAnamnese(latestAnswers, multiAnswers, outraDetalhe)));
       }
       setPhase("analyzing");
     }
@@ -596,29 +598,40 @@ export default function QuizPage() {
               {currentItem.options.map((opt) => {
                 const selected = (multiAnswers[currentItem.key] ?? []).includes(opt.value);
                 return (
-                  <button
-                    key={opt.value}
-                    onClick={() => toggleMultiOption(currentItem.key, opt.value)}
-                    className={`w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border transition-all ${
-                      selected
-                        ? "border-[#A855F7] bg-[#1E1035] text-[#F0F0F0]"
-                        : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#A855F7] hover:text-[#F0F0F0]"
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
-                      <span
-                        className={`w-5 h-5 rounded-[0.375rem] border-2 shrink-0 flex items-center justify-center ${
-                          selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
-                        }`}
-                      >
-                        {selected && <span className="text-white text-xs">✓</span>}
+                  <div key={opt.value}>
+                    <button
+                      onClick={() => toggleMultiOption(currentItem.key, opt.value)}
+                      className={`w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border transition-all ${
+                        selected
+                          ? "border-[#A855F7] bg-[#1E1035] text-[#F0F0F0]"
+                          : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#A855F7] hover:text-[#F0F0F0]"
+                      }`}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span
+                          className={`w-5 h-5 rounded-[0.375rem] border-2 shrink-0 flex items-center justify-center ${
+                            selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                          }`}
+                        >
+                          {selected && <span className="text-white text-xs">✓</span>}
+                        </span>
+                        {opt.label}
                       </span>
-                      {opt.label}
-                    </span>
-                    <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
-                      {opt.icon}
-                    </span>
-                  </button>
+                      <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
+                        {opt.icon}
+                      </span>
+                    </button>
+                    {opt.value === "Outra" && selected && (
+                      <input
+                        type="text"
+                        value={outraDetalhe}
+                        onChange={(e) => setOutraDetalhe(e.target.value)}
+                        placeholder="Qual condição? (ex: fibromialgia, pós-cirúrgico...)"
+                        autoFocus
+                        className="w-full mt-2 border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#A855F7] transition-all"
+                      />
+                    )}
+                  </div>
                 );
               })}
             </div>

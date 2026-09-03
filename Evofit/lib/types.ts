@@ -15,5 +15,6 @@ export interface AnamneseData {
   periodo?: string;
   // Saúde
   lesoes?: string[];
+  lesoesDetalhe?: string;
   sono?: string;
 }

@@ -250,24 +250,34 @@ export default function OnboardingPage() {
                       const value = field.optionValues ? field.optionValues[i] : opt;
                       const selected = Array.isArray(data[field.key]) && (data[field.key] as string[]).includes(value);
                       return (
-                        <button
-                          key={value}
-                          onClick={() => toggleCheckbox(field.key, value)}
-                          className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
-                            selected
-                              ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
-                              : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
-                          }`}
-                        >
-                          <span
-                            className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${
-                              selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                        <div key={value}>
+                          <button
+                            onClick={() => toggleCheckbox(field.key, value)}
+                            className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
+                              selected
+                                ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
+                                : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
                             }`}
                           >
-                            {selected && <span className="text-white text-[10px]">✓</span>}
-                          </span>
-                          {opt}
-                        </button>
+                            <span
+                              className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${
+                                selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                              }`}
+                            >
+                              {selected && <span className="text-white text-[10px]">✓</span>}
+                            </span>
+                            {opt}
+                          </button>
+                          {value === "Outra" && selected && (
+                            <input
+                              type="text"
+                              value={(data.lesoesDetalhe as string) ?? ""}
+                              onChange={(e) => setValue("lesoesDetalhe", e.target.value)}
+                              placeholder="Qual condição? (ex: fibromialgia, pós-cirúrgico...)"
+                              className="w-full mt-2 border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#A855F7] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
+                            />
+                          )}
+                        </div>
                       );
                     })}
                   </div>

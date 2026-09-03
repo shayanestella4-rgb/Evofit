@@ -582,6 +582,53 @@ function isGroupAllowed(g: MuscleGroup, isFemale: boolean, isBeginner: boolean):
   return true;
 }
 
+// ─── "Outra condição" (texto livre) → tags conhecidas ────────────────────────
+// Quando a aluna descreve a condição em texto livre, tentamos reconhecer
+// palavras-chave e aplicar as mesmas restrições da condição correspondente,
+// em vez de cair sempre no modo "Outra" (que exclui qualquer exercício com
+// qualquer restrição, mais conservador do que precisa ser).
+
+const OUTRA_KEYWORDS: Record<string, string[]> = {
+  "Condromalácia": ["condromalacia"],
+  "Joelho": ["joelho", "menisco", "ligamento cruzado", " lca ", "tendinite patelar", "patela"],
+  "Coluna/lombar": ["lombar", "hernia de disco", "hernia", "disco", "coluna", "lombalgia", "protrusao"],
+  "Ombro": ["ombro", "manguito rotador", "luxacao"],
+  "Punho/Cotovelo": ["punho", "cotovelo", "epicondilite", "tunel do carpo", "carpo"],
+  "Quadril": ["quadril", "femoroacetabular", "labrum", " fai "],
+  "Tornozelo": ["tornozelo", "entorse"],
+  "Osteoporose": ["osteoporose", "osteopenia", "densidade ossea"],
+};
+
+function normalizeText(s: string): string {
+  return ` ${s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")} `;
+}
+
+/** Reconhece palavras-chave no texto livre de "Outra condição" e retorna as tags equivalentes já mapeadas. */
+function matchOutraKeywords(detalhe: string): string[] {
+  const norm = normalizeText(detalhe);
+  const matched: string[] = [];
+  for (const [tag, keywords] of Object.entries(OUTRA_KEYWORDS)) {
+    if (keywords.some((k) => norm.includes(normalizeText(k).trim()))) matched.push(tag);
+  }
+  return matched;
+}
+
+/**
+ * Resolve a lista final de restrições: se "Outra" foi marcada e o texto livre
+ * bate com alguma condição conhecida, usa as tags específicas (mais precisas)
+ * em vez do modo conservador de "Outra". Sem correspondência, mantém "Outra".
+ */
+function resolveInjuries(lesoes: string[], lesoesDetalhe?: string): string[] {
+  const base = lesoes.filter((l) => l !== "Nenhuma");
+  if (!base.includes("Outra") || !lesoesDetalhe?.trim()) return base;
+
+  const matched = matchOutraKeywords(lesoesDetalhe);
+  if (matched.length === 0) return base;
+
+  const semOutra = base.filter((l) => l !== "Outra");
+  return [...new Set([...semOutra, ...matched])];
+}
+
 /** Volume padrão por grupo (fallback para slots manuais sem volumes definidos) */
 function defaultVol(g: MuscleGroup, isFemale: boolean): number {
   const female: Record<MuscleGroup, number> = {
@@ -838,15 +885,16 @@ export function getWorkoutBySlot(
   cycleNumber: number = 1
 ): DayWorkout {
   const {
-    sexo      = "Feminino",
-    objetivo  = "Mais disposição e saúde",
-    nivel     = "Iniciante (nunca treinei)",
-    lesoes    = [],
+    sexo          = "Feminino",
+    objetivo      = "Mais disposição e saúde",
+    nivel         = "Iniciante (nunca treinei)",
+    lesoes        = [],
+    lesoesDetalhe,
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
   const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
-  const injuries = lesoes.filter((l) => l !== "Nenhuma");
+  const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner);
 
@@ -892,11 +940,12 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   }
 
   const {
-    sexo       = "Feminino",
-    objetivo   = "Mais disposição e saúde",
-    nivel      = "Iniciante (nunca treinei)",
-    diasTreino = "3 dias",
-    lesoes     = [],
+    sexo          = "Feminino",
+    objetivo      = "Mais disposição e saúde",
+    nivel         = "Iniciante (nunca treinei)",
+    diasTreino    = "3 dias",
+    lesoes        = [],
+    lesoesDetalhe,
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
@@ -916,7 +965,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
     };
   }
 
-  const injuries = lesoes.filter((l) => l !== "Nenhuma");
+  const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
   const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);

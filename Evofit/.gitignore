@@ -49,3 +49,10 @@ next-env.d.ts
 # videos de demonstracao ficam so no Vercel Blob (script upload-videos.mjs), nunca no git
 /public/videos/*.mp4
 /public/videos/*.mov
+
+# videos e capas das aulas guiadas ficam so no Vercel Blob (script upload-aulas.mjs), nunca no git
+/public/aulas/videos/*.mp4
+/public/aulas/videos/*.mov
+/public/aulas/thumbs/*.jpg
+/public/aulas/thumbs/*.jpeg
+/public/aulas/thumbs/*.png

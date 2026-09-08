@@ -13,6 +13,8 @@ import {
 import { loadWeightLog, saveWeightEntry } from "@/lib/weightLog";
 import type { WeightEntry } from "@/lib/weightLog";
 import Link from "next/link";
+import { AULAS_CATALOG, getAulaVideo, getAulaThumb } from "@/lib/aulas";
+import type { Aula } from "@/lib/aulas";
 
 import type { Exercise } from "@/lib/workout";
 
@@ -25,6 +27,8 @@ const DAY_NAMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 export default function TreinoPage() {
   const { anamnese, completedExercises, toggleExercise } = useApp();
   const [gifModal, setGifModal] = useState<Exercise | null>(null);
+  const [view, setView] = useState<"treino" | "aulas">("treino");
+  const [aulaModal, setAulaModal] = useState<Aula | null>(null);
   const [weightInput, setWeightInput] = useState("");
   const [weightLog,   setWeightLog]   = useState<WeightEntry[]>([]);
   const [weightSaved, setWeightSaved] = useState(false);
@@ -132,6 +136,72 @@ export default function TreinoPage() {
   return (
     <>
       <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
+
+        {/* Toggle Meu treino / Aulas */}
+        <div className="flex gap-2 mb-5 bg-[#1A1A1A] p-1 rounded-[0.875rem] border border-[#2D2D2D]">
+          <button
+            onClick={() => setView("treino")}
+            className={`flex-1 py-2.5 rounded-[0.75rem] text-sm font-bold transition-all ${
+              view === "treino" ? "bg-[#A855F7] text-white" : "text-[#CBD5E0]"
+            }`}
+          >
+            Meu treino
+          </button>
+          <button
+            onClick={() => setView("aulas")}
+            className={`flex-1 py-2.5 rounded-[0.75rem] text-sm font-bold transition-all ${
+              view === "aulas" ? "bg-[#A855F7] text-white" : "text-[#CBD5E0]"
+            }`}
+          >
+            Aulas
+          </button>
+        </div>
+
+        {view === "aulas" ? (
+          <div className="space-y-3">
+            <p className="text-[10px] text-[#CBD5E0] font-semibold uppercase tracking-wide mb-1">
+              Aulas guiadas — treine junto com o vídeo
+            </p>
+            {AULAS_CATALOG.map((aula) => {
+              const video = getAulaVideo(aula.id);
+              const thumb = getAulaThumb(aula.id);
+              const disponivel = !!video;
+              return (
+                <button
+                  key={aula.id}
+                  onClick={() => disponivel && setAulaModal(aula)}
+                  disabled={!disponivel}
+                  className={`w-full flex items-center gap-3 p-3 rounded-[1rem] border text-left transition-all ${
+                    disponivel
+                      ? "bg-[#1A1A1A] border-[#2D2D2D] hover:border-[#A855F7] active:scale-[0.98]"
+                      : "bg-[#151515] border-[#2D2D2D] opacity-60 cursor-default"
+                  }`}
+                >
+                  <div className="w-16 h-16 rounded-[0.75rem] shrink-0 overflow-hidden bg-[#1E1035] flex items-center justify-center relative">
+                    {thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={thumb} alt={aula.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl">{aula.emoji}</span>
+                    )}
+                    {disponivel && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/30 text-white text-lg">▶</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm text-[#F0F0F0]">{aula.title}</p>
+                    <p className="text-xs text-[#CBD5E0] mt-0.5">{aula.category} · {aula.duration} min</p>
+                    <p className="text-[11px] text-[#8A8A8A] mt-1 line-clamp-2">{aula.description}</p>
+                  </div>
+                  {!disponivel && (
+                    <span className="text-[10px] font-semibold text-[#8A8A8A] shrink-0">em breve</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+        <>
 
         {/* Seletor de dias de treino da semana */}
         {trainingDays.length > 0 && (
@@ -369,6 +439,8 @@ export default function TreinoPage() {
             )}
           </>
         )}
+        </>
+        )}
       </div>
 
       {/* ── Modal de milestone (100, 200, 300… treinos) ──────────────────────── */}
@@ -523,6 +595,38 @@ export default function TreinoPage() {
 
               <button
                 onClick={() => setGifModal(null)}
+                className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal do player de aula guiada (vídeo longo, com controles normais) ── */}
+      {aulaModal && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setAulaModal(null)}
+        >
+          <div
+            className="bg-[#1A1A1A] rounded-[1.5rem] w-full max-w-sm overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <video
+              src={getAulaVideo(aulaModal.id)}
+              controls
+              playsInline
+              className="w-full bg-black"
+              style={{ maxHeight: "50vh" }}
+            />
+            <div className="p-4">
+              <p className="text-base font-extrabold text-[#F0F0F0] mb-0.5">{aulaModal.title}</p>
+              <p className="text-xs text-[#CBD5E0] mb-3">{aulaModal.category} · {aulaModal.duration} min</p>
+              <p className="text-xs text-[#C0C0C0] leading-relaxed mb-4">{aulaModal.description}</p>
+              <button
+                onClick={() => setAulaModal(null)}
                 className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors"
               >
                 Fechar

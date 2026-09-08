@@ -319,6 +319,9 @@ export default function TreinoPage() {
                             {ex.name}
                           </p>
                           <p className="text-xs text-[#CBD5E0] mt-0.5">{ex.muscle}</p>
+                          {ex.biSetNote && (
+                            <p className="text-[10px] font-semibold text-[#C084FC] mt-0.5">🔗 Bi-set — sem pausa até o próximo</p>
+                          )}
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-xs font-bold text-[#C084FC]">{ex.sets}</p>
@@ -438,6 +441,14 @@ export default function TreinoPage() {
                   💡 {gifModal.tip}
                 </p>
               </div>
+
+              {gifModal.biSetNote && (
+                <div className="bg-[#1E1035] border border-[#A855F7] rounded-[0.75rem] p-3 mb-4">
+                  <p className="text-[11px] text-[#C084FC] leading-relaxed">
+                    {gifModal.biSetNote}
+                  </p>
+                </div>
+              )}
 
               {gifModal.jointCaution && (
                 <div className="bg-[#2D1B00] border border-[#7C4A03] rounded-[0.75rem] p-3 mb-4">

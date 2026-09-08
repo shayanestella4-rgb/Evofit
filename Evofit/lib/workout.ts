@@ -28,6 +28,7 @@ export interface Exercise {
   gif?: string;   // caminho em /gifs/<id>.gif — undefined se não houver GIF disponível
   video?: string; // vídeo de demonstração — undefined se ainda não gravado (usa gif como fallback)
   jointCaution?: string; // aviso extra quando o exercício está na mesma região de uma condição articular da aluna
+  biSetNote?: string; // presente só no primeiro exercício do par — nome do parceiro pra fazer em bi-set
 }
 
 // Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
@@ -786,6 +787,71 @@ function isMachineFriendly(name: string): boolean {
   return MACHINE_KEYWORDS.some((k) => lower.includes(k));
 }
 
+// Classificação explícita de equipamento (por id) pra formar bi-sets com confiança —
+// o nome do exercício sozinho é pouco confiável ("Pulldown" não bate com "pulley",
+// "Rosca direta alternada" não menciona "halteres" mesmo sendo com halteres).
+const BISET_MACHINE_IDS = new Set([
+  "q2", "q9", "q6", "q10", "q5", "q12", "q15",
+  "g7", "g11", "g4", "g5",
+  "po3", "po4", "po8", "po11",
+  "pa1", "pa3", "pa5", "pa4", "pa2",
+  "p28", "p26", "p32", "p20", "p21", "p24", "p25", "p17", "p18", "p19",
+  "c18", "c25", "c19", "c21", "c20", "c22", "c23", "c24", "c33", "c31", "c26", "c34", "c27", "c28", "c29", "c30", "c17",
+  "o19", "o21", "o22", "o16", "o17",
+  "b20", "b33", "b22", "b23", "b17",
+  "t1", "t6", "t9", "t11", "t13", "t7",
+  "tr1", "tr4",
+  "ab7",
+]);
+
+const BISET_DUMBBELL_IDS = new Set([
+  "q4", "q11", "q14",
+  "g2", "g8", "g3",
+  "po9", "po6",
+  "p29", "p27", "p22", "p23",
+  "c35",
+  "o20", "o24", "o25", "o23",
+  "b25", "b19", "b18", "b34", "b35", "b15", "b32", "b31", "b26", "b24", "b29", "b27",
+  "t5", "t4", "t8",
+  "tr2",
+  "an7", "an3",
+]);
+
+/**
+ * Bi-set pra treinos de 40min: pareia 1 exercício de aparelho fixo (máquina/cabo)
+ * com 1 exercício de halteres — nunca dois aparelhos, porque numa academia cheia
+ * a aluna não consegue ocupar duas máquinas ao mesmo tempo. Prioriza um parceiro
+ * de outro grupo muscular do dia (ex: bíceps num dia de costas) quando existir,
+ * já que esse exercício entraria no treino de qualquer forma — só reordena pra
+ * virar bi-set em vez de bloco sequencial. Reordena a lista pra cada par ficar
+ * lado a lado.
+ */
+function applyBiSets(
+  defs: (ExerciseDef & { group: MuscleGroup })[]
+): { ordered: (ExerciseDef & { group: MuscleGroup })[]; partnerNameOf: Map<string, string> } {
+  const machines  = defs.filter((d) => BISET_MACHINE_IDS.has(d.id));
+  const dumbbells = defs.filter((d) => BISET_DUMBBELL_IDS.has(d.id));
+  const paired = new Set<string>();
+  const partnerNameOf = new Map<string, string>();
+  const pairs: [ExerciseDef & { group: MuscleGroup }, ExerciseDef & { group: MuscleGroup }][] = [];
+
+  for (const m of machines) {
+    if (paired.has(m.id)) continue;
+    const partner =
+      dumbbells.find((d) => !paired.has(d.id) && d.group !== m.group) ??
+      dumbbells.find((d) => !paired.has(d.id));
+    if (!partner) continue;
+    paired.add(m.id);
+    paired.add(partner.id);
+    partnerNameOf.set(m.id, partner.name);
+    pairs.push([m, partner]);
+  }
+
+  const ordered = pairs.flatMap(([a, b]) => [a, b]);
+  ordered.push(...defs.filter((d) => !paired.has(d.id)));
+  return { ordered, partnerNameOf };
+}
+
 /**
  * Monta a lista de exercícios filtrada por lesão, ordenada (compostos primeiro,
  * com máquinas priorizadas para iniciantes) e rotacionada pelo número do ciclo —
@@ -869,12 +935,13 @@ function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: n
  * (aplicado ao cap em pickExercises) e ajusta o cardio final.
  * "1h30" é o baseline em que os volumes dos splits foram desenhados (volumeScale 1).
  * Em "40 min" o cardio fixo sai do treino — não cabe no tempo e vira opcional,
- * a fazer num dia com mais disponibilidade.
+ * a fazer num dia com mais disponibilidade — e os exercícios entram em bi-set
+ * (aparelho + halteres) pra caber no tempo sem depender de duas máquinas livres.
  */
-const TIME_PROFILES: Record<string, { volumeScale: number; includeCardio: boolean; cardioMinutes: number; cardioLabel: string }> = {
-  "40 min": { volumeScale: 0.55, includeCardio: false, cardioMinutes: 0,  cardioLabel: "" },
-  "1h":     { volumeScale: 0.8,  includeCardio: true,  cardioMinutes: 15, cardioLabel: "10-15 min" },
-  "1h30":   { volumeScale: 1,    includeCardio: true,  cardioMinutes: 25, cardioLabel: "20-30 min" },
+const TIME_PROFILES: Record<string, { volumeScale: number; includeCardio: boolean; cardioMinutes: number; cardioLabel: string; useBiSets: boolean }> = {
+  "40 min": { volumeScale: 0.55, includeCardio: false, cardioMinutes: 0,  cardioLabel: "",          useBiSets: true },
+  "1h":     { volumeScale: 0.8,  includeCardio: true,  cardioMinutes: 15, cardioLabel: "10-15 min", useBiSets: false },
+  "1h30":   { volumeScale: 1,    includeCardio: true,  cardioMinutes: 25, cardioLabel: "20-30 min", useBiSets: false },
 };
 
 function getTimeProfile(tempoTreino?: string) {
@@ -944,20 +1011,28 @@ export function getWorkoutBySlot(
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const timeProfile = getTimeProfile(tempoTreino);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner, timeProfile.volumeScale);
+  let defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner, timeProfile.volumeScale);
   const cautionGroups = getCautionGroups(injuries);
+  let partnerNameOf = new Map<string, string>();
+  if (timeProfile.useBiSets) {
+    ({ ordered: defs, partnerNameOf } = applyBiSets(defs));
+  }
 
-  const exercises: Exercise[] = defs.map((ex) => ({
-    id:     ex.id,
-    name:   ex.name,
-    muscle: ex.primaryMuscle,
-    sets:   `${sets}x${reps}`,
-    rest,
-    tip,
-    gif:    GIF_MAP[ex.id] ?? undefined,
-    video:  VIDEO_MAP[ex.id] ?? undefined,
-    jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
-  }));
+  const exercises: Exercise[] = defs.map((ex) => {
+    const partner = partnerNameOf.get(ex.id);
+    return {
+      id:     ex.id,
+      name:   ex.name,
+      muscle: ex.primaryMuscle,
+      sets:   `${sets}x${reps}`,
+      rest:   partner ? `sem pausa entre a dupla · ${rest} depois` : rest,
+      tip,
+      gif:    GIF_MAP[ex.id] ?? undefined,
+      video:  VIDEO_MAP[ex.id] ?? undefined,
+      jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
+      biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
+    };
+  });
 
   const mainCount = exercises.length;
   if (timeProfile.includeCardio) exercises.push(buildCardioExercise(cycleNumber, 0, timeProfile.cardioLabel));
@@ -1020,25 +1095,32 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const timeProfile = getTimeProfile(tempoTreino);
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
   const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
-  const isFinisherDay = advanced !== null && getFinisherDays(split).has(dayIdx);
-  const defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
+  // Em treinos de 40min o bi-set por tempo já é a técnica do dia — não empilha com o finalizador avançado.
+  const isFinisherDay = !timeProfile.useBiSets && advanced !== null && getFinisherDays(split).has(dayIdx);
+  let defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
   const cautionGroups = getCautionGroups(injuries);
+  let partnerNameOf = new Map<string, string>();
+  if (timeProfile.useBiSets) {
+    ({ ordered: defs, partnerNameOf } = applyBiSets(defs));
+  }
 
   // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
   // e só nos dias marcados como finalizador — nunca no treino inteiro.
   const exercises: Exercise[] = defs.map((ex, i) => {
     const isFinisherExercise = isFinisherDay && i === defs.length - 1;
     const presc = isFinisherExercise ? advanced! : base;
+    const partner = partnerNameOf.get(ex.id);
     return {
       id:     ex.id,
       name:   ex.name,
       muscle: ex.primaryMuscle,
       sets:   `${presc.sets}x${presc.reps}`,
-      rest:   presc.rest,
+      rest:   partner ? `sem pausa entre a dupla · ${presc.rest} depois` : presc.rest,
       tip:    presc.tip,
       gif:    GIF_MAP[ex.id] ?? undefined,
       video:  VIDEO_MAP[ex.id] ?? undefined,
       jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
+      biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
     };
   });
   const mainCount = exercises.length;

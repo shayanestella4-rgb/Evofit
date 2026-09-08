@@ -272,6 +272,22 @@ export default function TreinoPage() {
               </div>
             )}
 
+            {/* Por que Corpo Inteiro — só aparece pra quem está no nível Iniciante */}
+            {anamnese?.nivel?.includes("Iniciante") && !workout.isRest && (
+              <div className="bg-[#1A1A1A] rounded-[1rem] p-3 border border-[#2D2D2D] mb-4">
+                <p className="text-xs font-bold text-[#C0C0C0] mb-2">🎯 Por que seu treino é Corpo Inteiro?</p>
+                <p className="text-xs text-[#CBD5E0] leading-relaxed mb-2">
+                  Como você está começando agora, treinar o corpo todo em cada sessão (em vez de dividir por grupo muscular) evita fadiga acumulada, permite treinar cada músculo com mais frequência e ajuda a manter a técnica em dia. A cada sessão a gente troca o exercício de cada grupo, pra não ficar repetitivo.
+                </p>
+                <p className="text-xs text-[#CBD5E0] leading-relaxed">
+                  {anamnese?.sexo === "Feminino"
+                    ? "Seu treino já prioriza mais volume pra pernas e glúteos — a cada dia, uma região (glúteo, quadríceps ou posterior de coxa) ganha um exercício a mais, alternando ao longo da semana."
+                    : "Seu treino já prioriza mais volume pra parte superior — a cada dia, uma região (peito, costas ou ombro) ganha um exercício a mais, alternando ao longo da semana."}
+                  {" "}Conforme você evoluir de nível, o treino passa a ser dividido por grupo muscular, com mais volume em cada um.
+                </p>
+              </div>
+            )}
+
             {/* Observações gerais */}
             <div className="bg-[#1A1A1A] rounded-[1rem] p-3 border border-[#2D2D2D] mb-4">
               <p className="text-xs font-bold text-[#C0C0C0] mb-2">📋 Antes de começar</p>

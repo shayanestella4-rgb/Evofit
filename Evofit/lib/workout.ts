@@ -558,6 +558,59 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
   },
 };
 
+// ── FULL BODY (só nível Iniciante) ────────────────────────────────────────────
+// Iniciante/sedentário não deve ser parcelado por grupo (ABC) — a literatura
+// (supercompensação + baixo volume tolerado) indica corpo inteiro em toda
+// sessão, variando o exercício de cada grupo a cada dia/mês (ver getWorkoutForDay,
+// que usa um ciclo virtual por dia da semana pra garantir essa variação).
+// Só os grandes padrões de movimento (agachamento/quadril já recruta posterior
+// e panturrilha sinergicamente) — um full body de verdade não é 1 exercício
+// isolado por cada um dos 9 grupos da biblioteca, isso vira sessão de 90min.
+//
+// Mesmo treinando tudo todo dia, mantém a mesma preferência de ênfase por sexo
+// (mulher: inferior — glúteo/quadríceps/posterior; homem: superior — peito/
+// costas/ombros) alternando qual dessas regiões ganha um exercício extra a
+// cada dia de treino da semana — todo mundo treina tudo, só a "estrela do dia"
+// muda.
+const FULL_BODY_DAY_INDEXES: Record<string, number[]> = {
+  "2 dias":  [0, 3],
+  "3 dias":  [0, 2, 4],
+  "4 dias":  [0, 1, 3, 4],
+  "5+ dias": [0, 1, 2, 3, 4],
+};
+
+const FULL_BODY_BASE_VOLUMES: Partial<Record<MuscleGroup, number>> = {
+  quadriceps: 1, gluteos: 1, peito: 1, costas: 1, ombros: 1, biceps: 1, triceps: 1,
+};
+
+const FEMALE_FULL_BODY_EMPHASIS: MuscleGroup[] = ["gluteos", "quadriceps", "posteriores"];
+const MALE_FULL_BODY_EMPHASIS: MuscleGroup[] = ["peito", "costas", "ombros"];
+
+function buildFullBodyDay(position: number, isFemale: boolean): SplitSlot {
+  const emphasisList = isFemale ? FEMALE_FULL_BODY_EMPHASIS : MALE_FULL_BODY_EMPHASIS;
+  const emphasis = emphasisList[position % emphasisList.length];
+  const volumes = { ...FULL_BODY_BASE_VOLUMES, [emphasis]: (FULL_BODY_BASE_VOLUMES[emphasis] ?? 0) + 1 };
+  const groups = Array.from(new Set([...(Object.keys(FULL_BODY_BASE_VOLUMES) as MuscleGroup[]), emphasis]));
+  return {
+    name: `Corpo Inteiro (ênfase: ${GROUP_LABELS[emphasis]})`,
+    emoji: "💪",
+    groups,
+    volumes,
+    abs: true,
+  };
+}
+
+/** Monta a tabela de dias Full Body pra um diasTreino específico, já com a ênfase de cada dia. */
+function buildFullBodySplits(diasTreino: string, isFemale: boolean): Record<string, Record<number, SplitSlot>> {
+  const key = FULL_BODY_DAY_INDEXES[diasTreino] ? diasTreino : "3 dias";
+  const dayIndexes = FULL_BODY_DAY_INDEXES[key];
+  const dayMap: Record<number, SplitSlot> = {};
+  dayIndexes.forEach((dayIdx, position) => {
+    dayMap[dayIdx] = buildFullBodyDay(position, isFemale);
+  });
+  return { [key]: dayMap };
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const GROUP_LABELS: Record<MuscleGroup, string> = {
@@ -599,6 +652,7 @@ const OUTRA_KEYWORDS: Record<string, string[]> = {
   "Quadril": ["quadril", "femoroacetabular", "labrum", " fai "],
   "Tornozelo": ["tornozelo", "entorse"],
   "Osteoporose": ["osteoporose", "osteopenia", "densidade ossea"],
+  "Cardiovascular": ["hipertensao", "pressao alta", "cardiaco", "cardiopata", "coracao", "arritmia"],
 };
 
 function normalizeText(s: string): string {
@@ -635,7 +689,7 @@ function resolveInjuries(lesoes: string[], lesoesDetalhe?: string): string[] {
 // Condições de sobrecarga óssea (osteoporose) pedem o oposto ("mantenha a
 // carga, evite é flexão/torção") — não entram nesse aviso de amplitude.
 const JOINT_CAUTION_TEXT = "Neste exercício diminua a amplitude e intensidade, vá até o seu limite.";
-const JOINT_CAUTION_EXCLUDED_TAGS = ["Osteoporose", "Nenhuma", "Outra"];
+const JOINT_CAUTION_EXCLUDED_TAGS = ["Osteoporose", "Cardiovascular", "Nenhuma", "Outra"];
 
 /** Grupos musculares onde essa tag tem pelo menos um exercício restrito — ou seja, a região que a condição afeta. */
 function affectedGroupsForTag(tag: string): Set<MuscleGroup> {
@@ -736,9 +790,12 @@ function getBaseSetsRest(
  * treino), e só em 1-2 dias de treino da semana (ver isFinisherDay) — nunca no
  * treino inteiro.
  */
-function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number): SetsRest | null {
+function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, injuries: string[] = []): SetsRest | null {
   const isInter = nivel?.includes("Intermediário");
   if (!isInter) return null;
+  // Dropset/bi-set/rest-pause elevam bastante o duplo produto (FC × pressão) —
+  // contraindicados pra quem tem hipertensão ou problema cardiovascular.
+  if (injuries.includes("Cardiovascular")) return null;
 
   const phase = ((cycleNumber - 1) % 4) + 1;
   if (phase !== 4) return null;
@@ -1039,7 +1096,11 @@ export function getWorkoutBySlot(
 
   const restSeconds = parseInt(rest) || 60;
   const timePerEx   = sets * (1.5 + restSeconds / 60);
-  const duration    = estimateDuration(mainCount, timePerEx, 0, timeProfile.cardioMinutes);
+  let duration      = estimateDuration(mainCount, timePerEx, 0, timeProfile.cardioMinutes);
+  // Bi-set: a dupla descansa uma vez só, não duas — desconta o descanso economizado por par.
+  if (partnerNameOf.size > 0) {
+    duration -= Math.round(partnerNameOf.size * (restSeconds / 60));
+  }
 
   return {
     name:        slot.name,
@@ -1076,7 +1137,8 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
 
   const isFemale = sexo === "Feminino";
   const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
-  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
+  const isTrueBeginner = nivel?.includes("Iniciante") ?? false;
+  const splits   = isTrueBeginner ? buildFullBodySplits(diasTreino, isFemale) : (isFemale ? FEMALE_SPLITS : MALE_SPLITS);
   const split    = splits[diasTreino] ?? splits["3 dias"];
   const slot     = split[dayIdx];
 
@@ -1094,20 +1156,35 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const timeProfile = getTimeProfile(tempoTreino);
   const base     = getBaseSetsRest(objetivo, nivel, cycleNumber);
-  const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber);
+  const advanced = getAdvancedTechnique(objetivo, nivel, cycleNumber, injuries);
   // Em treinos de 40min o bi-set por tempo já é a técnica do dia — não empilha com o finalizador avançado.
   const isFinisherDay = !timeProfile.useBiSets && advanced !== null && getFinisherDays(split).has(dayIdx);
-  let defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
+  // Full Body treina os mesmos grupos toda sessão — usa um ciclo virtual por dia
+  // pra segunda/quarta/sexta pegarem exercícios diferentes na mesma semana
+  // (ex: Peck Deck na segunda, Supino Máquina na quarta), não só de mês em mês.
+  const pickCycle = isTrueBeginner ? cycleNumber * 10 + dayIdx : cycleNumber;
+  let defs = pickExercises(slot.groups, injuries, pickCycle, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
   const cautionGroups = getCautionGroups(injuries);
   let partnerNameOf = new Map<string, string>();
   if (timeProfile.useBiSets) {
     ({ ordered: defs, partnerNameOf } = applyBiSets(defs));
   }
 
-  // A técnica avançada (quando existe) aplica-se só ao último exercício do dia,
+  // Dropset exige troca de carga instantânea, sem sair andando pra pegar outro
+  // peso — por isso só pode cair num exercício de máquina/cabo, nunca em peso
+  // livre. Se o último exercício não for de aparelho, usa o último que for.
+  const isDropset = !!advanced && advanced.tip.startsWith("🔥 Dropset");
+  let finisherIndex = defs.length - 1;
+  if (isFinisherDay && isDropset) {
+    for (let i = defs.length - 1; i >= 0; i--) {
+      if (BISET_MACHINE_IDS.has(defs[i].id)) { finisherIndex = i; break; }
+    }
+  }
+
+  // A técnica avançada (quando existe) aplica-se só a um exercício do dia,
   // e só nos dias marcados como finalizador — nunca no treino inteiro.
   const exercises: Exercise[] = defs.map((ex, i) => {
-    const isFinisherExercise = isFinisherDay && i === defs.length - 1;
+    const isFinisherExercise = isFinisherDay && i === finisherIndex;
     const presc = isFinisherExercise ? advanced! : base;
     const partner = partnerNameOf.get(ex.id);
     return {
@@ -1135,6 +1212,10 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const baseRestSeconds = parseInt(base.rest) || 60;
   const timePerMain      = base.sets * (1.5 + baseRestSeconds / 60);
   let duration = estimateDuration(mainCount, timePerMain, absExercises.length, timeProfile.cardioMinutes);
+  // Bi-set: a dupla descansa uma vez só, não duas — desconta o descanso economizado por par.
+  if (partnerNameOf.size > 0) {
+    duration -= Math.round(partnerNameOf.size * (baseRestSeconds / 60));
+  }
   if (isFinisherDay) {
     // O último exercício usa a prescrição avançada em vez da base — ajusta a diferença
     const advRestSeconds = parseInt(advanced!.rest) || 60;
@@ -1168,8 +1249,10 @@ export function getWeekSchedule(anamnese: AnamneseData | null): WeekDay[] {
   }
 
   const isFemale = (anamnese.sexo ?? "Feminino") === "Feminino";
-  const splits   = isFemale ? FEMALE_SPLITS : MALE_SPLITS;
-  const split    = splits[anamnese.diasTreino ?? "3 dias"] ?? splits["3 dias"];
+  const isTrueBeginner = (anamnese.nivel ?? "").includes("Iniciante");
+  const diasTreino = anamnese.diasTreino ?? "3 dias";
+  const splits   = isTrueBeginner ? buildFullBodySplits(diasTreino, isFemale) : (isFemale ? FEMALE_SPLITS : MALE_SPLITS);
+  const split    = splits[diasTreino] ?? splits["3 dias"];
 
   return labels.map((d, i) => ({
     day:         d,

@@ -273,6 +273,7 @@ const QUIZ_ITEMS: QuizItem[] = [
       { label: "Dor no quadril (bursite, impacto femoroacetabular)", value: "Quadril", icon: "🦴" },
       { label: "Entorses frequentes ou instabilidade no tornozelo", value: "Tornozelo", icon: "🦶" },
       { label: "Osteoporose ou osteopenia", value: "Osteoporose", icon: "🩻" },
+      { label: "Hipertensão ou outro problema cardiovascular", value: "Cardiovascular", icon: "❤️" },
       { label: "Outra condição não listada", value: "Outra", icon: "❓" },
       { label: "Nenhuma dessas", value: "Nenhuma", icon: "✅" },
     ],

@@ -109,10 +109,11 @@ const STEPS: Step[] = [
           "Dor no quadril (bursite, impacto femoroacetabular)",
           "Entorses frequentes ou instabilidade no tornozelo",
           "Osteoporose ou osteopenia",
+          "Hipertensão ou outro problema cardiovascular",
           "Outra condição não listada",
           "Nenhuma dessas",
         ],
-        optionValues: ["Condromalácia", "Joelho", "Coluna/lombar", "Ombro", "Punho/Cotovelo", "Quadril", "Tornozelo", "Osteoporose", "Outra", "Nenhuma"],
+        optionValues: ["Condromalácia", "Joelho", "Coluna/lombar", "Ombro", "Punho/Cotovelo", "Quadril", "Tornozelo", "Osteoporose", "Cardiovascular", "Outra", "Nenhuma"],
       },
       {
         key: "sono",

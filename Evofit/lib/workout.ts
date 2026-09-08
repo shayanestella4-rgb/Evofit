@@ -83,13 +83,13 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "q9",  name: "Leg press horizontal",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: [] },
     { id: "q6",  name: "Hack squat (máquina)",            primaryMuscle: "Quadríceps / Vasto lateral",  compound: true,  avoidFor: ["Joelho"] },
     { id: "q8",  name: "Agachamento sumô com barra",      primaryMuscle: "Quadríceps / Adutores",       compound: true,  avoidFor: ["Quadril", "Coluna/lombar"], avoidForBeginner: true },
-    { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril", "Coluna/lombar"] },
+    { id: "q10", name: "Agachamento no Smith",            primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril", "Coluna/lombar"], avoidForBeginner: true },
     { id: "q13", name: "Agachamento com trava",           primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Coluna/lombar"] },
     { id: "q14", name: "Agachamento taça",                primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Quadril"] },
-    { id: "q3",  name: "Agachamento búlgaro",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia"] },
+    { id: "q3",  name: "Agachamento búlgaro",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia"], avoidForBeginner: true },
     { id: "q4",  name: "Afundo com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
-    { id: "q7",  name: "Agachamento búlgaro com barra",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia", "Coluna/lombar"] },
-    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"], avoidForBeginner: true },
+    { id: "q7",  name: "Agachamento búlgaro com barra",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia", "Coluna/lombar"], avoidForBeginner: true },
+    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
     { id: "q15", name: "Leg press 45° unilateral",        primaryMuscle: "Quadríceps (unilateral)",     compound: true,  avoidFor: [] },
     { id: "q5",  name: "Cadeira extensora",               primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
     { id: "q12", name: "Cadeira extensora unilateral",    primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
@@ -104,9 +104,9 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "g7",  name: "Abdução sentada na máquina",      primaryMuscle: "Glúteo médio",                compound: true,  avoidFor: [] },
     { id: "g2",  name: "Agachamento sumô com haltere",    primaryMuscle: "Glúteos / Adutores",          compound: true,  avoidFor: ["Quadril"] },
     { id: "g8",  name: "Recuo com halteres",              primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Quadril"], avoidForBeginner: true },
-    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"] },
+    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], avoidForBeginner: true },
     { id: "g9",  name: "Elevação de perna em pé",         primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: [] },
-    { id: "g12", name: "Step-up com barra",               primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"] },
+    { id: "g12", name: "Step-up com barra",               primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], avoidForBeginner: true },
     { id: "g10", name: "Elevação pélvica unilateral",     primaryMuscle: "Glúteo máximo (unilateral)",  compound: true,  avoidFor: [] },
     { id: "g1",  name: "Hip thrust com barra",            primaryMuscle: "Glúteo máximo",               compound: true,  avoidFor: ["Coluna/lombar", "Quadril"] },
     { id: "g11", name: "Coice de glúteo no cabo",         primaryMuscle: "Glúteo máximo",               compound: false, avoidFor: [] },
@@ -629,11 +629,17 @@ const GROUP_LABELS: Record<MuscleGroup, string> = {
 };
 
 /**
- * Trapézio: só para homens em nível avançado (Intermediário) — iniciante e
- * básico não precisam desse volume extra, e não faz parte do treino feminino.
+ * Trapézio: só para homens em nível avançado (Intermediário) — iniciante,
+ * básico e full body (que só existe pra Iniciante) não entram.
+ * Antebraço: só para homens, nunca no full body.
+ * Glúteos: só para mulheres na programação automática — quando o aluno
+ * escolhe manualmente um slot com glúteos (isManualOverride), a escolha dele
+ * prevalece.
  */
-function isGroupAllowed(g: MuscleGroup, isFemale: boolean, isBeginner: boolean): boolean {
-  if (g === "trapezio") return !isFemale && !isBeginner;
+function isGroupAllowed(g: MuscleGroup, isFemale: boolean, isBeginner: boolean, isFullBody: boolean = false, isManualOverride: boolean = false): boolean {
+  if (g === "trapezio") return !isFemale && !isBeginner && !isFullBody;
+  if (g === "antebraco") return !isFemale && !isFullBody;
+  if (g === "gluteos" && !isManualOverride) return isFemale;
   return true;
 }
 
@@ -909,10 +915,78 @@ function applyBiSets(
   return { ordered, partnerNameOf };
 }
 
+// Pra mulher, alguns grupos ficam restritos a um pool bem menor (menos ênfase/
+// variedade que no treino masculino) — ex: bíceps só rosca direta (polia ou
+// halter) e rosca martelo, sem Scott nem banco inclinado.
+const FEMALE_RESTRICTED_POOLS: Partial<Record<MuscleGroup, string[]>> = {
+  biceps: ["b33", "b25", "b32", "b30", "b31"],
+};
+
+// Porção/ângulo de cada exercício — usado pra intercalar a seleção e garantir
+// que, quando o volume permitir mais de 1 exercício, cubram ângulos diferentes
+// em vez de repetir sempre a mesma porção (ex: ombro posterior + lateral, não
+// só desenvolvimento repetido). Sem entrada = cai no bucket "medio".
+const PORTION_MAP: Partial<Record<MuscleGroup, Record<string, string>>> = {
+  ombros: {
+    o18: "frontal", o19: "frontal", o20: "frontal", o21: "frontal", o22: "frontal",
+    o23: "lateral",
+    o24: "posterior", o25: "posterior", o16: "posterior", o17: "posterior",
+  },
+  biceps: {
+    b16: "curto", b17: "curto", b34: "curto", b35: "curto",
+    b15: "longo",
+  },
+  triceps: {
+    t5: "frances", t7: "frances", t12: "frances",
+    t2: "testa", t8: "testa", t10: "testa",
+    t1: "pulley", t6: "pulley", t9: "pulley", t11: "pulley", t13: "pulley", t4: "pulley",
+  },
+};
+
+/**
+ * Escolhe `cap` exercícios cobrindo porções/ângulos diferentes (ex: ombro
+ * frontal, lateral, posterior) em vez de deixar a rotação simples repetir a
+ * mesma porção. Cicla por qual porção "começa" a cada mês, então: com cap ≥
+ * número de porções, cobre todas nesse dia; com cap menor (pouco tempo/
+ * volume), garante que ao menos 1-2 porções apareçam, alternando qual delas
+ * ao longo dos meses. Retorna null quando não há porção definida pro grupo
+ * (usa a rotação padrão nesse caso).
+ */
+function pickAcrossPortions(
+  sorted: ExerciseDef[],
+  portionMap: Record<string, string> | undefined,
+  cap: number,
+  cycleNumber: number
+): ExerciseDef[] | null {
+  if (!portionMap) return null;
+
+  const buckets = new Map<string, ExerciseDef[]>();
+  for (const ex of sorted) {
+    const portion = portionMap[ex.id] ?? "medio";
+    if (!buckets.has(portion)) buckets.set(portion, []);
+    buckets.get(portion)!.push(ex);
+  }
+  const portionNames = Array.from(buckets.keys());
+  if (portionNames.length <= 1) return null;
+
+  const picked: ExerciseDef[] = [];
+  const usedPerPortion = new Map<string, number>();
+  for (let i = 0; i < cap; i++) {
+    const portion = portionNames[(cycleNumber - 1 + i) % portionNames.length];
+    const bucket = buckets.get(portion)!;
+    const already = usedPerPortion.get(portion) ?? 0;
+    const idx = (cycleNumber - 1 + already) % bucket.length;
+    picked.push(bucket[idx]);
+    usedPerPortion.set(portion, already + 1);
+  }
+  return picked;
+}
+
 /**
  * Monta a lista de exercícios filtrada por lesão, ordenada (compostos primeiro,
- * com máquinas priorizadas para iniciantes) e rotacionada pelo número do ciclo —
- * exercícios diferentes a cada mês.
+ * com máquinas priorizadas para iniciantes, e porções/ângulos intercalados pra
+ * ombro/bíceps/tríceps) e rotacionada pelo número do ciclo — exercícios
+ * diferentes a cada mês.
  *
  * @param volumes  Quantidade de exercícios por grupo (usa defaultVol como fallback)
  */
@@ -923,18 +997,25 @@ function pickExercises(
   volumes: Partial<Record<MuscleGroup, number>> = {},
   isFemale: boolean = true,
   isBeginner: boolean = false,
-  timeScale: number = 1
+  timeScale: number = 1,
+  isFullBody: boolean = false,
+  isManualOverride: boolean = false
 ): (ExerciseDef & { group: MuscleGroup })[] {
   const result: (ExerciseDef & { group: MuscleGroup })[] = [];
 
   for (const g of groups) {
-    if (!isGroupAllowed(g, isFemale, isBeginner)) continue;
+    if (!isGroupAllowed(g, isFemale, isBeginner, isFullBody, isManualOverride)) continue;
 
-    const pool = LIBRARY[g].filter((ex) => {
+    let pool = LIBRARY[g].filter((ex) => {
       const injuryOk = injuries.includes("Outra") ? ex.avoidFor.length === 0 : !ex.avoidFor.some((a) => injuries.includes(a));
       if (!injuryOk) return false;
       return !(isBeginner && ex.avoidForBeginner);
     });
+
+    if (isFemale && FEMALE_RESTRICTED_POOLS[g]) {
+      const allowedIds = FEMALE_RESTRICTED_POOLS[g]!;
+      pool = pool.filter((ex) => allowedIds.includes(ex.id));
+    }
 
     // Compostos primeiro; para iniciantes, máquinas antes de peso livre dentro do mesmo grupo
     const sorted = [...pool].sort((a, b) => {
@@ -944,11 +1025,18 @@ function pickExercises(
       }
       return +b.compound - +a.compound;
     });
+
     let cap = volumes[g] ?? defaultVol(g, isFemale);
     cap = Math.max(1, Math.round(cap * timeScale));
     if (isFemale && g === "peito") cap = Math.min(cap, 2);
 
     if (sorted.length === 0) continue;
+
+    const byPortion = pickAcrossPortions(sorted, PORTION_MAP[g], cap, cycleNumber);
+    if (byPortion) {
+      result.push(...byPortion.map((ex) => ({ ...ex, group: g })));
+      continue;
+    }
 
     // Rotação: cada ciclo avança `cap` posições → exercícios novos a cada mês
     const offset = ((cycleNumber - 1) * cap) % sorted.length;
@@ -1068,7 +1156,7 @@ export function getWorkoutBySlot(
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const timeProfile = getTimeProfile(tempoTreino);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
-  let defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner, timeProfile.volumeScale);
+  let defs = pickExercises(slot.groups, injuries, cycleNumber, slot.volumes ?? {}, isFemale, isBeginner, timeProfile.volumeScale, false, true);
   const cautionGroups = getCautionGroups(injuries);
   let partnerNameOf = new Map<string, string>();
   if (timeProfile.useBiSets) {
@@ -1105,7 +1193,7 @@ export function getWorkoutBySlot(
   return {
     name:        slot.name,
     emoji:       slot.emoji,
-    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner)).map((g) => GROUP_LABELS[g]).join(" · "),
+    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner, false, true)).map((g) => GROUP_LABELS[g]).join(" · "),
     duration,
     exercises,
     isRest: false,
@@ -1163,7 +1251,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   // pra segunda/quarta/sexta pegarem exercícios diferentes na mesma semana
   // (ex: Peck Deck na segunda, Supino Máquina na quarta), não só de mês em mês.
   const pickCycle = isTrueBeginner ? cycleNumber * 10 + dayIdx : cycleNumber;
-  let defs = pickExercises(slot.groups, injuries, pickCycle, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale);
+  let defs = pickExercises(slot.groups, injuries, pickCycle, slot.volumes, isFemale, isBeginner, timeProfile.volumeScale, isTrueBeginner);
   const cautionGroups = getCautionGroups(injuries);
   let partnerNameOf = new Map<string, string>();
   if (timeProfile.useBiSets) {
@@ -1226,7 +1314,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   return {
     name:        slot.name,
     emoji:       slot.emoji,
-    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner)).map((g) => GROUP_LABELS[g]).join(" · "),
+    muscleLabel: slot.groups.filter((g) => isGroupAllowed(g, isFemale, isBeginner, isTrueBeginner)).map((g) => GROUP_LABELS[g]).join(" · "),
     duration,
     exercises,
     isRest: false,

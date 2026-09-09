@@ -78,6 +78,7 @@ for (const file of videoFiles) {
       token,
       contentType: CONTENT_TYPES[ext],
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
     urlMap[id] = blob.url;

@@ -310,12 +310,12 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       volumes: { quadriceps: 3, gluteos: 3, panturrilha: 1 },
       abs: true,
     },
-    // Qui: posteriores
+    // Qui: posteriores — com 1 exercício extra de glúteo como estímulo, sem tirar o foco de posterior
     3: {
       name: "Posteriores",
       emoji: "🍑",
-      groups: ["posteriores"],
-      volumes: { posteriores: 3 },
+      groups: ["posteriores", "gluteos"],
+      volumes: { posteriores: 5, gluteos: 1 },
       abs: true,
     },
   },
@@ -362,12 +362,12 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["gluteos"],
       volumes: { gluteos: 6 },
     },
-    // Qui: posteriores
+    // Qui: posteriores — com 1 exercício extra de glúteo como estímulo, sem tirar o foco de posterior
     3: {
       name: "Posteriores",
       emoji: "🔥",
-      groups: ["posteriores"],
-      volumes: { posteriores: 3 },
+      groups: ["posteriores", "gluteos"],
+      volumes: { posteriores: 5, gluteos: 1 },
       abs: true,
     },
     // Sex: superior — peito com só 1 exercício, mais costas
@@ -403,19 +403,20 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
       groups: ["costas", "biceps"],
       volumes: { costas: 4, biceps: 2 },
     },
-    // Qui: posteriores
+    // Qui: posteriores — com 1 exercício extra de glúteo como estímulo, sem tirar o foco de posterior
     3: {
       name: "Posteriores",
       emoji: "🔥",
-      groups: ["posteriores"],
-      volumes: { posteriores: 3 },
+      groups: ["posteriores", "gluteos"],
+      volumes: { posteriores: 5, gluteos: 1 },
       abs: true,
     },
-    // Sex: peito + ombros + tríceps — peito com só 1 exercício
+    // Sex: ombros + tríceps + peito, nessa ordem — ombro é prioridade (feito
+    // com o corpo mais descansado), peito por último. Peito com só 1 exercício.
     4: {
-      name: "Peito + Ombros + Tríceps",
+      name: "Ombros + Tríceps + Peito",
       emoji: "💥",
-      groups: ["peito", "ombros", "triceps"],
+      groups: ["ombros", "triceps", "peito"],
       volumes: { peito: 1, ombros: 3, triceps: 3 },
       abs: true,
     },
@@ -911,6 +912,84 @@ const FEMALE_RESTRICTED_POOLS: Partial<Record<MuscleGroup, string[]>> = {
   biceps: ["b33", "b19", "b32", "b31"],
 };
 
+/**
+ * Com volume baixo (40min), a rotação normal às vezes seleciona só exercícios
+ * de máquina/cabo OU só de halter no dia inteiro — sem os dois tipos, o
+ * applyBiSets não tem como formar par nenhum. Garante que o dia tenha pelo
+ * menos 1 de cada, trocando um exercício (do tipo em falta) por outro do
+ * mesmo grupo — sem isso, um dia de grupo único (ex: Glúteos, Posteriores)
+ * podia ficar sem nenhum bi-set formado, mesmo em 40min.
+ */
+function ensureBiSetMix(
+  defs: (ExerciseDef & { group: MuscleGroup })[],
+  injuries: string[],
+  isFemale: boolean,
+  isBeginner: boolean,
+  cycleNumber: number
+): (ExerciseDef & { group: MuscleGroup })[] {
+  if (defs.length < 2) return defs;
+  const hasMachine  = defs.some((d) => BISET_MACHINE_IDS.has(d.id));
+  const hasDumbbell = defs.some((d) => BISET_DUMBBELL_IDS.has(d.id));
+  if (hasMachine && hasDumbbell) return defs; // já tem os dois
+
+  const findCandidate = (group: MuscleGroup, targetSet: Set<string>, excludeIds: Set<string>) => {
+    const pool = LIBRARY[group].filter((ex) =>
+      targetSet.has(ex.id) &&
+      !excludeIds.has(ex.id) &&
+      !ex.avoidFor.some((a) => injuries.includes(a)) &&
+      !(isBeginner && ex.avoidForBeginner) &&
+      (!isFemale || !FEMALE_RESTRICTED_POOLS[group] || FEMALE_RESTRICTED_POOLS[group]!.includes(ex.id))
+    );
+    return pool.length > 0 ? pool[(cycleNumber - 1) % pool.length] : null;
+  };
+
+  if (hasMachine !== hasDumbbell) {
+    // já tem um dos dois — só precisa trocar 1 exercício pelo tipo que falta,
+    // sem sacrificar o único exercício que já representa o tipo que temos.
+    const haveSet = hasMachine ? BISET_MACHINE_IDS : BISET_DUMBBELL_IDS;
+    const needSet = hasMachine ? BISET_DUMBBELL_IDS : BISET_MACHINE_IDS;
+    const idsInDefs = new Set(defs.map((d) => d.id));
+
+    for (let i = 0; i < defs.length; i++) {
+      if (haveSet.has(defs[i].id)) continue; // preserva o representante do tipo que já temos
+      const c = findCandidate(defs[i].group, needSet, idsInDefs);
+      if (c) { const next = [...defs]; next[i] = { ...c, group: defs[i].group }; return next; }
+    }
+    // não achou um "neutro" pra trocar — só mexe no tipo que já temos se houver mais de 1 (não zera o tipo existente)
+    if (defs.filter((d) => haveSet.has(d.id)).length >= 2) {
+      for (let i = 0; i < defs.length; i++) {
+        if (!haveSet.has(defs[i].id)) continue;
+        const c = findCandidate(defs[i].group, needSet, idsInDefs);
+        if (c) { const next = [...defs]; next[i] = { ...c, group: defs[i].group }; return next; }
+      }
+    }
+    return defs; // nenhum candidato seguro (ex: só existe versão avançada pra iniciante) — dia fica sem bi-set
+  }
+
+  // Nenhum dos dois tipos presente (ex: só exercícios de barra livre) — tenta
+  // converter 2 exercícios distintos, 1 pra máquina e 1 pra halter.
+  const next = [...defs];
+  const idsInDefs = new Set(defs.map((d) => d.id));
+  let machineIdx = -1;
+  for (let i = 0; i < next.length; i++) {
+    const c = findCandidate(next[i].group, BISET_MACHINE_IDS, idsInDefs);
+    if (c) {
+      idsInDefs.delete(next[i].id);
+      idsInDefs.add(c.id);
+      next[i] = { ...c, group: next[i].group };
+      machineIdx = i;
+      break;
+    }
+  }
+  if (machineIdx === -1) return defs;
+  for (let i = 0; i < next.length; i++) {
+    if (i === machineIdx) continue;
+    const c = findCandidate(next[i].group, BISET_DUMBBELL_IDS, idsInDefs);
+    if (c) { next[i] = { ...c, group: next[i].group }; return next; }
+  }
+  return defs; // só conseguiu converter 1 dos 2 tipos — troca parcial não ajuda, mantém original
+}
+
 // Porção/ângulo de cada exercício — usado pra intercalar a seleção e garantir
 // que, quando o volume permitir mais de 1 exercício, cubram ângulos diferentes
 // em vez de repetir sempre a mesma porção (ex: ombro posterior + lateral, não
@@ -1067,15 +1146,17 @@ function buildAbsExercises(injuries: string[], isFemale: boolean, cycleNumber: n
 /**
  * Perfil de tempo disponível — escala o volume de exercícios por grupo
  * (aplicado ao cap em pickExercises) e ajusta o cardio final.
- * "1h30" é o baseline em que os volumes dos splits foram desenhados (volumeScale 1).
- * Em "40 min" o cardio fixo sai do treino — não cabe no tempo e vira opcional,
- * a fazer num dia com mais disponibilidade — e os exercícios entram em bi-set
- * (aparelho + halteres) pra caber no tempo sem depender de duas máquinas livres.
+ * Cardio nunca entra no tempo de musculação, em nenhum perfil — é sempre
+ * opcional/à parte (feito num dia/momento com mais disponibilidade), então o
+ * tempo escolhido vai inteiro pra musculação. Os volumes dos splits foram
+ * desenhados pro "1h30" (volumeScale 1.2 já embute esse tempo cheio).
+ * Em "40 min" os exercícios entram em bi-set (aparelho + halteres) pra caber
+ * no tempo sem depender de duas máquinas livres.
  */
 const TIME_PROFILES: Record<string, { volumeScale: number; includeCardio: boolean; cardioMinutes: number; cardioLabel: string; useBiSets: boolean }> = {
-  "40 min": { volumeScale: 0.55, includeCardio: false, cardioMinutes: 0,  cardioLabel: "",          useBiSets: true },
-  "1h":     { volumeScale: 0.8,  includeCardio: true,  cardioMinutes: 15, cardioLabel: "10-15 min", useBiSets: false },
-  "1h30":   { volumeScale: 1,    includeCardio: true,  cardioMinutes: 25, cardioLabel: "20-30 min", useBiSets: false },
+  "40 min": { volumeScale: 0.55, includeCardio: false, cardioMinutes: 0, cardioLabel: "", useBiSets: true },
+  "1h":     { volumeScale: 0.85, includeCardio: false, cardioMinutes: 0, cardioLabel: "", useBiSets: false },
+  "1h30":   { volumeScale: 1,    includeCardio: false, cardioMinutes: 0, cardioLabel: "", useBiSets: false },
 };
 
 function getTimeProfile(tempoTreino?: string) {
@@ -1094,6 +1175,18 @@ function buildCardioExercise(cycleNumber: number, dayIdx: number, cardioLabel: s
     gif:    GIF_MAP[c.id] ?? undefined,
     video:  VIDEO_MAP[c.id] ?? undefined,
   };
+}
+
+/**
+ * Converte o texto de descanso ("75s", "2min") pra segundos. parseInt sozinho
+ * lê "2min" como 2 (segundos!) em vez de 120 — por isso o formato precisa ser
+ * reconhecido explicitamente, não só o prefixo numérico.
+ */
+function parseRestSeconds(rest: string): number {
+  const match = rest.match(/(\d+)\s*(min)?/);
+  if (!match) return 60;
+  const value = parseInt(match[1], 10);
+  return match[2] ? value * 60 : value;
 }
 
 /** Estima a duração (min) somando o tempo dos exercícios de força + abdômen + cardio. */
@@ -1149,6 +1242,7 @@ export function getWorkoutBySlot(
   const cautionGroups = getCautionGroups(injuries);
   let partnerNameOf = new Map<string, string>();
   if (timeProfile.useBiSets) {
+    defs = ensureBiSetMix(defs, injuries, isFemale, isBeginner, cycleNumber);
     ({ ordered: defs, partnerNameOf } = applyBiSets(defs));
   }
 
@@ -1171,7 +1265,7 @@ export function getWorkoutBySlot(
   const mainCount = exercises.length;
   if (timeProfile.includeCardio) exercises.push(buildCardioExercise(cycleNumber, 0, timeProfile.cardioLabel));
 
-  const restSeconds = parseInt(rest) || 60;
+  const restSeconds = parseRestSeconds(rest);
   const timePerEx   = sets * (1.5 + restSeconds / 60);
   let duration      = estimateDuration(mainCount, timePerEx, 0, timeProfile.cardioMinutes);
   // Bi-set: a dupla descansa uma vez só, não duas — desconta o descanso economizado por par.
@@ -1244,6 +1338,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   const cautionGroups = getCautionGroups(injuries);
   let partnerNameOf = new Map<string, string>();
   if (timeProfile.useBiSets) {
+    defs = ensureBiSetMix(defs, injuries, isFemale, isBeginner, cycleNumber);
     ({ ordered: defs, partnerNameOf } = applyBiSets(defs));
   }
 
@@ -1286,7 +1381,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   // Cardio — todo dia de treino, sempre por último (exceto em treinos de 40min, ver TIME_PROFILES)
   if (timeProfile.includeCardio) exercises.push(buildCardioExercise(cycleNumber, dayIdx, timeProfile.cardioLabel));
 
-  const baseRestSeconds = parseInt(base.rest) || 60;
+  const baseRestSeconds = parseRestSeconds(base.rest);
   const timePerMain      = base.sets * (1.5 + baseRestSeconds / 60);
   let duration = estimateDuration(mainCount, timePerMain, absExercises.length, timeProfile.cardioMinutes);
   // Bi-set: a dupla descansa uma vez só, não duas — desconta o descanso economizado por par.
@@ -1295,7 +1390,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   }
   if (isFinisherDay) {
     // O último exercício usa a prescrição avançada em vez da base — ajusta a diferença
-    const advRestSeconds = parseInt(advanced!.rest) || 60;
+    const advRestSeconds = parseRestSeconds(advanced!.rest);
     const timePerAdvanced = advanced!.sets * (1.5 + advRestSeconds / 60);
     duration += Math.round(timePerAdvanced - timePerMain);
   }

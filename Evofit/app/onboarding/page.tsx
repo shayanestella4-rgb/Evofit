@@ -110,10 +110,11 @@ const STEPS: Step[] = [
           "Entorses frequentes ou instabilidade no tornozelo",
           "Osteoporose ou osteopenia",
           "Hipertensão ou outro problema cardiovascular",
+          "Diabetes",
           "Outra condição não listada",
           "Nenhuma dessas",
         ],
-        optionValues: ["Condromalácia", "Joelho", "Coluna/lombar", "Ombro", "Punho/Cotovelo", "Quadril", "Tornozelo", "Osteoporose", "Cardiovascular", "Outra", "Nenhuma"],
+        optionValues: ["Condromalácia", "Joelho", "Coluna/lombar", "Ombro", "Punho/Cotovelo", "Quadril", "Tornozelo", "Osteoporose", "Cardiovascular", "Diabetes", "Outra", "Nenhuma"],
       },
       {
         key: "sono",

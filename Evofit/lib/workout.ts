@@ -650,6 +650,7 @@ const OUTRA_KEYWORDS: Record<string, string[]> = {
   "Tornozelo": ["tornozelo", "entorse"],
   "Osteoporose": ["osteoporose", "osteopenia", "densidade ossea"],
   "Cardiovascular": ["hipertensao", "pressao alta", "cardiaco", "cardiopata", "coracao", "arritmia"],
+  "Diabetes": ["diabetes", "diabetico", "diabetica", "glicemia"],
 };
 
 function normalizeText(s: string): string {
@@ -686,7 +687,7 @@ function resolveInjuries(lesoes: string[], lesoesDetalhe?: string): string[] {
 // Condições de sobrecarga óssea (osteoporose) pedem o oposto ("mantenha a
 // carga, evite é flexão/torção") — não entram nesse aviso de amplitude.
 const JOINT_CAUTION_TEXT = "Neste exercício diminua a amplitude e intensidade, vá até o seu limite.";
-const JOINT_CAUTION_EXCLUDED_TAGS = ["Osteoporose", "Cardiovascular", "Nenhuma", "Outra"];
+const JOINT_CAUTION_EXCLUDED_TAGS = ["Osteoporose", "Cardiovascular", "Diabetes", "Nenhuma", "Outra"];
 
 /** Grupos musculares onde essa tag tem pelo menos um exercício restrito — ou seja, a região que a condição afeta. */
 function affectedGroupsForTag(tag: string): Set<MuscleGroup> {
@@ -791,8 +792,10 @@ function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, 
   const isInter = nivel?.includes("Intermediário");
   if (!isInter) return null;
   // Dropset/bi-set/rest-pause elevam bastante o duplo produto (FC × pressão) —
-  // contraindicados pra quem tem hipertensão ou problema cardiovascular.
-  if (injuries.includes("Cardiovascular")) return null;
+  // contraindicados pra quem tem hipertensão/problema cardiovascular, e também
+  // pra diabetes (risco de sangramento retiniano com esforço máximo/Valsalva
+  // em quem tem retinopatia — como o quiz não distingue o grau, aplica pra todos).
+  if (injuries.includes("Cardiovascular") || injuries.includes("Diabetes")) return null;
 
   const phase = ((cycleNumber - 1) % 4) + 1;
   if (phase !== 4) return null;

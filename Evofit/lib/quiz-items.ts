@@ -238,6 +238,7 @@ export const QUIZ_ITEMS: QuizItem[] = [
       { label: "Entorses frequentes ou instabilidade no tornozelo", value: "Tornozelo", icon: "🦶" },
       { label: "Osteoporose ou osteopenia", value: "Osteoporose", icon: "🩻" },
       { label: "Hipertensão ou outro problema cardiovascular", value: "Cardiovascular", icon: "❤️" },
+      { label: "Diabetes", value: "Diabetes", icon: "🩸" },
       { label: "Outra condição não listada", value: "Outra", icon: "❓" },
       { label: "Nenhuma dessas", value: "Nenhuma", icon: "✅" },
     ],

@@ -82,12 +82,6 @@ const STEPS: Step[] = [
         type: "radio",
         options: ["40 min", "1h", "1h30"],
       },
-      {
-        key: "periodo",
-        label: "Qual período você prefere treinar?",
-        type: "radio",
-        options: ["Manhã", "Tarde", "Noite", "Indiferente"],
-      },
     ],
   },
   {
@@ -220,7 +214,7 @@ export default function OnboardingPage() {
                         className={`flex-1 py-3 rounded-[0.75rem] text-sm font-semibold border transition-all ${
                           data[field.key] === opt
                             ? "bg-[#A855F7] text-white border-[#A855F7]"
-                            : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A855F7]"
+                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A855F7]"
                         }`}
                       >
                         {opt}
@@ -236,7 +230,7 @@ export default function OnboardingPage() {
                         className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
                           data[field.key] === opt
                             ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
-                            : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
+                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
                         }`}
                       >
                         <span
@@ -264,7 +258,7 @@ export default function OnboardingPage() {
                             className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
                               selected
                                 ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
-                                : "bg-white text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
+                                : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
                             }`}
                           >
                             <span

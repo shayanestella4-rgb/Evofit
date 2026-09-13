@@ -189,8 +189,10 @@ export default function TreinoPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-[#F0F0F0]">{aula.title}</p>
-                    <p className="text-xs text-[#CBD5E0] mt-0.5">{aula.category} · {aula.duration} min</p>
-                    <p className="text-[11px] text-[#8A8A8A] mt-1 line-clamp-2">{aula.description}</p>
+                    <p className="text-xs text-[#CBD5E0] mt-0.5">{aula.category ? `${aula.category} · ` : ""}{aula.duration} min</p>
+                    {aula.description && (
+                      <p className="text-[11px] text-[#8A8A8A] mt-1 line-clamp-2">{aula.description}</p>
+                    )}
                   </div>
                   {!disponivel && (
                     <span className="text-[10px] font-semibold text-[#8A8A8A] shrink-0">em breve</span>
@@ -622,8 +624,10 @@ export default function TreinoPage() {
             />
             <div className="p-4">
               <p className="text-base font-extrabold text-[#F0F0F0] mb-0.5">{aulaModal.title}</p>
-              <p className="text-xs text-[#CBD5E0] mb-3">{aulaModal.category} · {aulaModal.duration} min</p>
-              <p className="text-xs text-[#C0C0C0] leading-relaxed mb-4">{aulaModal.description}</p>
+              <p className="text-xs text-[#CBD5E0] mb-3">{aulaModal.category ? `${aulaModal.category} · ` : ""}{aulaModal.duration} min</p>
+              {aulaModal.description && (
+                <p className="text-xs text-[#C0C0C0] leading-relaxed mb-4">{aulaModal.description}</p>
+              )}
               <button
                 onClick={() => setAulaModal(null)}
                 className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors"

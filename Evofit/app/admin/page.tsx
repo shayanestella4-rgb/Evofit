@@ -19,6 +19,16 @@ interface Stats {
   };
 }
 
+interface Lead {
+  id: string;
+  email: string;
+  answers: Record<string, unknown> | null;
+  progress: number;
+  reachedOffer: boolean;
+  purchased: boolean;
+  createdAt: string;
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -28,6 +38,9 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState("");
   const [stats, setStats] = useState<Stats | null>(null);
   const [statsError, setStatsError] = useState("");
+  const [leads, setLeads] = useState<Lead[] | null>(null);
+  const [leadsError, setLeadsError] = useState("");
+  const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
 
   const loadStats = useCallback(async () => {
     setStatsError("");
@@ -45,11 +58,28 @@ export default function AdminPage() {
     }
   }, []);
 
+  const loadLeads = useCallback(async () => {
+    setLeadsError("");
+    try {
+      const res = await fetch("/api/admin/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      });
+      const data = await res.json();
+      if (res.ok) setLeads(data.leads);
+      else setLeadsError(data.error || "Erro ao carregar leads.");
+    } catch {
+      setLeadsError("Erro de conexão ao carregar leads.");
+    }
+  }, []);
+
   function handleAuth(e: React.FormEvent) {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
       setAuthed(true);
       loadStats();
+      loadLeads();
     } else {
       setAuthError("Senha incorreta.");
     }
@@ -158,6 +188,58 @@ export default function AdminPage() {
             </div>
           </>
         )}
+
+        {/* Leads do quiz (quem deixou email) */}
+        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6">
+          <h2 className="text-white font-bold text-sm mb-1">Leads do quiz</h2>
+          <p className="text-[#8A8A8A] text-xs mb-4">
+            Quem deixou o email, mais recente primeiro{leads ? ` (${leads.length})` : ""}.
+          </p>
+          {leadsError && <p className="text-red-400 text-xs">{leadsError}</p>}
+          {leads && leads.length === 0 && (
+            <p className="text-[#6B7280] text-xs">Ninguém deixou o email ainda.</p>
+          )}
+          {leads && leads.length > 0 && (
+            <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
+              {leads.map((lead) => {
+                const isOpen = expandedLeadId === lead.id;
+                return (
+                  <div key={lead.id} className="border border-[#2D2D2D] rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setExpandedLeadId(isOpen ? null : lead.id)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#1E1035]/40 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-[#F0F0F0] truncate">{lead.email}</p>
+                        <p className="text-[10px] text-[#6B7280]">
+                          {new Date(lead.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                      <span className="text-[10px] text-[#8A8A8A] shrink-0">{lead.progress}% do quiz</span>
+                      {lead.purchased && (
+                        <span className="text-[10px] font-semibold text-green-400 shrink-0">✓ comprou</span>
+                      )}
+                      {!lead.purchased && lead.reachedOffer && (
+                        <span className="text-[10px] font-semibold text-yellow-400 shrink-0">viu a oferta</span>
+                      )}
+                      <span className="text-[#6B7280] shrink-0">{isOpen ? "▲" : "▼"}</span>
+                    </button>
+                    {isOpen && lead.answers && (
+                      <div className="px-3 py-3 bg-[#111] border-t border-[#2D2D2D] grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        {Object.entries(lead.answers).map(([key, value]) => (
+                          <div key={key} className="text-xs">
+                            <span className="text-[#6B7280]">{key}:</span>{" "}
+                            <span className="text-[#C0C0C0]">{Array.isArray(value) ? value.join(", ") : String(value)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* Liberar/revogar acesso manual */}
         <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">

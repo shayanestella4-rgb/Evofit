@@ -89,7 +89,6 @@ function buildAnamnese(answers: Record<string, string>, multi: Record<string, st
     nivel: mapNivel(answers.experiencia),
     diasTreino: answers.diasTreino,
     tempoTreino: answers.tempoTreino,
-    periodo: answers.periodo,
     lesoes: multi.lesoes ?? [],
     lesoesDetalhe: (multi.lesoes ?? []).includes("Outra") ? outraDetalhe.trim() : undefined,
     sono: answers.sono,

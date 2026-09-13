@@ -126,17 +126,6 @@ export const QUIZ_ITEMS: QuizItem[] = [
   },
   {
     type: "question",
-    key: "local",
-    question: "Prefere treinar em casa ou na academia?",
-    options: [
-      { label: "Em casa", icon: "🏠" },
-      { label: "Na academia", icon: "🏋️" },
-      { label: "Os dois", icon: "🔀" },
-      { label: "Ainda não decidi", icon: "🤔" },
-    ],
-  },
-  {
-    type: "question",
     key: "alimentacao",
     question: "Como está sua alimentação hoje?",
     options: [
@@ -251,17 +240,6 @@ export const QUIZ_ITEMS: QuizItem[] = [
       { label: "Hipertensão ou outro problema cardiovascular", value: "Cardiovascular", icon: "❤️" },
       { label: "Outra condição não listada", value: "Outra", icon: "❓" },
       { label: "Nenhuma dessas", value: "Nenhuma", icon: "✅" },
-    ],
-  },
-  {
-    type: "question",
-    key: "periodo",
-    question: "Qual período você prefere treinar?",
-    options: [
-      { label: "Manhã", icon: "🌅" },
-      { label: "Tarde", icon: "🌤️" },
-      { label: "Noite", icon: "🌙" },
-      { label: "Indiferente", icon: "🔀" },
     ],
   },
 ];

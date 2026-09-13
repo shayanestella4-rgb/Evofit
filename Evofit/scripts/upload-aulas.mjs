@@ -1,12 +1,15 @@
 /**
- * Script para fazer upload dos vídeos e capas das aulas guiadas (cardio,
- * funcional, muay thai...) para o Vercel Blob.
+ * Script para fazer upload de capas customizadas das aulas guiadas pro Vercel Blob.
  * Uso: node scripts/upload-aulas.mjs
  *
- * Salve os arquivos em:
- *   public/aulas/videos/<aula-id>.mp4   → gera lib/aula-video-urls.json
- *   public/aulas/thumbs/<aula-id>.jpg   → gera lib/aula-thumb-urls.json  (opcional)
- * O <aula-id> é o "id" de cada aula em lib/aulas.ts (ex: cardio-20min.mp4).
+ * O vídeo em si NÃO passa por aqui — fica hospedado como "não listado" no
+ * YouTube (grátis, sem limite de espaço; vídeo longo com áudio não cabe no
+ * plano gratuito do Vercel Blob). Cole o id do vídeo do YouTube direto em
+ * lib/aulas.ts (campo `youtubeId` de cada aula).
+ *
+ * Esse script é só pra quando você quiser uma capa customizada em vez da
+ * miniatura automática do YouTube: salve em public/aulas/thumbs/<aula-id>.jpg
+ * (o <aula-id> é o "id" de cada aula em lib/aulas.ts).
  */
 
 import { put } from '@vercel/blob';
@@ -34,92 +37,46 @@ if (!token) {
   process.exit(1);
 }
 
-const VIDEO_CONTENT_TYPES = {
-  '.mp4':  'video/mp4',
-  '.mov':  'video/quicktime',
-  '.webm': 'video/webm',
-};
-
 const THUMB_CONTENT_TYPES = {
   '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png':  'image/png',
 };
 
-async function uploadFolder(folderName, sourceDir, outputFile, contentTypes) {
-  if (!existsSync(sourceDir)) {
-    console.log(`⏭️  Pasta ${sourceDir} não existe, pulando ${folderName}.\n`);
-    return;
-  }
+const THUMBS_DIR  = join(process.cwd(), 'public', 'aulas', 'thumbs');
+const OUTPUT_FILE = join(process.cwd(), 'lib', 'aula-thumb-urls.json');
 
-  let urlMap = {};
-  if (existsSync(outputFile)) {
-    urlMap = JSON.parse(readFileSync(outputFile, 'utf-8'));
-  }
-
-  const files = readdirSync(sourceDir).filter((f) => contentTypes[extname(f).toLowerCase()]);
-  console.log(`📁 ${folderName}: ${files.length} arquivo(s) encontrado(s), ${Object.keys(urlMap).length} já enviados.`);
-
-  let uploaded = 0;
-  let skipped  = 0;
-  let failed   = 0;
-
-  for (const file of files) {
-    const ext      = extname(file).toLowerCase();
-    const id       = basename(file, ext);
-    const filePath = join(sourceDir, file);
-
-    if (urlMap[id]) {
-      skipped++;
-      continue;
-    }
-
-    try {
-      const fileBuffer = readFileSync(filePath);
-      const blob = await put(`${folderName}/${file}`, fileBuffer, {
-        access: 'public',
-        token,
-        contentType: contentTypes[ext],
-        addRandomSuffix: false,
-      });
-
-      urlMap[id] = blob.url;
-      uploaded++;
-
-      const total = files.length;
-      const done  = uploaded + skipped;
-      process.stdout.write(`\r✅ [${done}/${total}] ${file}                    `);
-
-      writeFileSync(outputFile, JSON.stringify(urlMap, null, 2));
-    } catch (err) {
-      if (err.message && err.message.includes('blob-allow-overwrite')) {
-        const baseUrl = `https://dckgeeda0hovqkbr.public.blob.vercel-storage.com`;
-        urlMap[id] = `${baseUrl}/${folderName}/${file}`;
-        uploaded++;
-        process.stdout.write(`\r⏭️  já existia — ${file}                    `);
-      } else {
-        console.error(`\n❌ Falha: ${file} — ${err.message}`);
-        failed++;
-      }
-    }
-  }
-
-  writeFileSync(outputFile, JSON.stringify(urlMap, null, 2));
-  console.log(`\n   Enviados agora: ${uploaded} | Pulados: ${skipped} | Falhas: ${failed}\n`);
+if (!existsSync(THUMBS_DIR)) {
+  console.log('⏭️  Pasta public/aulas/thumbs não existe — nada pra enviar.');
+  process.exit(0);
 }
 
-await uploadFolder(
-  'aulas/videos',
-  join(process.cwd(), 'public', 'aulas', 'videos'),
-  join(process.cwd(), 'lib', 'aula-video-urls.json'),
-  VIDEO_CONTENT_TYPES
-);
+let urlMap = {};
+if (existsSync(OUTPUT_FILE)) {
+  urlMap = JSON.parse(readFileSync(OUTPUT_FILE, 'utf-8'));
+}
 
-await uploadFolder(
-  'aulas/thumbs',
-  join(process.cwd(), 'public', 'aulas', 'thumbs'),
-  join(process.cwd(), 'lib', 'aula-thumb-urls.json'),
-  THUMB_CONTENT_TYPES
-);
+const files = readdirSync(THUMBS_DIR).filter((f) => THUMB_CONTENT_TYPES[extname(f).toLowerCase()]);
+console.log(`📁 Capas: ${files.length} arquivo(s) encontrado(s).`);
 
-console.log('📄 Mapeamentos salvos em lib/aula-video-urls.json e lib/aula-thumb-urls.json');
+let uploaded = 0, failed = 0;
+for (const file of files) {
+  const ext = extname(file).toLowerCase();
+  const id  = basename(file, ext);
+  try {
+    const buf  = readFileSync(join(THUMBS_DIR, file));
+    const blob = await put(`aulas/thumbs/${file}`, buf, {
+      access: 'public', token, contentType: THUMB_CONTENT_TYPES[ext], addRandomSuffix: false, allowOverwrite: true,
+    });
+    urlMap[id] = blob.url;
+    uploaded++;
+    console.log(`✅ ${file}`);
+  } catch (err) {
+    failed++;
+    console.error(`❌ Falha: ${file} — ${err.message}`);
+  }
+}
+
+writeFileSync(OUTPUT_FILE, JSON.stringify(urlMap, null, 2));
+console.log(`\n📊 Enviadas: ${uploaded} | Falhas: ${failed}`);
+console.log('📄 Mapeamento salvo em: lib/aula-thumb-urls.json');

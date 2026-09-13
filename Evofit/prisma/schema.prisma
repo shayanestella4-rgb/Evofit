@@ -172,3 +172,20 @@ enum SubscriptionStatus {
   REFUNDED
   CANCELLED
 }
+
+// Sessão de quiz (funil de marketing) — criada assim que a pessoa abre /quiz,
+// atualizada a cada pergunta respondida. Não tem relação com User: a maioria
+// de quem faz o quiz nunca chega a criar conta. O cruzamento com quem comprou
+// é feito por email (ver Subscription) no painel de métricas.
+model QuizSession {
+  id           String   @id @default(cuid())
+  email        String?
+  answers      Json?
+  lastStep     Int      @default(0)
+  totalSteps   Int      @default(0)
+  reachedOffer Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("quiz_sessions")
+}

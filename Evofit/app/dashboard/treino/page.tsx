@@ -13,7 +13,7 @@ import {
 import { loadWeightLog, saveWeightEntry } from "@/lib/weightLog";
 import type { WeightEntry } from "@/lib/weightLog";
 import Link from "next/link";
-import { AULAS_CATALOG, getAulaVideo, getAulaThumb } from "@/lib/aulas";
+import { AULAS_CATALOG, getAulaThumb } from "@/lib/aulas";
 import type { Aula } from "@/lib/aulas";
 
 import type { Exercise } from "@/lib/workout";
@@ -163,9 +163,8 @@ export default function TreinoPage() {
               Aulas guiadas — treine junto com o vídeo
             </p>
             {AULAS_CATALOG.map((aula) => {
-              const video = getAulaVideo(aula.id);
-              const thumb = getAulaThumb(aula.id);
-              const disponivel = !!video;
+              const thumb = getAulaThumb(aula);
+              const disponivel = !!aula.youtubeId;
               return (
                 <button
                   key={aula.id}
@@ -614,12 +613,12 @@ export default function TreinoPage() {
             className="bg-[#1A1A1A] rounded-[1.5rem] w-full max-w-sm overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <video
-              src={getAulaVideo(aulaModal.id)}
-              controls
-              playsInline
+            <iframe
+              src={`https://www.youtube.com/embed/${aulaModal.youtubeId}`}
               className="w-full bg-black"
-              style={{ maxHeight: "50vh" }}
+              style={{ aspectRatio: "16/9", border: 0 }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
             <div className="p-4">
               <p className="text-base font-extrabold text-[#F0F0F0] mb-0.5">{aulaModal.title}</p>

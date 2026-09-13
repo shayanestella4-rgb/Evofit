@@ -153,14 +153,14 @@ export default function TreinoPage() {
               view === "aulas" ? "bg-[#A855F7] text-white" : "text-[#CBD5E0]"
             }`}
           >
-            Hits
+            Hits de Muay Thai
           </button>
         </div>
 
         {view === "aulas" ? (
           <div className="space-y-3">
             <p className="text-[10px] text-[#CBD5E0] font-semibold uppercase tracking-wide mb-1">
-              Hits — treine junto com o vídeo
+              Hits de Muay Thai — treine junto com o vídeo
             </p>
             {AULAS_CATALOG.map((aula) => {
               const thumb = getAulaThumb(aula);

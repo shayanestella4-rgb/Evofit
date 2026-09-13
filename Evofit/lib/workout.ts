@@ -306,7 +306,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Quadríceps + Glúteos",
       emoji: "🦵",
-      groups: ["panturrilha", "quadriceps", "gluteos"],
+      groups: ["quadriceps", "gluteos", "panturrilha"],
       volumes: { quadriceps: 3, gluteos: 3, panturrilha: 1 },
       abs: true,
     },
@@ -325,7 +325,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Pernas",
       emoji: "🦵",
-      groups: ["panturrilha", "quadriceps", "posteriores"],
+      groups: ["quadriceps", "posteriores", "panturrilha"],
       volumes: { quadriceps: 4, posteriores: 3, panturrilha: 1 },
       abs: true,
     },
@@ -333,7 +333,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     2: {
       name: "Superior Completo",
       emoji: "💪",
-      groups: ["costas", "peito", "triceps", "ombros", "biceps"],
+      groups: ["costas", "biceps", "ombros", "triceps", "peito"],
       volumes: { costas: 3, peito: 1, triceps: 1, ombros: 2, biceps: 1 },
       abs: true,
     },
@@ -351,7 +351,7 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Quadríceps",
       emoji: "🦵",
-      groups: ["panturrilha", "quadriceps"],
+      groups: ["quadriceps", "panturrilha"],
       volumes: { quadriceps: 4, panturrilha: 1 },
       abs: true,
     },
@@ -374,50 +374,52 @@ const FEMALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     4: {
       name: "Superior",
       emoji: "💪",
-      groups: ["costas", "peito", "ombros", "biceps", "triceps"],
+      groups: ["costas", "biceps", "ombros", "triceps", "peito"],
       volumes: { costas: 3, peito: 1, ombros: 2, biceps: 1, triceps: 1 },
       abs: true,
     },
   },
 
+  // Alterna inferior/superior/inferior/superior/inferior ao longo da semana —
+  // nunca 2 dias de inferior seguidos, mesmo com mais dias de inferior no total.
   "5+ dias": {
     // Seg: quadríceps — volume extra pra reforçar o viés de inferiores
     0: {
       name: "Quadríceps",
       emoji: "🦵",
-      groups: ["panturrilha", "quadriceps"],
+      groups: ["quadriceps", "panturrilha"],
       volumes: { quadriceps: 5, panturrilha: 1 },
       abs: true,
     },
-    // Ter: glúteos
+    // Ter: costas + bíceps
     1: {
-      name: "Glúteos",
-      emoji: "🍑",
-      groups: ["gluteos"],
-      volumes: { gluteos: 6 },
-    },
-    // Qua: costas + bíceps
-    2: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
       groups: ["costas", "biceps"],
       volumes: { costas: 4, biceps: 2 },
     },
-    // Qui: posteriores — com 1 exercício extra de glúteo como estímulo, sem tirar o foco de posterior
-    3: {
-      name: "Posteriores",
-      emoji: "🔥",
-      groups: ["posteriores", "gluteos"],
-      volumes: { posteriores: 5, gluteos: 1 },
-      abs: true,
+    // Qua: glúteos
+    2: {
+      name: "Glúteos",
+      emoji: "🍑",
+      groups: ["gluteos"],
+      volumes: { gluteos: 6 },
     },
-    // Sex: ombros + tríceps + peito, nessa ordem — ombro é prioridade (feito
+    // Qui: ombros + tríceps + peito, nessa ordem — ombro é prioridade (feito
     // com o corpo mais descansado), peito por último. Peito com só 1 exercício.
-    4: {
+    3: {
       name: "Ombros + Tríceps + Peito",
       emoji: "💥",
       groups: ["ombros", "triceps", "peito"],
       volumes: { peito: 1, ombros: 3, triceps: 3 },
+      abs: true,
+    },
+    // Sex: posteriores — com 1 exercício extra de glúteo como estímulo, sem tirar o foco de posterior
+    4: {
+      name: "Posteriores",
+      emoji: "🔥",
+      groups: ["posteriores", "gluteos"],
+      volumes: { posteriores: 5, gluteos: 1 },
       abs: true,
     },
   },
@@ -433,7 +435,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Superior Completo",
       emoji: "💪",
-      groups: ["panturrilha", "trapezio", "antebraco", "costas", "peito", "ombros", "biceps", "triceps"],
+      groups: ["costas", "trapezio", "biceps", "ombros", "peito", "triceps", "antebraco", "panturrilha"],
       volumes: { costas: 2, peito: 2, ombros: 2, biceps: 1, triceps: 1, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
@@ -452,7 +454,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["panturrilha", "trapezio", "antebraco", "costas", "biceps"],
+      groups: ["costas", "trapezio", "biceps", "antebraco", "panturrilha"],
       volumes: { costas: 4, biceps: 2, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
@@ -478,7 +480,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     0: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["panturrilha", "trapezio", "antebraco", "costas", "biceps"],
+      groups: ["costas", "trapezio", "biceps", "antebraco", "panturrilha"],
       volumes: { costas: 4, biceps: 2, panturrilha: 1, trapezio: 1, antebraco: 1 },
       abs: true,
     },
@@ -519,7 +521,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     1: {
       name: "Costas + Bíceps",
       emoji: "🏋️",
-      groups: ["trapezio", "antebraco", "costas", "biceps"],
+      groups: ["costas", "trapezio", "biceps", "antebraco"],
       volumes: { costas: 4, biceps: 3, trapezio: 1, antebraco: 1 },
       abs: true,
     },
@@ -543,7 +545,7 @@ const MALE_SPLITS: Record<string, Record<number, SplitSlot>> = {
     4: {
       name: "Braços — Volume",
       emoji: "⚡",
-      groups: ["panturrilha", "biceps", "triceps"],
+      groups: ["biceps", "triceps", "panturrilha"],
       volumes: { biceps: 4, triceps: 4, panturrilha: 1 },
     },
   },
@@ -570,8 +572,10 @@ const FULL_BODY_DAY_INDEXES: Record<string, number[]> = {
   "5+ dias": [0, 1, 2, 3, 4],
 };
 
+// Ordem pensada pra ficar inferior (quad/glúteo) → costas+bíceps (puxar) →
+// peito+ombros+tríceps (empurrar) — mesmo padrão usado nos splits normais.
 const FULL_BODY_BASE_VOLUMES: Partial<Record<MuscleGroup, number>> = {
-  quadriceps: 1, gluteos: 1, peito: 1, costas: 1, ombros: 1, biceps: 1, triceps: 1,
+  quadriceps: 1, gluteos: 1, costas: 1, biceps: 1, peito: 1, ombros: 1, triceps: 1,
 };
 
 const FEMALE_FULL_BODY_EMPHASIS: MuscleGroup[] = ["gluteos", "quadriceps", "posteriores"];
@@ -581,7 +585,15 @@ function buildFullBodyDay(position: number, isFemale: boolean): SplitSlot {
   const emphasisList = isFemale ? FEMALE_FULL_BODY_EMPHASIS : MALE_FULL_BODY_EMPHASIS;
   const emphasis = emphasisList[position % emphasisList.length];
   const volumes = { ...FULL_BODY_BASE_VOLUMES, [emphasis]: (FULL_BODY_BASE_VOLUMES[emphasis] ?? 0) + 1 };
-  const groups = Array.from(new Set([...(Object.keys(FULL_BODY_BASE_VOLUMES) as MuscleGroup[]), emphasis]));
+  const baseGroups = Object.keys(FULL_BODY_BASE_VOLUMES) as MuscleGroup[];
+  // "posteriores" não é grupo base do full body — quando é a ênfase do dia,
+  // entra logo depois de glúteos (mesma vizinhança "inferior" dos outros splits).
+  const groups = baseGroups.includes(emphasis)
+    ? baseGroups
+    : (() => {
+        const idx = baseGroups.indexOf("gluteos");
+        return [...baseGroups.slice(0, idx + 1), emphasis, ...baseGroups.slice(idx + 1)];
+      })();
   return {
     name: `Corpo Inteiro (ênfase: ${GROUP_LABELS[emphasis]})`,
     emoji: "💪",
@@ -993,6 +1005,71 @@ function ensureBiSetMix(
   return defs; // só conseguiu converter 1 dos 2 tipos — troca parcial não ajuda, mantém original
 }
 
+// Exercícios que são essencialmente o MESMO movimento, no MESMO aparelho —
+// só muda pegada, ângulo do cabo, ou unilateral/bilateral (ex: pulley pegada
+// supinada vs neutra, leg press vs leg press unilateral, glúteo no cabo perna
+// cruzada vs estendida). Diferença de equipamento (barra vs halter vs Smith)
+// NÃO entra aqui — isso muda o estímulo de verdade (estabilização, ADM) e já
+// é tratado como exercícios distintos no resto do sistema. Usado só pra evitar
+// 2 variações quase-idênticas no mesmo treino — nunca restringe seleção.
+const FAMILY_MAP: Record<string, string> = {
+  // Quadríceps
+  q2: "q_legpress", q15: "q_legpress",
+  q5: "q_legext", q12: "q_legext",
+  // Glúteos
+  g4: "g_kickback", g11: "g_kickback", g16: "g_kickback",
+  g5: "g_abducao_cabo", g13: "g_abducao_cabo",
+  // Posteriores
+  po9: "po_stiff_halter", po6: "po_stiff_halter",
+  // Costas
+  c19: "c_pulley_artic", c21: "c_pulley_artic", c20: "c_pulley_artic",
+  c26: "c_remada_artic", c34: "c_remada_artic", c36: "c_remada_artic", c27: "c_remada_artic",
+  c18: "c_pulldown_pegada", c23: "c_pulldown_pegada", c24: "c_pulldown_pegada",
+  // Ombros
+  o20: "o_dev_halter", o26: "o_dev_halter",
+  o21: "o_frontal_cabo", o22: "o_frontal_cabo",
+  o27: "o_frontal_livre", o28: "o_frontal_livre",
+  // Bíceps
+  b26: "b_direta_halter", b19: "b_direta_halter",
+  b27: "b_inclinado45", b15: "b_inclinado45",
+  b33: "b_cabo_reto", b36: "b_cabo_reto",
+  b34: "b_scott_halter", b35: "b_scott_halter",
+  // Tríceps
+  t1: "t_pulley_pegada", t6: "t_pulley_pegada", t14: "t_pulley_pegada",
+  t16: "t_frances_cabo", t7: "t_frances_cabo",
+  // Antebraço
+  an1: "an_flexao_halter", an3: "an_flexao_halter",
+};
+
+/**
+ * Garante que, dentro de UM MESMO grupo no dia, não saiam 2 exercícios da
+ * mesma família (ex: pulley pegada supinada + pulley pegada neutra) — troca
+ * a segunda ocorrência por outro exercício do pool que não repita a família.
+ * Se não achar substituto sem família repetida, mantém a escolha original
+ * (melhor repetir do que sobrar menos exercícios do que o volume pedia).
+ */
+function dedupeFamilies(picks: ExerciseDef[], pool: ExerciseDef[]): ExerciseDef[] {
+  const usedFamilies = new Set<string>();
+  const usedIds = new Set(picks.map((p) => p.id));
+  const result: ExerciseDef[] = [];
+  for (const ex of picks) {
+    const fam = FAMILY_MAP[ex.id];
+    if (fam && usedFamilies.has(fam)) {
+      const alt = pool.find((p) => !usedIds.has(p.id) && !(FAMILY_MAP[p.id] && usedFamilies.has(FAMILY_MAP[p.id])));
+      if (alt) {
+        usedIds.delete(ex.id);
+        usedIds.add(alt.id);
+        if (FAMILY_MAP[alt.id]) usedFamilies.add(FAMILY_MAP[alt.id]);
+        result.push(alt);
+        continue;
+      }
+    }
+    if (fam) usedFamilies.add(fam);
+    result.push(ex);
+  }
+  return result;
+}
+
 // Porção/ângulo de cada exercício — usado pra intercalar a seleção e garantir
 // que, quando o volume permitir mais de 1 exercício, cubram ângulos diferentes
 // em vez de repetir sempre a mesma porção (ex: ombro posterior + lateral, não
@@ -1104,16 +1181,22 @@ function pickExercises(
     if (sorted.length === 0) continue;
 
     const byPortion = pickAcrossPortions(sorted, PORTION_MAP[g], cap, cycleNumber);
+    let groupPicks: ExerciseDef[];
     if (byPortion) {
-      result.push(...byPortion.map((ex) => ({ ...ex, group: g })));
-      continue;
+      groupPicks = byPortion;
+    } else {
+      // Rotação: cada ciclo avança `cap` posições → exercícios novos a cada mês
+      groupPicks = [];
+      const offset = ((cycleNumber - 1) * cap) % sorted.length;
+      for (let i = 0; i < cap && i < sorted.length; i++) {
+        groupPicks.push(sorted[(offset + i) % sorted.length]);
+      }
     }
 
-    // Rotação: cada ciclo avança `cap` posições → exercícios novos a cada mês
-    const offset = ((cycleNumber - 1) * cap) % sorted.length;
-    for (let i = 0; i < cap && i < sorted.length; i++) {
-      result.push({ ...sorted[(offset + i) % sorted.length], group: g });
-    }
+    // Evita 2 variações quase-idênticas do mesmo exercício no mesmo treino
+    // (ex: pulley pegada supinada + pegada neutra) — troca a repetida por outra do pool.
+    groupPicks = dedupeFamilies(groupPicks, sorted);
+    result.push(...groupPicks.map((ex) => ({ ...ex, group: g })));
   }
 
   return result;

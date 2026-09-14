@@ -87,3 +87,44 @@ export async function cancelSubscription(
   }
   return { ok: true, detail: data.detail, status: data.status };
 }
+
+/** Busca o pedido pago mais recente de um e-mail — devolve o id (UUID) usado pra reembolsar. */
+export async function findLatestPaidOrderId(
+  email: string,
+  token?: string
+): Promise<string | null> {
+  const t = token ?? (await getToken());
+
+  const url = new URL(`${BASE}/orders/`);
+  url.searchParams.set("customer", email);
+  url.searchParams.set("status", "paid");
+  url.searchParams.set("ordering", "-paidAt");
+  url.searchParams.set("limit", "1");
+
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${t}` },
+  });
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  return data.results?.[0]?.id ?? null;
+}
+
+/** Reembolsa um pedido na Cakto. */
+export async function refundOrder(
+  orderId: string,
+  token?: string
+): Promise<{ ok: boolean; detail?: string }> {
+  const t = token ?? (await getToken());
+
+  const res = await fetch(`${BASE}/orders/${orderId}/refund/`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${t}` },
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    return { ok: false, detail: data.detail ?? `Erro ${res.status}` };
+  }
+  return { ok: true, detail: data.detail };
+}

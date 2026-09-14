@@ -228,6 +228,25 @@ export default function OfertaPage() {
             ))}
           </ul>
 
+          {/* Garantia de 7 dias */}
+          <div className="bg-[#111] border border-[#2D2D2D] rounded-[1rem] p-4 mb-5 flex items-center gap-3">
+            <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#A855F7] to-[#6B21A8] flex flex-col items-center justify-center text-white shadow-lg shadow-purple-950 border-2 border-[#C084FC]/40">
+              <span className="text-lg font-black leading-none">7</span>
+              <span className="text-[7px] font-bold leading-none mt-0.5 tracking-wide">DIAS</span>
+            </div>
+            <div>
+              <span className="inline-block bg-[#1E1035] text-[#C084FC] text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full mb-1">
+                Compra 100% segura
+              </span>
+              <p className="text-sm font-extrabold text-[#F0F0F0] mb-0.5">Garantia de 7 dias, sem burocracia</p>
+              <p className="text-[11px] text-[#8A8A8A] leading-relaxed">
+                Se por qualquer motivo você sentir que o Evofit não é pra você, é só entrar em contato
+                nos primeiros 7 dias e devolvemos <strong className="text-[#C0C0C0]">100% do seu investimento</strong>.
+                Sem pergunta, sem burocracia. O risco é todo nosso.
+              </p>
+            </div>
+          </div>
+
           <button
             onClick={goToCakto}
             className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"

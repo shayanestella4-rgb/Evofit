@@ -310,6 +310,33 @@ export default function AdminPage() {
     }
   }
 
+  const [refundConfirmOpen, setRefundConfirmOpen] = useState(false);
+
+  async function handleRefund() {
+    setStatus("loading");
+    setMessage("");
+    setRefundConfirmOpen(false);
+    try {
+      const res = await fetch("/api/admin/refund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, email: email.trim().toLowerCase() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("success");
+        setMessage(`✓ Reembolsado e acesso revogado para ${email}`);
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMessage(data.error || "Erro ao reembolsar.");
+      }
+    } catch {
+      setStatus("error");
+      setMessage("Erro de conexão.");
+    }
+  }
+
   if (!authed) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4">
@@ -702,12 +729,47 @@ export default function AdminPage() {
             </button>
           </div>
 
+          <button
+            onClick={() => setRefundConfirmOpen(true)}
+            disabled={status === "loading" || !email}
+            className="w-full bg-[#252525] border border-[#EF4444] text-[#FCA5A5] font-semibold py-3 rounded-lg text-sm disabled:opacity-50"
+          >
+            💸 Reembolsar pedido na Cakto
+          </button>
+
           <p className="text-[#B8B8B8] text-xs text-center">
-            Liberar = ativa o acesso ao Evofit<br />
-            Revogar = bloqueia imediatamente
+            Liberar = ativa o acesso ao Evofit · Revogar = bloqueia imediatamente<br />
+            Reembolsar = devolve o dinheiro do último pedido pago e revoga o acesso na hora
           </p>
         </div>
       </div>
+
+      {/* Confirmação de reembolso */}
+      {refundConfirmOpen && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1A1A1A] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h2 className="text-white font-bold text-lg mb-2">Reembolsar {email}?</h2>
+            <p className="text-[#B8B8B8] text-sm leading-relaxed mb-5">
+              Isso devolve o valor do pedido pago mais recente dessa pessoa na Cakto de verdade
+              (dinheiro sai da sua conta) e revoga o acesso dela ao Evofit imediatamente. Não dá pra desfazer.
+            </p>
+            <div className="space-y-2">
+              <button
+                onClick={handleRefund}
+                className="w-full bg-[#EF4444] text-white font-bold py-3.5 rounded-lg text-sm hover:bg-[#DC2626] transition-colors"
+              >
+                Sim, reembolsar
+              </button>
+              <button
+                onClick={() => setRefundConfirmOpen(false)}
+                className="w-full text-sm text-[#CBD5E0] py-2 hover:text-[#C0C0C0] transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

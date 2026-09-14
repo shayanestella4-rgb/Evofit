@@ -205,3 +205,18 @@ model WorkoutCompletion {
   @@index([email])
   @@map("workout_completions")
 }
+
+// Cópia no servidor da anamnese (o que hoje vive só no localStorage do
+// celular da pessoa, ver AnamneseData em lib/types.ts) — guardada como JSON
+// porque os campos mudam com frequência (várias perguntas já foram
+// adicionadas/removidas do quiz ao longo do projeto). Existe pra permitir
+// editar o treino de alguém pelo /admin, e pra sincronizar entre aparelhos.
+model UserAnamnese {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("user_anamnese")
+}

@@ -40,6 +40,38 @@ interface Lead {
   createdAt: string;
 }
 
+interface AnamneseForm {
+  nome: string; idade: string; sexo: string; peso: string; altura: string;
+  objetivo: string; nivel: string; diasTreino: string; tempoTreino: string; sono: string;
+  lesoes: string[]; lesoesDetalhe: string;
+}
+
+const BLANK_ANAMNESE: AnamneseForm = {
+  nome: "", idade: "", sexo: "Feminino", peso: "", altura: "",
+  objetivo: "", nivel: "", diasTreino: "", tempoTreino: "", sono: "",
+  lesoes: [], lesoesDetalhe: "",
+};
+
+const OBJETIVO_OPTS = ["Perder gordura", "Ganhar músculo", "Melhorar condicionamento", "Mais disposição e saúde"];
+const NIVEL_OPTS = ["Iniciante (nunca treinei)", "Básico (treino às vezes)", "Intermediário (treino regularmente)"];
+const DIAS_OPTS = ["2 dias", "3 dias", "4 dias", "5+ dias"];
+const TEMPO_OPTS = ["40 min", "1h", "1h30"];
+const SONO_OPTS = ["Durmo bem (7h+)", "Durmo mal (menos de 6h)", "Irregular"];
+const LESOES_OPTS: [string, string][] = [
+  ["Condromalácia", "Condromalácia (desgaste da cartilagem do joelho)"],
+  ["Joelho", "Outra lesão no joelho (menisco, ligamento, tendinite patelar)"],
+  ["Coluna/lombar", "Dor lombar ou hérnia de disco"],
+  ["Ombro", "Dor no ombro (tendinite, bursite, luxação)"],
+  ["Punho/Cotovelo", "Tendinite ou dor no punho/cotovelo"],
+  ["Quadril", "Dor no quadril (bursite, impacto femoroacetabular)"],
+  ["Tornozelo", "Entorses frequentes ou instabilidade no tornozelo"],
+  ["Osteoporose", "Osteoporose ou osteopenia"],
+  ["Cardiovascular", "Hipertensão ou outro problema cardiovascular"],
+  ["Diabetes", "Diabetes"],
+  ["Outra", "Outra condição não listada"],
+  ["Nenhuma", "Nenhuma dessas"],
+];
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -52,6 +84,85 @@ export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[] | null>(null);
   const [leadsError, setLeadsError] = useState("");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+
+  const [anamneseEmail, setAnamneseEmail] = useState("");
+  const [anamneseForm, setAnamneseForm] = useState<AnamneseForm | null>(null);
+  const [anamneseFound, setAnamneseFound] = useState(false);
+  const [anamneseStatus, setAnamneseStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
+  const [anamneseMessage, setAnamneseMessage] = useState("");
+
+  async function loadAnamnese() {
+    const target = anamneseEmail.trim().toLowerCase();
+    if (!target) return;
+    setAnamneseStatus("loading");
+    setAnamneseMessage("");
+    try {
+      const res = await fetch("/api/admin/anamnese", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        setAnamneseStatus("error");
+        setAnamneseMessage(result.error || "Erro ao buscar.");
+        return;
+      }
+      if (result.data) {
+        setAnamneseForm({ ...BLANK_ANAMNESE, ...result.data, lesoes: result.data.lesoes ?? [] });
+        setAnamneseFound(true);
+      } else {
+        setAnamneseForm({ ...BLANK_ANAMNESE });
+        setAnamneseFound(false);
+      }
+      setAnamneseStatus("idle");
+    } catch {
+      setAnamneseStatus("error");
+      setAnamneseMessage("Erro de conexão.");
+    }
+  }
+
+  async function saveAnamneseAdmin() {
+    if (!anamneseForm) return;
+    const target = anamneseEmail.trim().toLowerCase();
+    setAnamneseStatus("saving");
+    setAnamneseMessage("");
+    try {
+      const res = await fetch("/api/admin/anamnese", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, email: target, data: anamneseForm }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setAnamneseStatus("saved");
+        setAnamneseFound(true);
+        setAnamneseMessage("✓ Salvo — o app dessa pessoa vai usar esses dados no próximo carregamento.");
+      } else {
+        setAnamneseStatus("error");
+        setAnamneseMessage(result.error || "Erro ao salvar.");
+      }
+    } catch {
+      setAnamneseStatus("error");
+      setAnamneseMessage("Erro de conexão.");
+    }
+  }
+
+  function toggleAnamneseLesao(value: string) {
+    setAnamneseForm((prev) => {
+      if (!prev) return prev;
+      const has = prev.lesoes.includes(value);
+      let lesoes: string[];
+      if (value === "Nenhuma") {
+        lesoes = has ? [] : ["Nenhuma"];
+      } else if (has) {
+        lesoes = prev.lesoes.filter((l) => l !== value);
+      } else {
+        lesoes = [...prev.lesoes.filter((l) => l !== "Nenhuma"), value];
+      }
+      return { ...prev, lesoes };
+    });
+  }
 
   const loadStats = useCallback(async () => {
     setStatsError("");
@@ -285,6 +396,96 @@ export default function AdminPage() {
           )}
         </div>
 
+        {/* Editar treino/anamnese de um usuário */}
+        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
+          <div>
+            <h2 className="text-white font-bold text-sm">Editar treino de um usuário</h2>
+            <p className="text-[#8A8A8A] text-xs mt-1">
+              Busca pelo email — se a pessoa já treina, vem preenchido; se não, começa em branco.
+              Salvar aqui atualiza o treino dela na próxima vez que abrir o app.
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="email"
+              value={anamneseEmail}
+              onChange={(e) => setAnamneseEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && loadAnamnese()}
+              placeholder="email@cliente.com"
+              className="flex-1 bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#A855F7]"
+            />
+            <button
+              onClick={loadAnamnese}
+              disabled={anamneseStatus === "loading" || !anamneseEmail}
+              className="bg-[#252525] text-white font-semibold px-5 rounded-lg text-sm disabled:opacity-50 shrink-0"
+            >
+              {anamneseStatus === "loading" ? "..." : "Buscar"}
+            </button>
+          </div>
+
+          {anamneseForm && (
+            <div className="space-y-4 pt-2 border-t border-[#2D2D2D]">
+              {!anamneseFound && (
+                <p className="text-[10px] text-yellow-500">Essa pessoa ainda não tem treino salvo no servidor — preencha e salve pra criar.</p>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <FieldText label="Nome" value={anamneseForm.nome} onChange={(v) => setAnamneseForm((p) => p && { ...p, nome: v })} />
+                <FieldText label="Idade" value={anamneseForm.idade} onChange={(v) => setAnamneseForm((p) => p && { ...p, idade: v })} type="number" />
+                <FieldSelect label="Sexo" value={anamneseForm.sexo} options={["Feminino", "Masculino"]} onChange={(v) => setAnamneseForm((p) => p && { ...p, sexo: v })} />
+                <FieldText label="Peso (kg)" value={anamneseForm.peso} onChange={(v) => setAnamneseForm((p) => p && { ...p, peso: v })} type="number" />
+                <FieldText label="Altura (cm)" value={anamneseForm.altura} onChange={(v) => setAnamneseForm((p) => p && { ...p, altura: v })} type="number" />
+                <FieldSelect label="Sono" value={anamneseForm.sono} options={SONO_OPTS} onChange={(v) => setAnamneseForm((p) => p && { ...p, sono: v })} />
+                <FieldSelect label="Objetivo" value={anamneseForm.objetivo} options={OBJETIVO_OPTS} onChange={(v) => setAnamneseForm((p) => p && { ...p, objetivo: v })} />
+                <FieldSelect label="Nível" value={anamneseForm.nivel} options={NIVEL_OPTS} onChange={(v) => setAnamneseForm((p) => p && { ...p, nivel: v })} />
+                <FieldSelect label="Dias de treino" value={anamneseForm.diasTreino} options={DIAS_OPTS} onChange={(v) => setAnamneseForm((p) => p && { ...p, diasTreino: v })} />
+                <FieldSelect label="Tempo por treino" value={anamneseForm.tempoTreino} options={TEMPO_OPTS} onChange={(v) => setAnamneseForm((p) => p && { ...p, tempoTreino: v })} />
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-[#8A8A8A] uppercase font-semibold tracking-wide mb-2">Condições / lesões</label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {LESOES_OPTS.map(([value, label]) => (
+                    <button
+                      key={value}
+                      onClick={() => toggleAnamneseLesao(value)}
+                      className={`text-left px-3 py-2 rounded-lg text-[11px] border transition-colors ${
+                        anamneseForm.lesoes.includes(value)
+                          ? "bg-[#1E1035] border-[#A855F7] text-[#C084FC]"
+                          : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {anamneseForm.lesoes.includes("Outra") && (
+                  <input
+                    type="text"
+                    value={anamneseForm.lesoesDetalhe}
+                    onChange={(e) => setAnamneseForm((p) => p && { ...p, lesoesDetalhe: e.target.value })}
+                    placeholder="Qual condição?"
+                    className="w-full mt-2 bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#A855F7]"
+                  />
+                )}
+              </div>
+
+              {anamneseMessage && (
+                <p className={`text-xs ${anamneseStatus === "error" ? "text-red-400" : "text-green-400"}`}>{anamneseMessage}</p>
+              )}
+
+              <button
+                onClick={saveAnamneseAdmin}
+                disabled={anamneseStatus === "saving"}
+                className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
+              >
+                {anamneseStatus === "saving" ? "Salvando..." : "💾 Salvar treino dessa pessoa"}
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Liberar/revogar acesso manual */}
         <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
           <h2 className="text-white font-bold text-sm">Liberar/revogar acesso</h2>
@@ -335,6 +536,38 @@ function StatCard({ label, value, sub, small }: { label: string; value: number; 
       <p className={`font-extrabold text-white ${small ? "text-lg" : "text-2xl"}`}>{value}</p>
       <p className="text-[#8A8A8A] text-[11px] mt-0.5 leading-snug">{label}</p>
       {sub && <p className="text-[#6B7280] text-[10px] mt-0.5">{sub}</p>}
+    </div>
+  );
+}
+
+function FieldText({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+  return (
+    <div>
+      <label className="block text-[10px] text-[#8A8A8A] uppercase font-semibold tracking-wide mb-1">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#A855F7]"
+      />
+    </div>
+  );
+}
+
+function FieldSelect({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-[10px] text-[#8A8A8A] uppercase font-semibold tracking-wide mb-1">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#A855F7]"
+      >
+        <option value="">—</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
     </div>
   );
 }

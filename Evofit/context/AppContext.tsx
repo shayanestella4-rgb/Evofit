@@ -46,18 +46,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const savedSlot      = localStorage.getItem(storageKeySlot());
     const savedPhoto     = localStorage.getItem(STORAGE_KEY_PHOTO);
 
+    let localAnamnese: AnamneseData | null = null;
     if (savedAnamnese) {
-      setAnamnese(JSON.parse(savedAnamnese));
+      localAnamnese = JSON.parse(savedAnamnese);
+      setAnamnese(localAnamnese);
     }
     if (savedExercises) setCompletedExercises(JSON.parse(savedExercises));
     if (savedTask)      setTodayTaskDoneState(JSON.parse(savedTask));
     if (savedSlot)      setOverrideSlotState(JSON.parse(savedSlot));
     if (savedPhoto)     setProfilePhotoState(savedPhoto);
+
+    // Sincroniza com o servidor (só funciona se estiver logado — visitante
+    // do quiz antes de comprar não tem sessão, e isso é esperado). Servidor
+    // manda mais (ex: admin editou o treino da pessoa pelo painel); se o
+    // servidor ainda não tem nada, sobe o que já existe no aparelho.
+    fetch("/api/anamnese")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((res) => {
+        if (!res) return;
+        if (res.data) {
+          setAnamnese(res.data);
+          localStorage.setItem(STORAGE_KEY_ANAMNESE, JSON.stringify(res.data));
+        } else if (localAnamnese) {
+          fetch("/api/anamnese", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: localAnamnese }),
+          }).catch(() => {});
+        }
+      })
+      .catch(() => {});
   }, []);
 
   function saveAnamnese(data: AnamneseData) {
     setAnamnese(data);
     localStorage.setItem(STORAGE_KEY_ANAMNESE, JSON.stringify(data));
+    fetch("/api/anamnese", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data }),
+    }).catch(() => {});
   }
 
   function toggleExercise(id: string) {

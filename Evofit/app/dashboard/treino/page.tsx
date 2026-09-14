@@ -3,13 +3,9 @@
 import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { getWorkoutForDay, getWeekSchedule } from "@/lib/workout";
-import {
-  saveWorkoutLog,
-  loadWorkoutLogs,
-  getUnseenCycleMilestone,
-  markCycleSeen,
-  getProgramStatus,
-} from "@/lib/workoutLog";
+import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/workoutLog";
+import { useCycleStatus } from "@/lib/useCycleStatus";
+import { WORKOUTS_PER_CYCLE } from "@/lib/cycle";
 import { loadWeightLog, saveWeightEntry } from "@/lib/weightLog";
 import type { WeightEntry } from "@/lib/weightLog";
 import Link from "next/link";
@@ -32,7 +28,8 @@ export default function TreinoPage() {
   const [weightInput, setWeightInput] = useState("");
   const [weightLog,   setWeightLog]   = useState<WeightEntry[]>([]);
   const [weightSaved, setWeightSaved] = useState(false);
-  const { cycleNumber } = getProgramStatus();
+  const { status: cycleStatus, setStatus: setCycleStatus } = useCycleStatus();
+  const cycleNumber = cycleStatus.cycleNumber;
 
   const todayIdx = toAppDay(new Date().getDay());
   const [selectedDay, setSelectedDay] = useState<number>(todayIdx);
@@ -72,7 +69,9 @@ export default function TreinoPage() {
     return logs.some((l) => l.dateStr === new Date().toDateString());
   });
 
-  // Loga o treino automaticamente quando todos os exercícios forem concluídos
+  // Loga o treino automaticamente quando todos os exercícios forem concluídos —
+  // localStorage pro heatmap/gráfico (por aparelho), banco pra contar o ciclo de
+  // verdade (120 treinos concluídos, ver lib/cycle.ts) e pro controle no admin.
   useEffect(() => {
     if (!allDone || loggedToday || workout.isRest || !anamnese || isViewing) return;
 
@@ -84,9 +83,25 @@ export default function TreinoPage() {
       exerciseCount: totalEx,
     };
     saveWorkoutLog(entry);
-    const unseen = getUnseenCycleMilestone();
-    if (unseen !== null) setMilestone(unseen);
-  }, [allDone, loggedToday, workout, anamnese, totalEx, isViewing]);
+
+    fetch("/api/workout/complete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workoutName: workout.name, duration: workout.duration }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || typeof data.cycleNumber !== "number") return;
+        setCycleStatus((prev: typeof data) => {
+          // Só comemora quando o total realmente avançou (não em re-render/revisita).
+          if (data.completedTotal > prev.completedTotal && data.completedInCycle === 0) {
+            setMilestone(data.cycleNumber - 1);
+          }
+          return data;
+        });
+      })
+      .catch(() => {});
+  }, [allDone, loggedToday, workout, anamnese, totalEx, isViewing, setCycleStatus]);
 
   // Carrega histórico de carga ao abrir modal de exercício
   useEffect(() => {
@@ -109,7 +124,6 @@ export default function TreinoPage() {
   }
 
   function handleCloseMilestone() {
-    if (milestone !== null) markCycleSeen(milestone);
     setMilestone(null);
   }
 
@@ -444,31 +458,31 @@ export default function TreinoPage() {
         )}
       </div>
 
-      {/* ── Modal de milestone (100, 200, 300… treinos) ──────────────────────── */}
+      {/* ── Modal de milestone (a cada 120 treinos concluídos) ───────────────── */}
       {milestone !== null && (
         <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
           <div className="bg-[#1A1A1A] rounded-[1.5rem] p-6 max-w-sm w-full text-center shadow-2xl">
             <div className="text-6xl mb-3">🏆</div>
             <h2 className="text-2xl font-extrabold text-[#F0F0F0] mb-1">
-              {milestone}º mês concluído!
+              Ciclo {milestone} concluído!
             </h2>
             <p className="text-sm text-[#B8B8B8] leading-relaxed mb-4">
-              Você completou <strong>30 dias de programa</strong> com o Evofit.
+              Você completou <strong>{WORKOUTS_PER_CYCLE} treinos</strong> com o Evofit.
               Isso é dedicação de verdade. Parabéns! 🎉
             </p>
             <div className="bg-[#1E1035] rounded-[0.75rem] p-3 mb-5 border border-[#2D1B4E] text-left">
               <p className="text-xs font-bold text-[#C084FC] mb-1">
-                ⚠️ Hora de renovar seu programa de treino
+                🔄 Hora de atualizar seu plano
               </p>
               <p className="text-xs text-[#C084FC] leading-relaxed">
-                Após 30 dias seu corpo se adaptou aos exercícios atuais.
+                Depois de {WORKOUTS_PER_CYCLE} treinos seu corpo se adaptou aos exercícios atuais.
                 Para continuar evoluindo, atualize sua anamnese e receba um novo programa personalizado.
               </p>
             </div>
             <div className="space-y-2">
               <Link href="/onboarding" onClick={handleCloseMilestone}>
                 <button className="w-full bg-[#A855F7] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors">
-                  🔄 Renovar assinatura agora
+                  🔄 Atualizar minha anamnese
                 </button>
               </Link>
               <button

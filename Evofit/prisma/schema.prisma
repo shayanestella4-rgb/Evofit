@@ -189,3 +189,19 @@ model QuizSession {
 
   @@map("quiz_sessions")
 }
+
+// Marca 1 registro por dia de treino concluído (todos os exercícios feitos).
+// O ciclo de periodização/rotação de exercícios avança a cada 120 concluídos
+// (ver getCycleNumber em lib/cycle.ts) — não mais por dias corridos desde a
+// anamnese. Ligado por email (mesmo padrão de Subscription/QuizSession, sem
+// depender do model User que nunca chegou a ser usado).
+model WorkoutCompletion {
+  id          String   @id @default(cuid())
+  email       String
+  workoutName String?
+  duration    Int?
+  completedAt DateTime @default(now())
+
+  @@index([email])
+  @@map("workout_completions")
+}

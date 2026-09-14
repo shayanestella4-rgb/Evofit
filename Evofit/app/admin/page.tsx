@@ -17,6 +17,17 @@ interface Stats {
     purchased: number;
     funnel: { step: number; label: string; reachedCount: number }[];
   };
+  workouts: {
+    totalCompletions: number;
+    byUser: {
+      email: string;
+      completedTotal: number;
+      cycleNumber: number;
+      completedInCycle: number;
+      remainingInCycle: number;
+      lastCompletedAt: string | null;
+    }[];
+  };
 }
 
 interface Lead {
@@ -185,6 +196,39 @@ export default function AdminPage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Treinos concluídos (ciclo de 120) */}
+            <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6">
+              <h2 className="text-white font-bold text-sm mb-1">Treinos concluídos</h2>
+              <p className="text-[#8A8A8A] text-xs mb-4">
+                O ciclo (fase de treino + variedade de exercícios) muda a cada 120 treinos concluídos por pessoa.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <StatCard label="Total de treinos concluídos" value={stats.workouts.totalCompletions} small />
+              </div>
+
+              {stats.workouts.byUser.length === 0 && (
+                <p className="text-[#6B7280] text-xs">Ninguém concluiu um treino ainda.</p>
+              )}
+              {stats.workouts.byUser.length > 0 && (
+                <div className="space-y-1.5 max-h-96 overflow-y-auto pr-1">
+                  {stats.workouts.byUser.map((u) => (
+                    <div key={u.email} className="flex items-center gap-3 px-3 py-2.5 border border-[#2D2D2D] rounded-lg text-xs">
+                      <span className="flex-1 min-w-0 truncate text-[#F0F0F0]">{u.email}</span>
+                      <span className="text-[#8A8A8A] shrink-0">
+                        {u.completedInCycle}/120 no ciclo {u.cycleNumber}
+                      </span>
+                      <span className="text-[#6B7280] shrink-0 font-semibold">{u.completedTotal} total</span>
+                      {u.lastCompletedAt && (
+                        <span className="text-[#6B7280] shrink-0 hidden sm:inline">
+                          {new Date(u.lastCompletedAt).toLocaleDateString("pt-BR")}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}

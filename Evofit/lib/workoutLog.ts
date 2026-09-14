@@ -7,81 +7,15 @@ export interface WorkoutLog {
   exerciseCount: number;
 }
 
-export interface ProgramStatus {
-  daysInProgram:  number;  // total de dias desde o início do ciclo atual
-  daysInCycle:    number;  // dias dentro do ciclo (0-30, trava em 30 se vencido)
-  daysRemaining:  number;  // dias restantes (0 = vencido)
-  isOverdue:      boolean; // programa vencido (>= 30 dias sem renovar)
-  cycleNumber:    number;  // qual ciclo estamos (1 = primeiro mês, 2 = segundo…)
-  hasStartDate:   boolean; // se o aluno já fez anamnese
-}
-
 // ─── Chaves de storage ────────────────────────────────────────────────────────
 
-const LOG_KEY          = "evofit_workout_log";
-const PROGRAM_START_KEY = "evofit_program_start";
-const cycleSeen         = (n: number) => `evofit_cycle_seen_${n}`;
-
-// ─── Programa de 30 dias ──────────────────────────────────────────────────────
-
-export function setProgramStartDate(dateISO: string) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(PROGRAM_START_KEY, dateISO);
-  }
-}
-
-export function getProgramStartDate(): Date | null {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(PROGRAM_START_KEY);
-  return raw ? new Date(raw) : null;
-}
-
-/** Retorna o status completo do ciclo atual de 30 dias. */
-export function getProgramStatus(): ProgramStatus {
-  const start = getProgramStartDate();
-
-  if (!start) {
-    return { daysInProgram: 0, daysInCycle: 0, daysRemaining: 30, isOverdue: false, cycleNumber: 1, hasStartDate: false };
-  }
-
-  const diffMs     = Date.now() - start.getTime();
-  const daysTotal  = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const isOverdue  = daysTotal >= 30;
-
-  return {
-    daysInProgram: daysTotal,
-    daysInCycle:   isOverdue ? 30 : daysTotal,
-    daysRemaining: isOverdue ? 0  : 30 - daysTotal,
-    isOverdue,
-    cycleNumber:   Math.floor(daysTotal / 30) + 1,
-    hasStartDate:  true,
-  };
-}
-
-/**
- * Retorna o número do ciclo vencido ainda não exibido, ou null.
- * Ex.: após 30 dias → retorna 1 (primeiro ciclo completo).
- */
-export function getUnseenCycleMilestone(): number | null {
-  if (typeof window === "undefined") return null;
-  const start = getProgramStartDate();
-  if (!start) return null;
-
-  const daysTotal = Math.floor((Date.now() - start.getTime()) / (1000 * 60 * 60 * 24));
-  if (daysTotal < 30) return null;
-
-  const cycleCompleted = Math.floor(daysTotal / 30); // ≥ 1
-  const seen = localStorage.getItem(cycleSeen(cycleCompleted)) === "true";
-  return seen ? null : cycleCompleted;
-}
-
-export function markCycleSeen(cycleNumber: number) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(cycleSeen(cycleNumber), "true");
-  }
-}
+const LOG_KEY = "evofit_workout_log";
 
 // ─── Registro de treinos ──────────────────────────────────────────────────────
+// O ciclo de periodização (fase + rotação de exercícios) não usa mais essas
+// datas locais — vem de WorkoutCompletion no banco (ver lib/cycle.ts e
+// lib/useCycleStatus.ts). O que sobra aqui é só o histórico local usado pro
+// heatmap/gráfico semanal do perfil.
 
 export function loadWorkoutLogs(): WorkoutLog[] {
   try {
@@ -104,10 +38,6 @@ export function saveWorkoutLog(entry: WorkoutLog): WorkoutLog[] {
     localStorage.setItem(LOG_KEY, JSON.stringify(updated));
   }
   return updated;
-}
-
-export function getTotalWorkouts(): number {
-  return loadWorkoutLogs().length;
 }
 
 // ─── Dados para gráficos ──────────────────────────────────────────────────────

@@ -4,7 +4,8 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import { getTodayWorkout, getWeekSchedule } from "@/lib/workout";
-import { getProgramStatus, loadWorkoutLogs } from "@/lib/workoutLog";
+import { loadWorkoutLogs } from "@/lib/workoutLog";
+import { useCycleStatus } from "@/lib/useCycleStatus";
 
 // ─── Frases motivacionais ─────────────────────────────────────────────────────
 
@@ -83,8 +84,8 @@ export default function DashboardHome() {
     e.target.value = "";
   }
 
-  const { cycleNumber } = getProgramStatus();
-  const workout      = getTodayWorkout(anamnese, cycleNumber);
+  const { status: cycleStatus } = useCycleStatus();
+  const workout      = getTodayWorkout(anamnese, cycleStatus.cycleNumber);
   const weekSchedule = getWeekSchedule(anamnese);
 
   const userName = anamnese?.nome ?? "você";

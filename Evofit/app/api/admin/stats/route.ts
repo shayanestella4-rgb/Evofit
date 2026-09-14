@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { QUIZ_ITEMS, quizStepLabel } from "@/lib/quiz-items";
+import { computeCycleStatus } from "@/lib/cycle";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
 
@@ -27,6 +28,8 @@ export async function POST(request: NextRequest) {
     purchasedEmails,
     quizEmails,
     stepCounts,
+    totalCompletions,
+    completionsByEmail,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
@@ -39,6 +42,14 @@ export async function POST(request: NextRequest) {
     prisma.subscription.findMany({ where: { status: { not: "INACTIVE" } }, select: { email: true } }),
     prisma.quizSession.findMany({ where: { email: { not: null } }, select: { email: true } }),
     prisma.quizSession.groupBy({ by: ["lastStep"], _count: { lastStep: true } }),
+    prisma.workoutCompletion.count(),
+    prisma.workoutCompletion.groupBy({
+      by: ["email"],
+      _count: { email: true },
+      _max: { completedAt: true },
+      orderBy: { _count: { email: "desc" } },
+      take: 50,
+    }),
   ]);
 
   const byStatus: Record<string, number> = {};
@@ -60,6 +71,12 @@ export async function POST(request: NextRequest) {
     funnel.push({ step, label: quizStepLabel(step - 1), reachedCount });
   }
 
+  const workoutsByUser = completionsByEmail.map((row) => ({
+    email: row.email,
+    lastCompletedAt: row._max.completedAt,
+    ...computeCycleStatus(row._count.email),
+  }));
+
   return NextResponse.json({
     totalUsers,
     newUsersLast7Days,
@@ -72,6 +89,10 @@ export async function POST(request: NextRequest) {
       reachedOffer: quizReachedOffer,
       purchased: quizPurchased,
       funnel,
+    },
+    workouts: {
+      totalCompletions,
+      byUser: workoutsByUser,
     },
   });
 }

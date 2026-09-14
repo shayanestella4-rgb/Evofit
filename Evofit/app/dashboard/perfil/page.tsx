@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import {
   loadWorkoutLogs,
-  getTotalWorkouts,
   getLast30DaysActivity,
   getWeeklyWorkouts,
-  getProgramStatus,
 } from "@/lib/workoutLog";
+import { useCycleStatus } from "@/lib/useCycleStatus";
+import { WORKOUTS_PER_CYCLE } from "@/lib/cycle";
 
 function calcIMC(weight: number, height: number) {
   const h = height / 100;
@@ -96,22 +96,19 @@ export default function PerfilPage() {
   const imcInfo = height > 0 ? imcLabel(Number(imc)) : { label: "—", color: "#CBD5E0" };
 
   // Dados de evolução (carregados do localStorage)
-  const [totalWorkouts, setTotalWorkouts]   = useState(0);
   const [last30Days,    setLast30Days]       = useState<boolean[]>([]);
   const [weeklyData,    setWeeklyData]       = useState<number[]>([]);
 
-  const [programStatus, setProgramStatus] = useState(() => getProgramStatus());
+  const { status: cycleStatus, loaded: cycleLoaded } = useCycleStatus();
 
   useEffect(() => {
-    setTotalWorkouts(getTotalWorkouts());
     setLast30Days(getLast30DaysActivity(30));
     setWeeklyData(getWeeklyWorkouts(7));
-    setProgramStatus(getProgramStatus());
     // Suprimir warning de unused import
     void loadWorkoutLogs;
   }, []);
 
-  const { daysInCycle, daysRemaining, isOverdue, cycleNumber, hasStartDate } = programStatus;
+  const { completedInCycle, cycleNumber } = cycleStatus;
 
   function handleSaveWeight() {
     if (anamnese) saveAnamnese({ ...anamnese, peso: String(weight) });
@@ -203,44 +200,41 @@ export default function PerfilPage() {
       <div className="bg-[#1A1A1A] rounded-[1rem] border border-[#2D2D2D] p-4 mb-4">
         <p className="text-xs font-semibold text-[#C0C0C0] mb-4">🏋️ Evolução de treinos</p>
 
-        {/* Ciclo de 30 dias + total de treinos */}
+        {/* Ciclo de 120 treinos concluídos + total de treinos */}
         <div className="flex items-end justify-between mb-2">
           <div>
-            {hasStartDate ? (
+            {cycleLoaded ? (
               <>
                 <p className="text-3xl font-extrabold text-[#C084FC] leading-none">
-                  {isOverdue ? "30" : daysInCycle}
+                  {completedInCycle}<span className="text-base text-[#CBD5E0]">/{WORKOUTS_PER_CYCLE}</span>
                 </p>
                 <p className="text-[10px] text-[#CBD5E0] mt-0.5">
-                  {isOverdue ? "dias — programa vencido" : `dias no programa (ciclo ${cycleNumber})`}
+                  treinos concluídos (ciclo {cycleNumber})
                 </p>
               </>
             ) : (
               <>
                 <p className="text-3xl font-extrabold text-[#CBD5E0] leading-none">—</p>
-                <p className="text-[10px] text-[#CBD5E0] mt-0.5">faça a anamnese para começar</p>
+                <p className="text-[10px] text-[#CBD5E0] mt-0.5">carregando...</p>
               </>
             )}
           </div>
           <div className="text-right">
-            <p className="text-sm font-bold text-[#C0C0C0]">{totalWorkouts}</p>
+            <p className="text-sm font-bold text-[#C0C0C0]">{cycleStatus.completedTotal}</p>
             <p className="text-[10px] text-[#CBD5E0]">treinos no total</p>
           </div>
         </div>
 
-        {/* Barra de progresso dos 30 dias */}
+        {/* Barra de progresso do ciclo (120 treinos) */}
         <div className="h-2.5 bg-[#1E1035] rounded-full overflow-hidden mb-1">
           <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{
-              width: `${hasStartDate ? Math.round((daysInCycle / 30) * 100) : 0}%`,
-              backgroundColor: isOverdue ? "#EF4444" : "#A855F7",
-            }}
+            className="h-full rounded-full transition-all duration-700 bg-[#A855F7]"
+            style={{ width: `${Math.round((completedInCycle / WORKOUTS_PER_CYCLE) * 100)}%` }}
           />
         </div>
         <div className="flex justify-between text-[10px] text-[#CBD5E0] mb-5">
-          <span>Dia {hasStartDate ? daysInCycle : 0}/30</span>
-          <span>🔄 A cada 30 dias, programa é renovado</span>
+          <span>Treino {completedInCycle}/{WORKOUTS_PER_CYCLE}</span>
+          <span>🔄 A cada {WORKOUTS_PER_CYCLE} treinos, o programa é renovado</span>
         </div>
 
         {/* Heatmap — últimos 30 dias */}
@@ -312,20 +306,10 @@ export default function PerfilPage() {
         </div>
 
         {/* Alerta de renovação */}
-        {isOverdue && (
-          <div className="mt-4 bg-[#2D0808] rounded-[0.75rem] p-3 border border-[#4A0A0A]">
-            <p className="text-xs font-bold text-[#FCA5A5]">
-              ⏰ Seu programa venceu! Renove para continuar evoluindo.
-            </p>
-            <p className="text-[10px] text-[#FCA5A5] mt-0.5 leading-relaxed">
-              30 dias se passaram desde a última anamnese. Atualize seus dados e receba um novo programa.
-            </p>
-          </div>
-        )}
-        {!isOverdue && hasStartDate && daysRemaining <= 5 && daysRemaining > 0 && (
+        {cycleStatus.remainingInCycle <= 5 && (
           <div className="mt-4 bg-[#1E1035] rounded-[0.75rem] p-3 border border-[#2D1B4E]">
             <p className="text-xs font-bold text-[#C084FC]">
-              ⏰ Faltam apenas {daysRemaining} dia{daysRemaining !== 1 ? "s" : ""} para renovar!
+              ⏰ Faltam apenas {cycleStatus.remainingInCycle} treino{cycleStatus.remainingInCycle !== 1 ? "s" : ""} para renovar!
             </p>
             <p className="text-[10px] text-[#C084FC] mt-0.5 leading-relaxed">
               Seu programa será atualizado em breve. Já vá pensando em seus novos objetivos.

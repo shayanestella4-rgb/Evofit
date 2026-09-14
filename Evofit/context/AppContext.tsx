@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { AnamneseData } from "@/lib/types";
-import { setProgramStartDate, getProgramStartDate } from "@/lib/workoutLog";
 import type { ManualSlot } from "@/lib/workout";
 
 const STORAGE_KEY_ANAMNESE = "evofit_anamnese";
@@ -49,11 +48,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     if (savedAnamnese) {
       setAnamnese(JSON.parse(savedAnamnese));
-      // Anamnese pode ter vindo pré-preenchida do quiz de vendas (antes da compra) —
-      // nesse caso o ciclo de 30 dias ainda não foi iniciado, então inicia agora.
-      if (!getProgramStartDate()) {
-        setProgramStartDate(new Date().toISOString());
-      }
     }
     if (savedExercises) setCompletedExercises(JSON.parse(savedExercises));
     if (savedTask)      setTodayTaskDoneState(JSON.parse(savedTask));
@@ -64,8 +58,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function saveAnamnese(data: AnamneseData) {
     setAnamnese(data);
     localStorage.setItem(STORAGE_KEY_ANAMNESE, JSON.stringify(data));
-    // Reinicia o ciclo de 30 dias sempre que a anamnese é salva/renovada
-    setProgramStartDate(new Date().toISOString());
   }
 
   function toggleExercise(id: string) {

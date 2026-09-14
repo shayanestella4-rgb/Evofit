@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { getWorkoutForDay, getWeekSchedule } from "@/lib/workout";
+import { getWorkoutForDay, getWorkoutFromExerciseIds, getWeekSchedule } from "@/lib/workout";
 import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/workoutLog";
 import { useCycleStatus } from "@/lib/useCycleStatus";
+import { useWorkoutOverrides } from "@/lib/useWorkoutOverrides";
 import { WORKOUTS_PER_CYCLE } from "@/lib/cycle";
 import { loadWeightLog, saveWeightEntry } from "@/lib/weightLog";
 import type { WeightEntry } from "@/lib/weightLog";
@@ -50,9 +51,13 @@ export default function TreinoPage() {
     .map((d, i) => ({ ...d, idx: i }))
     .filter((d) => d.isTraining);
 
+  const overrides = useWorkoutOverrides();
   const selectedTempo = timeOverride[selectedDay] ?? anamnese?.tempoTreino ?? "1h30";
   const effectiveAnamnese = anamnese ? { ...anamnese, tempoTreino: selectedTempo } : null;
-  const workout    = getWorkoutForDay(effectiveAnamnese, selectedDay, cycleNumber);
+  const manualIds = overrides[selectedDay];
+  const workout = manualIds && effectiveAnamnese
+    ? getWorkoutFromExerciseIds(effectiveAnamnese, manualIds, cycleNumber)
+    : getWorkoutForDay(effectiveAnamnese, selectedDay, cycleNumber);
   const isViewing  = selectedDay !== todayIdx;
 
   const doneCount = workout.exercises.filter((ex) =>

@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { getExerciseCatalog } from "@/lib/workout";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
+const DAY_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+const GROUP_LABELS: Record<string, string> = {
+  quadriceps: "Quadríceps", gluteos: "Glúteos", posteriores: "Posteriores", panturrilha: "Panturrilha",
+  peito: "Peito", costas: "Costas", ombros: "Ombros", biceps: "Bíceps", triceps: "Tríceps",
+  core: "Abdômen", trapezio: "Trapézio", antebraco: "Antebraço", cardio: "Cardio",
+};
 
 interface Stats {
   totalUsers: number;
@@ -91,19 +98,35 @@ export default function AdminPage() {
   const [anamneseStatus, setAnamneseStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
   const [anamneseMessage, setAnamneseMessage] = useState("");
 
+  const [overridesByDay, setOverridesByDay] = useState<Record<number, string[]>>({});
+  const [overrideDay, setOverrideDay] = useState(0);
+  const [overrideSearch, setOverrideSearch] = useState("");
+  const [overrideStatus, setOverrideStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const catalog = useMemo(() => getExerciseCatalog(), []);
+  const catalogById = useMemo(() => new Map(catalog.map((e) => [e.id, e])), [catalog]);
+
   async function loadAnamnese() {
     const target = anamneseEmail.trim().toLowerCase();
     if (!target) return;
     setAnamneseStatus("loading");
     setAnamneseMessage("");
+    setOverrideStatus("idle");
     try {
-      const res = await fetch("/api/admin/anamnese", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
-      });
-      const result = await res.json();
-      if (!res.ok) {
+      const [anamneseRes, overridesRes] = await Promise.all([
+        fetch("/api/admin/anamnese", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
+        }),
+        fetch("/api/admin/overrides", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
+        }),
+      ]);
+      const result = await anamneseRes.json();
+      const overridesResult = await overridesRes.json();
+      if (!anamneseRes.ok) {
         setAnamneseStatus("error");
         setAnamneseMessage(result.error || "Erro ao buscar.");
         return;
@@ -115,6 +138,9 @@ export default function AdminPage() {
         setAnamneseForm({ ...BLANK_ANAMNESE });
         setAnamneseFound(false);
       }
+      setOverridesByDay(overridesResult.overrides ?? {});
+      setOverrideDay(0);
+      setOverrideSearch("");
       setAnamneseStatus("idle");
     } catch {
       setAnamneseStatus("error");
@@ -162,6 +188,51 @@ export default function AdminPage() {
       }
       return { ...prev, lesoes };
     });
+  }
+
+  function toggleOverrideExercise(id: string) {
+    setOverridesByDay((prev) => {
+      const current = prev[overrideDay] ?? [];
+      const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+      return { ...prev, [overrideDay]: next };
+    });
+  }
+
+  async function saveOverrideDay() {
+    const target = anamneseEmail.trim().toLowerCase();
+    if (!target) return;
+    setOverrideStatus("saving");
+    try {
+      const res = await fetch("/api/admin/overrides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, email: target, dayIdx: overrideDay, exerciseIds: overridesByDay[overrideDay] ?? [] }),
+      });
+      setOverrideStatus(res.ok ? "saved" : "error");
+    } catch {
+      setOverrideStatus("error");
+    }
+  }
+
+  async function clearOverrideDay() {
+    const target = anamneseEmail.trim().toLowerCase();
+    if (!target) return;
+    setOverrideStatus("saving");
+    try {
+      const res = await fetch("/api/admin/overrides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, email: target, dayIdx: overrideDay, exerciseIds: [] }),
+      });
+      if (res.ok) {
+        setOverridesByDay((prev) => ({ ...prev, [overrideDay]: [] }));
+        setOverrideStatus("saved");
+      } else {
+        setOverrideStatus("error");
+      }
+    } catch {
+      setOverrideStatus("error");
+    }
   }
 
   const loadStats = useCallback(async () => {
@@ -485,6 +556,117 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+
+        {/* Treino manual por dia (substitui o algoritmo nesse dia) */}
+        {anamneseForm && (
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 className="text-white font-bold text-sm">Treino manual por dia</h2>
+              <p className="text-[#8A8A8A] text-xs mt-1">
+                Escolhe o dia e monta a lista de exercícios exata pra essa pessoa — esse dia
+                para de usar o algoritmo automático até você limpar de novo.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {DAY_NAMES.map((name, i) => {
+                const count = (overridesByDay[i] ?? []).length;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => { setOverrideDay(i); setOverrideStatus("idle"); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                      overrideDay === i
+                        ? "bg-[#A855F7] border-[#A855F7] text-white"
+                        : count > 0
+                        ? "bg-[#1E1035] border-[#A855F7] text-[#C084FC]"
+                        : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
+                    }`}
+                  >
+                    {name.slice(0, 3)}{count > 0 ? ` · ${count}` : ""}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div>
+              <p className="text-[10px] text-[#8A8A8A] uppercase font-semibold tracking-wide mb-2">
+                Selecionados pra {DAY_NAMES[overrideDay]} ({(overridesByDay[overrideDay] ?? []).length})
+              </p>
+              {(overridesByDay[overrideDay] ?? []).length === 0 ? (
+                <p className="text-[11px] text-[#6B7280]">Nenhum — esse dia usa o algoritmo automático normalmente.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {(overridesByDay[overrideDay] ?? []).map((id) => (
+                    <button
+                      key={id}
+                      onClick={() => toggleOverrideExercise(id)}
+                      className="flex items-center gap-1.5 bg-[#1E1035] border border-[#A855F7] text-[#C084FC] text-[11px] px-2.5 py-1 rounded-lg"
+                      title="Clique pra remover"
+                    >
+                      {catalogById.get(id)?.name ?? id} <span className="text-[#8A8A8A]">✕</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <input
+                type="text"
+                value={overrideSearch}
+                onChange={(e) => setOverrideSearch(e.target.value)}
+                placeholder="Buscar exercício pra adicionar (ex: supino, glúteo, esteira...)"
+                className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm mb-2 focus:outline-none focus:border-[#A855F7]"
+              />
+              <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
+                {catalog
+                  .filter((ex) =>
+                    overrideSearch.trim().length === 0 ||
+                    ex.name.toLowerCase().includes(overrideSearch.toLowerCase()) ||
+                    (GROUP_LABELS[ex.group] ?? ex.group).toLowerCase().includes(overrideSearch.toLowerCase())
+                  )
+                  .map((ex) => {
+                    const selected = (overridesByDay[overrideDay] ?? []).includes(ex.id);
+                    return (
+                      <button
+                        key={ex.id}
+                        onClick={() => toggleOverrideExercise(ex.id)}
+                        className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg text-xs text-left border transition-colors ${
+                          selected
+                            ? "bg-[#1E1035] border-[#A855F7] text-[#C084FC]"
+                            : "bg-[#111] border-[#2D2D2D] text-[#C0C0C0] hover:border-[#3A3A3A]"
+                        }`}
+                      >
+                        <span className="truncate">{ex.name}</span>
+                        <span className="text-[10px] text-[#6B7280] shrink-0">{GROUP_LABELS[ex.group] ?? ex.group}</span>
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+
+            {overrideStatus === "saved" && <p className="text-xs text-green-400">✓ Salvo.</p>}
+            {overrideStatus === "error" && <p className="text-xs text-red-400">Erro ao salvar.</p>}
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={saveOverrideDay}
+                disabled={overrideStatus === "saving"}
+                className="bg-[#A855F7] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
+              >
+                {overrideStatus === "saving" ? "Salvando..." : `💾 Salvar ${DAY_NAMES[overrideDay]}`}
+              </button>
+              <button
+                onClick={clearOverrideDay}
+                disabled={overrideStatus === "saving" || (overridesByDay[overrideDay] ?? []).length === 0}
+                className="bg-[#252525] text-white font-semibold py-3 rounded-lg text-sm disabled:opacity-50"
+              >
+                ↩️ Voltar ao automático
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Liberar/revogar acesso manual */}
         <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">

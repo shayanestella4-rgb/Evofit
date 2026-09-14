@@ -220,3 +220,19 @@ model UserAnamnese {
 
   @@map("user_anamnese")
 }
+
+// Treino manual (dia inteiro) escolhido pelo /admin pra uma pessoa —
+// substitui o algoritmo automático nesse dia da semana até ser removido.
+// exerciseIds guarda a lista de ids na ordem escolhida (ver getExerciseCatalog
+// e getWorkoutFromExerciseIds em lib/workout.ts).
+model UserWorkoutOverride {
+  id          String   @id @default(cuid())
+  email       String
+  dayIdx      Int      // 0=Seg … 6=Dom
+  exerciseIds Json
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@unique([email, dayIdx])
+  @@map("user_workout_overrides")
+}

@@ -1491,6 +1491,87 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   };
 }
 
+/** Catálogo achatado (id, nome, grupo) de toda a biblioteca — usado no editor manual do /admin. */
+export function getExerciseCatalog(): { id: string; name: string; group: MuscleGroup | "cardio" }[] {
+  const catalog: { id: string; name: string; group: MuscleGroup | "cardio" }[] = [];
+  for (const group of Object.keys(LIBRARY) as MuscleGroup[]) {
+    for (const ex of LIBRARY[group]) catalog.push({ id: ex.id, name: ex.name, group });
+  }
+  for (const c of CARDIO_LIBRARY) catalog.push({ id: c.id, name: c.name, group: "cardio" });
+  return catalog;
+}
+
+function findExerciseDef(id: string): (ExerciseDef & { group: MuscleGroup }) | null {
+  for (const group of Object.keys(LIBRARY) as MuscleGroup[]) {
+    const found = LIBRARY[group].find((ex) => ex.id === id);
+    if (found) return { ...found, group };
+  }
+  return null;
+}
+
+/**
+ * Monta o treino do dia a partir de uma lista fixa de ids escolhida
+ * manualmente (via /admin) — ignora o algoritmo de seleção automática pra
+ * esse dia específico. Ainda usa a prescrição de séries/descanso da
+ * periodização normal (fase do ciclo), só não filtra por lesão/nível —
+ * a escolha já é uma decisão explícita de quem está montando.
+ */
+export function getWorkoutFromExerciseIds(
+  anamnese: AnamneseData,
+  exerciseIds: string[],
+  cycleNumber: number = 1
+): DayWorkout {
+  const { objetivo = "Mais disposição e saúde", nivel = "Iniciante (nunca treinei)", lesoes = [], lesoesDetalhe } = anamnese;
+  const injuries = resolveInjuries(lesoes, lesoesDetalhe);
+  const cautionGroups = getCautionGroups(injuries);
+  const base = getBaseSetsRest(objetivo, nivel, cycleNumber);
+
+  const exercises: Exercise[] = [];
+  for (const id of exerciseIds) {
+    const cardio = CARDIO_LIBRARY.find((c) => c.id === id);
+    if (cardio) {
+      exercises.push({
+        id:     cardio.id,
+        name:   cardio.name,
+        muscle: "Cardio",
+        sets:   "20-30 min",
+        rest:   "—",
+        tip:    "Ritmo moderado e constante — o objetivo é queimar calorias extras sem prejudicar a recuperação do treino de força.",
+        gif:    GIF_MAP[cardio.id] ?? undefined,
+        video:  VIDEO_MAP[cardio.id] ?? undefined,
+      });
+      continue;
+    }
+    const def = findExerciseDef(id);
+    if (!def) continue; // id inválido/removido da biblioteca — ignora silenciosamente
+    exercises.push({
+      id:     def.id,
+      name:   def.name,
+      muscle: def.primaryMuscle,
+      sets:   `${base.sets}x${base.reps}`,
+      rest:   base.rest,
+      tip:    base.tip,
+      gif:    GIF_MAP[def.id] ?? undefined,
+      video:  VIDEO_MAP[def.id] ?? undefined,
+      jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
+    });
+  }
+
+  const restSeconds = parseRestSeconds(base.rest);
+  const timePerEx   = base.sets * (1.5 + restSeconds / 60);
+  const mainCount   = exercises.filter((e) => e.muscle !== "Cardio").length;
+  const duration    = estimateDuration(mainCount, timePerEx, 0, 0);
+
+  return {
+    name:        "Treino personalizado",
+    emoji:       "✍️",
+    muscleLabel: "Montado manualmente",
+    duration,
+    exercises,
+    isRest: exercises.length === 0,
+  };
+}
+
 /** Retorna o treino personalizado para o dia atual com base no gênero e objetivos */
 export function getTodayWorkout(anamnese: AnamneseData | null, cycleNumber: number = 1): DayWorkout {
   const jsDay  = new Date().getDay();

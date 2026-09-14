@@ -3,9 +3,10 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
-import { getTodayWorkout, getWeekSchedule } from "@/lib/workout";
+import { getTodayWorkout, getWorkoutFromExerciseIds, getWeekSchedule } from "@/lib/workout";
 import { loadWorkoutLogs } from "@/lib/workoutLog";
 import { useCycleStatus } from "@/lib/useCycleStatus";
+import { useWorkoutOverrides } from "@/lib/useWorkoutOverrides";
 
 // ─── Frases motivacionais ─────────────────────────────────────────────────────
 
@@ -85,8 +86,17 @@ export default function DashboardHome() {
   }
 
   const { status: cycleStatus } = useCycleStatus();
-  const workout      = getTodayWorkout(anamnese, cycleStatus.cycleNumber);
+  const overrides = useWorkoutOverrides();
   const weekSchedule = getWeekSchedule(anamnese);
+
+  // Dia atual (Seg=0...Dom=6)
+  const jsDay = new Date().getDay();
+  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+
+  const todayManualIds = overrides[todayIndex];
+  const workout = todayManualIds && anamnese
+    ? getWorkoutFromExerciseIds(anamnese, todayManualIds, cycleStatus.cycleNumber)
+    : getTodayWorkout(anamnese, cycleStatus.cycleNumber);
 
   const userName = anamnese?.nome ?? "você";
   const hour = new Date().getHours();
@@ -99,10 +109,6 @@ export default function DashboardHome() {
   ).length;
   const totalEx = workout.exercises.length;
   const workoutProgress = totalEx > 0 ? (doneCount / totalEx) * 100 : 0;
-
-  // Dia atual (Seg=0...Dom=6)
-  const jsDay = new Date().getDay();
-  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
 
   // Datas dos treinos realmente realizados (do localStorage)
   const loggedDates = useState<Set<string>>(() => {

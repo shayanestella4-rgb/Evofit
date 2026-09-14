@@ -119,6 +119,29 @@ export default function PerfilPage() {
     router.push("/");
   }
 
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelStatus, setCancelStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [cancelError, setCancelError] = useState("");
+
+  async function handleCancelSubscription() {
+    setCancelStatus("loading");
+    setCancelError("");
+    try {
+      const res = await fetch("/api/subscription/cancel", { method: "POST" });
+      const result = await res.json();
+      if (!res.ok) {
+        setCancelStatus("error");
+        setCancelError(result.error || "Erro ao cancelar. Tente de novo ou peça suporte via WhatsApp.");
+        return;
+      }
+      // Continua com acesso até o fim do período já pago — não desloga nem redireciona.
+      setCancelStatus("success");
+    } catch {
+      setCancelStatus("error");
+      setCancelError("Erro de conexão. Tente de novo ou peça suporte via WhatsApp.");
+    }
+  }
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
       <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-6">Perfil</h1>
@@ -402,6 +425,14 @@ export default function PerfilPage() {
         ))}
       </div>
 
+      {/* Cancelar assinatura */}
+      <button
+        onClick={() => setShowCancelConfirm(true)}
+        className="w-full text-center text-[#8A8A8A] text-xs py-2 mb-3 hover:text-[#C0C0C0] transition-colors underline"
+      >
+        Cancelar assinatura
+      </button>
+
       {/* Sair */}
       <button
         onClick={handleLogout}
@@ -409,6 +440,57 @@ export default function PerfilPage() {
       >
         Sair da conta
       </button>
+
+      {/* Modal de confirmação de cancelamento */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1A1A1A] rounded-[1.5rem] p-6 max-w-sm w-full shadow-2xl">
+            {cancelStatus === "success" ? (
+              <>
+                <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-2">Assinatura cancelada</h2>
+                <p className="text-sm text-[#B8B8B8] leading-relaxed mb-5">
+                  Você não será mais cobrado(a). Continua com acesso normal ao Evofit até o fim
+                  do período que já pagou.
+                </p>
+                <button
+                  onClick={() => { setShowCancelConfirm(false); setCancelStatus("idle"); }}
+                  className="w-full bg-[#A855F7] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors"
+                >
+                  Entendi
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-2">Cancelar assinatura?</h2>
+                <p className="text-sm text-[#B8B8B8] leading-relaxed mb-4">
+                  Isso encerra sua assinatura na Cakto — você não será mais cobrado(a).
+                  Você continua com acesso ao Evofit até o fim do período que já pagou.
+                  Não há reembolso do período já pago.
+                </p>
+                {cancelError && (
+                  <p className="text-xs text-red-400 mb-4">{cancelError}</p>
+                )}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleCancelSubscription}
+                    disabled={cancelStatus === "loading"}
+                    className="w-full bg-[#EF4444] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#DC2626] transition-colors disabled:opacity-50"
+                  >
+                    {cancelStatus === "loading" ? "Cancelando..." : "Sim, cancelar assinatura"}
+                  </button>
+                  <button
+                    onClick={() => { setShowCancelConfirm(false); setCancelStatus("idle"); setCancelError(""); }}
+                    disabled={cancelStatus === "loading"}
+                    className="w-full text-sm text-[#CBD5E0] py-2 hover:text-[#C0C0C0] transition-colors"
+                  >
+                    Voltar
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

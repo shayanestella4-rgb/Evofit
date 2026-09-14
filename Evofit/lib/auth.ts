@@ -15,8 +15,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const subscription = await prisma.subscription.findUnique({
           where: { email },
         });
+        if (!subscription) return null;
 
-        if (!subscription || subscription.status !== "ACTIVE") return null;
+        // Cancelada ainda pode logar até o fim do período já pago (ver
+        // dashboard/layout.tsx e Termos de Uso, seção 6) — só bloqueia de
+        // vez se nunca ativou, foi reembolsada, ou o período já passou.
+        const now = new Date();
+        const canLogin =
+          subscription.status === "ACTIVE" ||
+          (subscription.status === "CANCELLED" && !!subscription.expiresAt && subscription.expiresAt > now);
+        if (!canLogin) return null;
 
         return { id: email, email };
       },

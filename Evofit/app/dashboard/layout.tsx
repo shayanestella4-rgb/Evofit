@@ -16,10 +16,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     where: { email: session.user.email },
   });
 
+  // Cancelada mantém acesso até o fim do período já pago (ver Termos de Uso,
+  // seção 6) — só corta na hora se for reembolso/estorno ou nunca ter sido
+  // ativada. Por isso CANCELLED entra no mesmo cálculo de expiresAt que ACTIVE,
+  // em vez de barrar na hora.
   const now = new Date();
-  const isActive =
-    subscription?.status === "ACTIVE" &&
-    (!subscription.expiresAt || subscription.expiresAt > now);
+  let isActive = false;
+  if (subscription?.status === "ACTIVE") {
+    isActive = !subscription.expiresAt || subscription.expiresAt > now;
+  } else if (subscription?.status === "CANCELLED") {
+    isActive = !!subscription.expiresAt && subscription.expiresAt > now;
+  }
 
   if (!isActive) {
     redirect("/sem-acesso");

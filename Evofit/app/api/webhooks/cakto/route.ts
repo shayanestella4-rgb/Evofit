@@ -60,14 +60,22 @@ export async function POST(request: NextRequest) {
 
   switch (event) {
     case "purchase_approved":
-    case "subscription_renewed":
-      await setSubscription(email, "ACTIVE", caktoId);
+    case "subscription_renewed": {
+      // Renova o período pago por mais 30 dias a partir de agora — é essa data
+      // que "cancelamento mantém acesso até o fim do período" (Termos de Uso,
+      // seção 6) usa depois, se a assinatura for cancelada.
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
+      await setSubscription(email, "ACTIVE", caktoId, expiresAt);
       break;
+    }
     case "purchase_refunded":
     case "purchase_chargeback":
+      // Reembolso corta o acesso na hora — não faz sentido manter até expiresAt.
       await setSubscription(email, "REFUNDED", caktoId);
       break;
     case "subscription_cancelled":
+      // Não mexe em expiresAt — mantém o que já tinha, pra honrar o período já pago.
       await setSubscription(email, "CANCELLED", caktoId);
       break;
   }
@@ -78,11 +86,12 @@ export async function POST(request: NextRequest) {
 async function setSubscription(
   email: string,
   status: SubscriptionStatus,
-  caktoId?: string
+  caktoId?: string,
+  expiresAt?: Date
 ) {
   await prisma.subscription.upsert({
     where: { email },
-    create: { email, status, caktoId },
-    update: { status, ...(caktoId && { caktoId }) },
+    create: { email, status, caktoId, expiresAt },
+    update: { status, ...(caktoId && { caktoId }), ...(expiresAt && { expiresAt }) },
   });
 }

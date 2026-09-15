@@ -1,10 +1,85 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { CAKTO_CHECKOUT_URL } from "@/lib/constants";
 
 function goToCakto() {
   window.location.href = CAKTO_CHECKOUT_URL;
+}
+
+const FAQ = [
+  {
+    q: "E se eu quiser cancelar?",
+    a: "Você cancela quando quiser, pelo seu próprio painel, em dois cliques. Não tem fidelidade, não tem multa e não precisa pedir autorização para ninguém. Seu acesso continua até o fim do período que você já pagou.",
+  },
+  {
+    q: "Por quanto tempo tenho acesso ao material?",
+    a: "Enquanto sua assinatura estiver ativa, você tem acesso a tudo: os treinos do mês, os meses anteriores que já estão na plataforma, os vídeos de execução e o material de alimentação. Se cancelar, o acesso vai até o fim do período já pago.",
+  },
+  {
+    q: "Os treinos só são de academia?",
+    a: "Não, você tem acesso aos treinos executados em academia, mas também tem os HIITs de muay thai para fazer em casa.",
+  },
+  {
+    q: "Tem suporte para tirar dúvidas e corrigir exercícios?",
+    a: "Sim. Nosso time de personais está disponível de segunda a sexta para te auxiliar com qualquer dúvida e corrigir seus exercícios, acompanhando sua evolução de perto pelo WhatsApp.",
+  },
+  {
+    q: "Posso treinar mesmo começando do zero?",
+    a: "Sim. Os treinos são organizados por nível — iniciante, intermediário e avançado — e o suporte pelo WhatsApp ajuda você a começar pelo caminho mais adequado.",
+  },
+  {
+    q: "Como funciona a garantia?",
+    a: "Você tem 7 dias após a compra para solicitar o reembolso integral, conforme o Código de Defesa do Consumidor. Basta entrar em contato pelo suporte — sem burocracia.",
+  },
+];
+
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <div className="mb-4">
+      <span className="inline-block bg-[#1E1035] text-[#C084FC] text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">
+        Perguntas frequentes
+      </span>
+      <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-1">
+        Ainda tem alguma <span className="text-[#C084FC]">dúvida?</span>
+      </h2>
+      <p className="text-sm text-[#8A8A8A] mb-5">
+        Tudo o que você precisa saber antes de começar o Evofit.
+      </p>
+
+      <div className="space-y-2.5">
+        {FAQ.map((item, i) => {
+          const isOpen = openIndex === i;
+          return (
+            <div
+              key={item.q}
+              className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[0.75rem] overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left"
+              >
+                <span className="text-sm font-semibold text-[#F0F0F0]">{item.q}</span>
+                <span
+                  className={`shrink-0 w-6 h-6 rounded-full border border-[#3A3A3A] flex items-center justify-center text-[#8A8A8A] text-xs transition-transform ${
+                    isOpen ? "rotate-180 border-[#A855F7] text-[#C084FC]" : ""
+                  }`}
+                >
+                  ▾
+                </span>
+              </button>
+              {isOpen && (
+                <p className="px-4 pb-4 text-xs text-[#8A8A8A] leading-relaxed">{item.a}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 const BENEFICIOS = [
@@ -207,6 +282,11 @@ export default function OfertaPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Perguntas frequentes */}
+        <div className="mb-6 animate-slide-up">
+          <FaqAccordion />
         </div>
 
         {/* Preço */}

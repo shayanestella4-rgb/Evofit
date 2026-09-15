@@ -124,7 +124,7 @@ const DEPOIMENTOS_FOTOS = [
 const COMPARACAO = [
   { item: "Personal trainer", custo: "R$ 300+/mês" },
   { item: "Nutricionista", custo: "R$ 200+/mês" },
-  { item: "Evofit (treino + dieta + suporte)", custo: "R$ 27/mês", destaque: true },
+  { item: "Evofit (treino + dieta + suporte)", custo: "R$ 37/mês", destaque: true },
 ];
 
 export default function OfertaPage() {

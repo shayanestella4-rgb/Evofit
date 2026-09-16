@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { getExerciseCatalog } from "@/lib/workout";
+import type { ManualExerciseEntry, ManualTechnique } from "@/lib/workout";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
 const DAY_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -10,6 +11,14 @@ const GROUP_LABELS: Record<string, string> = {
   peito: "Peito", costas: "Costas", ombros: "Ombros", biceps: "Bíceps", triceps: "Tríceps",
   core: "Abdômen", trapezio: "Trapézio", antebraco: "Antebraço", cardio: "Cardio",
 };
+const TECHNIQUE_LABELS: Record<"" | ManualTechnique, string> = {
+  "": "Normal", dropset: "🔥 Dropset", cluster: "⚡ Cluster set", restpause: "⏸️ Rest-pause", biset: "🔗 Bi-set (com o próximo)",
+};
+
+function normalizeEntries(raw: unknown): ManualExerciseEntry[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((e) => (typeof e === "string" ? { id: e } : e));
+}
 
 interface Stats {
   totalUsers: number;
@@ -98,7 +107,7 @@ export default function AdminPage() {
   const [anamneseStatus, setAnamneseStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
   const [anamneseMessage, setAnamneseMessage] = useState("");
 
-  const [overridesByDay, setOverridesByDay] = useState<Record<number, string[]>>({});
+  const [overridesByDay, setOverridesByDay] = useState<Record<number, ManualExerciseEntry[]>>({});
   const [overrideDay, setOverrideDay] = useState(0);
   const [overrideSearch, setOverrideSearch] = useState("");
   const [overrideStatus, setOverrideStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -138,7 +147,12 @@ export default function AdminPage() {
         setAnamneseForm({ ...BLANK_ANAMNESE });
         setAnamneseFound(false);
       }
-      setOverridesByDay(overridesResult.overrides ?? {});
+      const rawOverrides = overridesResult.overrides ?? {};
+      const normalized: Record<number, ManualExerciseEntry[]> = {};
+      for (const key of Object.keys(rawOverrides)) {
+        normalized[Number(key)] = normalizeEntries(rawOverrides[key]);
+      }
+      setOverridesByDay(normalized);
       setOverrideDay(0);
       setOverrideSearch("");
       setAnamneseStatus("idle");
@@ -193,7 +207,23 @@ export default function AdminPage() {
   function toggleOverrideExercise(id: string) {
     setOverridesByDay((prev) => {
       const current = prev[overrideDay] ?? [];
-      const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+      const next = current.some((e) => e.id === id)
+        ? current.filter((e) => e.id !== id)
+        : [...current, { id }];
+      return { ...prev, [overrideDay]: next };
+    });
+  }
+
+  function setOverrideTechnique(id: string, technique: "" | ManualTechnique) {
+    setOverridesByDay((prev) => {
+      const current = prev[overrideDay] ?? [];
+      const next = current.map((e) =>
+        e.id === id
+          ? technique
+            ? { ...e, technique }
+            : { id: e.id }
+          : e
+      );
       return { ...prev, [overrideDay]: next };
     });
   }
@@ -591,7 +621,10 @@ export default function AdminPage() {
               <h2 className="text-white font-bold text-sm">Treino manual por dia</h2>
               <p className="text-[#8A8A8A] text-xs mt-1">
                 Escolhe o dia e monta a lista de exercícios exata pra essa pessoa — esse dia
-                para de usar o algoritmo automático até você limpar de novo.
+                para de usar o algoritmo automático até você limpar de novo. Pra cada exercício
+                dá pra escolher uma técnica (dropset, cluster, rest-pause). No bi-set, marque a
+                técnica no primeiro exercício da dupla — ele se junta automaticamente com o
+                próximo da lista, então adicione os dois em sequência.
               </p>
             </div>
 
@@ -624,15 +657,30 @@ export default function AdminPage() {
                 <p className="text-[11px] text-[#6B7280]">Nenhum — esse dia usa o algoritmo automático normalmente.</p>
               ) : (
                 <div className="flex flex-wrap gap-1.5">
-                  {(overridesByDay[overrideDay] ?? []).map((id) => (
-                    <button
-                      key={id}
-                      onClick={() => toggleOverrideExercise(id)}
-                      className="flex items-center gap-1.5 bg-[#1E1035] border border-[#A855F7] text-[#C084FC] text-[11px] px-2.5 py-1 rounded-lg"
-                      title="Clique pra remover"
+                  {(overridesByDay[overrideDay] ?? []).map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="flex items-center gap-1.5 bg-[#1E1035] border border-[#A855F7] text-[#C084FC] text-[11px] pl-2.5 pr-1 py-1 rounded-lg"
                     >
-                      {catalogById.get(id)?.name ?? id} <span className="text-[#8A8A8A]">✕</span>
-                    </button>
+                      <span>{catalogById.get(entry.id)?.name ?? entry.id}</span>
+                      <select
+                        value={entry.technique ?? ""}
+                        onChange={(e) => setOverrideTechnique(entry.id, e.target.value as "" | ManualTechnique)}
+                        className="bg-[#111] border border-[#3A2159] rounded text-[10px] text-[#C084FC] px-1 py-0.5 focus:outline-none"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {Object.entries(TECHNIQUE_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => toggleOverrideExercise(entry.id)}
+                        title="Clique pra remover"
+                        className="text-[#8A8A8A] hover:text-white px-0.5"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -654,7 +702,7 @@ export default function AdminPage() {
                     (GROUP_LABELS[ex.group] ?? ex.group).toLowerCase().includes(overrideSearch.toLowerCase())
                   )
                   .map((ex) => {
-                    const selected = (overridesByDay[overrideDay] ?? []).includes(ex.id);
+                    const selected = (overridesByDay[overrideDay] ?? []).some((e) => e.id === ex.id);
                     return (
                       <button
                         key={ex.id}

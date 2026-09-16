@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ManualExerciseEntry } from "./workout";
 
-/** Busca os treinos manuais (definidos pelo /admin) do usuário logado — {dayIdx: exerciseIds[]}. */
+/** Busca os treinos manuais (definidos pelo /admin) do usuário logado — {dayIdx: entries[]}. */
 export function useWorkoutOverrides() {
-  const [overrides, setOverrides] = useState<Record<number, string[]>>({});
+  const [overrides, setOverrides] = useState<Record<number, (string | ManualExerciseEntry)[]>>({});
 
   useEffect(() => {
     fetch("/api/workout/overrides")

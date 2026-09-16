@@ -1516,9 +1516,45 @@ function findExerciseDef(id: string): (ExerciseDef & { group: MuscleGroup }) | n
  * periodização normal (fase do ciclo), só não filtra por lesão/nível —
  * a escolha já é uma decisão explícita de quem está montando.
  */
+export type ManualTechnique = "dropset" | "cluster" | "restpause" | "biset";
+
+export interface ManualExerciseEntry {
+  id: string;
+  technique?: ManualTechnique;
+}
+
+// Prescrições fixas por técnica — independem de objetivo/nível porque aqui é
+// escolha explícita de quem está montando o treino manual, não periodização
+// automática (ver getAdvancedTechnique, que é a versão automática/mensal
+// dessas mesmas técnicas). Bi-set não tem SetsRest própria — usa a base do
+// exercício, só muda o texto do descanso (ver pareamento abaixo).
+const MANUAL_TECHNIQUE_PRESCRIPTIONS: Record<Exclude<ManualTechnique, "biset">, SetsRest> = {
+  dropset: {
+    sets: 3, reps: "12+8", rest: "60s",
+    tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico nessa série.",
+  },
+  cluster: {
+    sets: 4, reps: "8+4", rest: "90s",
+    tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita.",
+  },
+  restpause: {
+    sets: 4, reps: "6-8 + rest-pause", rest: "2min",
+    tip: "⏸️ Rest-pause: leve a série quase à falha, descanse só 15s sem soltar o peso, e faça mais 4-6 reps. Repita esse mini-descanso mais uma vez.",
+  },
+};
+
+/**
+ * Monta o treino do dia a partir de uma lista fixa de exercícios escolhida
+ * manualmente (via /admin) — ignora o algoritmo de seleção automática pra
+ * esse dia específico. Cada exercício pode ter uma técnica própria (dropset/
+ * cluster/rest-pause muda só a prescrição dele; bi-set pareia com o PRÓXIMO
+ * item da lista — os dois ficam sem pausa entre si). Sem técnica, usa a
+ * prescrição normal da periodização (fase do ciclo). Não filtra por lesão/
+ * nível — a escolha já é uma decisão explícita de quem está montando.
+ */
 export function getWorkoutFromExerciseIds(
   anamnese: AnamneseData,
-  exerciseIds: string[],
+  entries: (string | ManualExerciseEntry)[],
   cycleNumber: number = 1
 ): DayWorkout {
   const { objetivo = "Mais disposição e saúde", nivel = "Iniciante (nunca treinei)", lesoes = [], lesoesDetalhe } = anamnese;
@@ -1526,8 +1562,15 @@ export function getWorkoutFromExerciseIds(
   const cautionGroups = getCautionGroups(injuries);
   const base = getBaseSetsRest(objetivo, nivel, cycleNumber);
 
+  const normalized: ManualExerciseEntry[] = entries.map((e) => (typeof e === "string" ? { id: e } : e));
+
   const exercises: Exercise[] = [];
-  for (const id of exerciseIds) {
+  let skipNext = false;
+
+  for (let i = 0; i < normalized.length; i++) {
+    if (skipNext) { skipNext = false; continue; }
+    const { id, technique } = normalized[i];
+
     const cardio = CARDIO_LIBRARY.find((c) => c.id === id);
     if (cardio) {
       exercises.push({
@@ -1544,13 +1587,42 @@ export function getWorkoutFromExerciseIds(
     }
     const def = findExerciseDef(id);
     if (!def) continue; // id inválido/removido da biblioteca — ignora silenciosamente
+
+    if (technique === "biset") {
+      const next = normalized[i + 1];
+      const partnerDef = next ? findExerciseDef(next.id) : null;
+      if (partnerDef) {
+        skipNext = true;
+        exercises.push({
+          id: def.id, name: def.name, muscle: def.primaryMuscle,
+          sets: `${base.sets}x${base.reps}`,
+          rest: `sem pausa entre a dupla · ${base.rest} depois`,
+          tip: base.tip,
+          gif: GIF_MAP[def.id] ?? undefined, video: VIDEO_MAP[def.id] ?? undefined,
+          jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
+          biSetNote: `🔗 Bi-set com ${partnerDef.name} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.`,
+        });
+        exercises.push({
+          id: partnerDef.id, name: partnerDef.name, muscle: partnerDef.primaryMuscle,
+          sets: `${base.sets}x${base.reps}`,
+          rest: `sem pausa entre a dupla · ${base.rest} depois`,
+          tip: base.tip,
+          gif: GIF_MAP[partnerDef.id] ?? undefined, video: VIDEO_MAP[partnerDef.id] ?? undefined,
+          jointCaution: cautionGroups.has(partnerDef.group) ? JOINT_CAUTION_TEXT : undefined,
+        });
+        continue;
+      }
+      // sem próximo exercício pra parear — cai pra prescrição normal
+    }
+
+    const presc = technique && technique !== "biset" ? MANUAL_TECHNIQUE_PRESCRIPTIONS[technique] : base;
     exercises.push({
       id:     def.id,
       name:   def.name,
       muscle: def.primaryMuscle,
-      sets:   `${base.sets}x${base.reps}`,
-      rest:   base.rest,
-      tip:    base.tip,
+      sets:   `${presc.sets}x${presc.reps}`,
+      rest:   presc.rest,
+      tip:    presc.tip,
       gif:    GIF_MAP[def.id] ?? undefined,
       video:  VIDEO_MAP[def.id] ?? undefined,
       jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,

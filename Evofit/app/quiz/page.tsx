@@ -74,8 +74,8 @@ function buildChatMessages(bloqueio: string | undefined): string[] {
 }
 
 function mapNivel(experiencia: string | undefined): string {
-  if (experiencia === "Treino regularmente e quero evoluir") return "Intermediário (treino regularmente)";
-  if (experiencia === "Treino de vez em quando") return "Básico (treino às vezes)";
+  if (experiencia === "Treino regularmente e quero evoluir") return "Avançado (treino regularmente)";
+  if (experiencia === "Treino de vez em quando") return "Intermediário (já tenho uma certa experiência com os exercícios)";
   return "Iniciante (nunca treinei)";
 }
 

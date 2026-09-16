@@ -58,7 +58,7 @@ interface ExerciseDef {
   primaryMuscle: string;
   compound: boolean;       // compostos primeiro na ordenação
   avoidFor: string[];      // lesões que contra-indicam
-  avoidForBeginner?: boolean; // tecnicamente exigente — fora do pool para nível Iniciante
+  avoidForBeginner?: boolean; // tecnicamente exigente — fora do pool pra Iniciante e Intermediário (só entra no Avançado)
 }
 
 interface SplitSlot {
@@ -632,8 +632,8 @@ const GROUP_LABELS: Record<MuscleGroup, string> = {
 };
 
 /**
- * Trapézio: só para homens em nível avançado (Intermediário) — iniciante,
- * básico e full body (que só existe pra Iniciante) não entram.
+ * Trapézio: só para homens em nível Avançado — Iniciante, Intermediário
+ * e full body (que só existe pra Iniciante) não entram.
  * Antebraço: só para homens, nunca no full body.
  * Glúteos: só para mulheres na programação automática — quando o aluno
  * escolhe manualmente um slot com glúteos (isManualOverride), a escolha dele
@@ -644,6 +644,21 @@ function isGroupAllowed(g: MuscleGroup, isFemale: boolean, isBeginner: boolean, 
   if (g === "antebraco") return !isFemale && !isFullBody;
   if (g === "gluteos" && !isManualOverride) return isFemale;
   return true;
+}
+
+/**
+ * Tier de experiência (1=Iniciante, 2=Intermediário, 3=Avançado) a partir do
+ * texto de "nivel". Usa o texto entre parênteses (não o rótulo principal)
+ * pra reconhecer os dois rótulos que o tier 2 já teve ("treino às vezes" e,
+ * mais recente, "já tenho uma certa experiência com os exercícios") e o
+ * rótulo antigo do tier 1/3 ("Básico"/"Iniciante", "treino regularmente") —
+ * então continua classificando corretamente quem já tinha o nível salvo com
+ * um rótulo anterior, sem precisar migrar dados.
+ */
+function getNivelTier(nivel?: string): 1 | 2 | 3 {
+  if (nivel?.includes("treino regularmente")) return 3;
+  if (nivel?.includes("treino às vezes") || nivel?.includes("já tenho uma certa experiência")) return 2;
+  return 1;
 }
 
 // ─── "Outra condição" (texto livre) → tags conhecidas ────────────────────────
@@ -741,11 +756,11 @@ type SetsRest = { sets: number; reps: string; rest: string; tip: string };
  * Periodização em 3 fases que rotacionam a cada ciclo de 30 dias — aplicada a
  * todos os exercícios "normais" do treino.
  *
- * Fase 1 — Hipertrofia base  (ciclos 1, 4, 7 … para iniciante/básico | 1, 5, 9 … para intermediário)
+ * Fase 1 — Hipertrofia base  (ciclos 1, 4, 7 … para iniciante/intermediário | 1, 5, 9 … para avançado)
  * Fase 2 — Força
  * Fase 3 — Volume alto
  *
- * Para intermediário, o ciclo tem uma 4ª posição (ver getAdvancedTechnique) que
+ * Para avançado, o ciclo tem uma 4ª posição (ver getAdvancedTechnique) que
  * não substitui o treino inteiro — só adiciona um finalizador em 1-2 dias da
  * semana (ver isFinisherDay). Nessa posição, os exercícios normais usam a
  * mesma prescrição da fase 3 (volume alto).
@@ -755,7 +770,7 @@ function getBaseSetsRest(
   nivel: string,
   cycleNumber: number = 1,
 ): SetsRest {
-  const isInter    = nivel?.includes("Intermediário");
+  const isInter    = getNivelTier(nivel) === 3;
   const totalPhases = isInter ? 4 : 3;
   let phase          = ((cycleNumber - 1) % totalPhases) + 1; // 1 → 2 → 3 → (4) → 1 → …
   if (phase === 4) phase = 3; // fase 4 usa a base da fase 3 — só o finalizador muda (ver getAdvancedTechnique)
@@ -793,7 +808,7 @@ function getBaseSetsRest(
 
 /**
  * Técnica avançada do finalizador (dropset / bi-set / cluster set / rest-pause).
- * Retorna null se o aluno não é intermediário, ou se o ciclo atual não está na
+ * Retorna null se o aluno não é avançado, ou se o ciclo atual não está na
  * "rodada" de fase 4 — nesses casos o dia inteiro usa só getBaseSetsRest.
  *
  * Quando não-nulo, aplica-se a UM ÚNICO exercício (o último/finalizador do
@@ -801,7 +816,7 @@ function getBaseSetsRest(
  * treino inteiro.
  */
 function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, injuries: string[] = []): SetsRest | null {
-  const isInter = nivel?.includes("Intermediário");
+  const isInter = getNivelTier(nivel) === 3;
   if (!isInter) return null;
   // Dropset/bi-set/rest-pause elevam bastante o duplo produto (FC × pressão) —
   // contraindicados pra quem tem hipertensão/problema cardiovascular, e também
@@ -1320,7 +1335,7 @@ export function getWorkoutBySlot(
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
-  const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
+  const isBeginner = getNivelTier(nivel) <= 2;
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const timeProfile = getTimeProfile(tempoTreino);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
@@ -1393,8 +1408,8 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   } = anamnese;
 
   const isFemale = sexo === "Feminino";
-  const isBeginner = (nivel?.includes("Iniciante") || nivel?.includes("Básico")) ?? false;
-  const isTrueBeginner = nivel?.includes("Iniciante") ?? false;
+  const isBeginner = getNivelTier(nivel) <= 2;
+  const isTrueBeginner = getNivelTier(nivel) === 1;
   const splits   = isTrueBeginner ? buildFullBodySplits(diasTreino, isFemale) : (isFemale ? FEMALE_SPLITS : MALE_SPLITS);
   const split    = splits[diasTreino] ?? splits["3 dias"];
   const slot     = split[dayIdx];
@@ -1660,7 +1675,7 @@ export function getWeekSchedule(anamnese: AnamneseData | null): WeekDay[] {
   }
 
   const isFemale = (anamnese.sexo ?? "Feminino") === "Feminino";
-  const isTrueBeginner = (anamnese.nivel ?? "").includes("Iniciante");
+  const isTrueBeginner = getNivelTier(anamnese.nivel) === 1;
   const diasTreino = anamnese.diasTreino ?? "3 dias";
   const splits   = isTrueBeginner ? buildFullBodySplits(diasTreino, isFemale) : (isFemale ? FEMALE_SPLITS : MALE_SPLITS);
   const split    = splits[diasTreino] ?? splits["3 dias"];

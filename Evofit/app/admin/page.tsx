@@ -69,7 +69,7 @@ const BLANK_ANAMNESE: AnamneseForm = {
 };
 
 const OBJETIVO_OPTS = ["Perder gordura", "Ganhar músculo", "Melhorar condicionamento", "Mais disposição e saúde"];
-const NIVEL_OPTS = ["Iniciante (nunca treinei)", "Básico (treino às vezes)", "Intermediário (treino regularmente)"];
+const NIVEL_OPTS = ["Iniciante (nunca treinei)", "Intermediário (já tenho uma certa experiência com os exercícios)", "Avançado (treino regularmente)"];
 const DIAS_OPTS = ["2 dias", "3 dias", "4 dias", "5+ dias"];
 const TEMPO_OPTS = ["40 min", "1h", "1h30"];
 const SONO_OPTS = ["Durmo bem (7h+)", "Durmo mal (menos de 6h)", "Irregular"];

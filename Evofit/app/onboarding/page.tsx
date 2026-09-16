@@ -60,7 +60,7 @@ const STEPS: Step[] = [
         key: "nivel",
         label: "Seu nível de experiência",
         type: "radio",
-        options: ["Iniciante (nunca treinei)", "Básico (treino às vezes)", "Intermediário (treino regularmente)"],
+        options: ["Iniciante (nunca treinei)", "Intermediário (já tenho uma certa experiência com os exercícios)", "Avançado (treino regularmente)"],
       },
     ],
   },

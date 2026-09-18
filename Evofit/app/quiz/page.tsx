@@ -92,6 +92,7 @@ function buildAnamnese(answers: Record<string, string>, multi: Record<string, st
     lesoes: multi.lesoes ?? [],
     lesoesDetalhe: (multi.lesoes ?? []).includes("Outra") ? outraDetalhe.trim() : undefined,
     sono: answers.sono,
+    exercicioNaoGosta: answers.exercicioNaoGosta && answers.exercicioNaoGosta !== "Nenhum" ? answers.exercicioNaoGosta : undefined,
   };
 }
 
@@ -343,10 +344,13 @@ export default function QuizPage() {
           </div>
 
           <div className="flex-1 animate-fade-in" key={itemIndex}>
-            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-8 leading-snug">
+            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-2 leading-snug">
               {currentItem.question}
             </h2>
-            <div className="relative">
+            {currentItem.subtitle && (
+              <p className="text-xs text-[#8A8A8A] mb-6 leading-relaxed">{currentItem.subtitle}</p>
+            )}
+            <div className={`relative ${currentItem.subtitle ? "" : "mt-6"}`}>
               <input
                 type={currentItem.inputType}
                 value={inputValue}
@@ -370,6 +374,14 @@ export default function QuizPage() {
           >
             Continuar
           </button>
+          {currentItem.allowNone && (
+            <button
+              onClick={() => selectAnswer(currentItem.key, currentItem.allowNone!)}
+              className="w-full mt-3 text-[#8A8A8A] text-sm font-medium py-2 hover:text-[#F0F0F0] transition-colors"
+            >
+              {currentItem.allowNone}
+            </button>
+          )}
         </div>
       )}
 

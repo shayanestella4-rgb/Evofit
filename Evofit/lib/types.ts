@@ -18,4 +18,6 @@ export interface AnamneseData {
   lesoes?: string[];
   lesoesDetalhe?: string;
   sono?: string;
+  // Preferência (não filtra o treino automaticamente — uso manual do admin)
+  exercicioNaoGosta?: string;
 }

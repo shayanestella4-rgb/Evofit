@@ -10,7 +10,7 @@ export type QuizItem =
   | { type: "multi"; key: string; question: string; subtitle?: string; options: MultiOption[] }
   | { type: "insight"; title: string; text: string }
   | { type: "social"; title: string; subtitle: string }
-  | { type: "input"; key: string; question: string; inputType: "text" | "number"; placeholder: string; suffix?: string };
+  | { type: "input"; key: string; question: string; subtitle?: string; inputType: "text" | "number"; placeholder: string; suffix?: string; allowNone?: string };
 
 export const QUIZ_ITEMS: QuizItem[] = [
   {
@@ -199,6 +199,15 @@ export const QUIZ_ITEMS: QuizItem[] = [
     type: "insight",
     title: "Só faltam alguns dados pra deixar seu plano 100% preciso",
     text: "Treino e dieta calculados certinho pro SEU corpo — não uma média genérica. Leva 30 segundos.",
+  },
+  {
+    type: "input",
+    key: "exercicioNaoGosta",
+    question: "Se você já treina, qual exercício você não gosta?",
+    subtitle: "Isso não significa que você não irá fazer, mas sim de buscarmos formas de melhor aderência ao treino montado.",
+    inputType: "text",
+    placeholder: "Ex: agachamento, esteira...",
+    allowNone: "Nenhum",
   },
   {
     type: "input",

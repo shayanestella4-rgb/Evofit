@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { getExerciseCatalog } from "@/lib/workout";
+import { getExerciseCatalog, getWorkoutForDay, getWorkoutFromExerciseIds, getWeekSchedule } from "@/lib/workout";
 import type { ManualExerciseEntry, ManualTechnique } from "@/lib/workout";
+import { computeCycleStatus } from "@/lib/cycle";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
 const DAY_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -114,6 +115,9 @@ export default function AdminPage() {
   const catalog = useMemo(() => getExerciseCatalog(), []);
   const catalogById = useMemo(() => new Map(catalog.map((e) => [e.id, e])), [catalog]);
 
+  const [previewDay, setPreviewDay] = useState(0);
+  const [previewCompletedTotal, setPreviewCompletedTotal] = useState(0);
+
   async function loadAnamnese() {
     const target = anamneseEmail.trim().toLowerCase();
     if (!target) return;
@@ -147,6 +151,8 @@ export default function AdminPage() {
         setAnamneseForm({ ...BLANK_ANAMNESE });
         setAnamneseFound(false);
       }
+      setPreviewCompletedTotal(result.completedTotal ?? 0);
+      setPreviewDay(0);
       const rawOverrides = overridesResult.overrides ?? {};
       const normalized: Record<number, ManualExerciseEntry[]> = {};
       for (const key of Object.keys(rawOverrides)) {
@@ -392,6 +398,15 @@ export default function AdminPage() {
 
   const maxFunnelCount = stats?.quiz.funnel[0]?.reachedCount || 1;
 
+  const previewCycleNumber = computeCycleStatus(previewCompletedTotal).cycleNumber;
+  const previewSchedule = anamneseForm ? getWeekSchedule(anamneseForm) : [];
+  const previewManualEntries = overridesByDay[previewDay];
+  const previewWorkout = anamneseForm
+    ? previewManualEntries && previewManualEntries.length > 0
+      ? getWorkoutFromExerciseIds(anamneseForm, previewManualEntries, previewCycleNumber)
+      : getWorkoutForDay(anamneseForm, previewDay, previewCycleNumber)
+    : null;
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] px-4 py-10">
       <div className="max-w-3xl mx-auto space-y-6">
@@ -613,6 +628,77 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+
+        {/* Treino atual — visualização somente-leitura do que o app dela mostra */}
+        {anamneseForm && anamneseFound && (
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 className="text-white font-bold text-sm">Treino atual dessa pessoa</h2>
+              <p className="text-[#8A8A8A] text-xs mt-1">
+                Exatamente o que o app dela mostra hoje — o algoritmo automático, ou o manual do
+                dia, quando houver um. Ciclo atual: {previewCycleNumber} ({previewCompletedTotal}{" "}
+                treinos concluídos no total). Edite os campos acima (sem precisar salvar) pra ver
+                como o treino mudaria.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {DAY_NAMES.map((name, i) => {
+                const isManual = (overridesByDay[i] ?? []).length > 0;
+                const isTraining = previewSchedule[i]?.isTraining ?? true;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setPreviewDay(i)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                      previewDay === i
+                        ? "bg-[#A855F7] border-[#A855F7] text-white"
+                        : !isTraining
+                        ? "bg-[#111] border-[#2D2D2D] text-[#4B5563]"
+                        : isManual
+                        ? "bg-[#1E1035] border-[#A855F7] text-[#C084FC]"
+                        : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
+                    }`}
+                  >
+                    {name.slice(0, 3)}{isManual ? " ✏️" : ""}
+                  </button>
+                );
+              })}
+            </div>
+
+            {previewWorkout && (
+              previewWorkout.isRest ? (
+                <p className="text-sm text-[#8A8A8A]">😴 Descanso nesse dia.</p>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">{previewWorkout.emoji} {previewWorkout.name}</p>
+                      <p className="text-[11px] text-[#8A8A8A]">{previewWorkout.muscleLabel} · ~{previewWorkout.duration} min</p>
+                    </div>
+                    {(overridesByDay[previewDay] ?? []).length > 0 && (
+                      <span className="text-[10px] font-semibold text-[#C084FC] bg-[#1E1035] border border-[#A855F7] px-2 py-1 rounded-lg shrink-0">
+                        ✏️ Manual
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    {previewWorkout.exercises.map((ex, i) => (
+                      <div key={`${ex.id}-${i}`} className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-xs">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[#F0F0F0] font-medium">{ex.name}</span>
+                          <span className="text-[#8A8A8A] shrink-0">{ex.sets} · {ex.rest}</span>
+                        </div>
+                        {ex.biSetNote && <p className="text-[10px] text-[#C084FC] mt-1">{ex.biSetNote}</p>}
+                        {ex.jointCaution && <p className="text-[10px] text-yellow-500 mt-1">{ex.jointCaution}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
 
         {/* Treino manual por dia (substitui o algoritmo nesse dia) */}
         {anamneseForm && (

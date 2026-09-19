@@ -29,6 +29,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ data: record.data, updatedAt: record.updatedAt });
   }
 
-  const record = await prisma.userAnamnese.findUnique({ where: { email: normalizedEmail } });
-  return NextResponse.json({ data: record?.data ?? null, updatedAt: record?.updatedAt ?? null });
+  const [record, completedTotal] = await Promise.all([
+    prisma.userAnamnese.findUnique({ where: { email: normalizedEmail } }),
+    prisma.workoutCompletion.count({ where: { email: normalizedEmail } }),
+  ]);
+  return NextResponse.json({ data: record?.data ?? null, updatedAt: record?.updatedAt ?? null, completedTotal });
 }

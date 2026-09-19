@@ -26,6 +26,10 @@ const FAQ = [
     a: "Sim. Nosso time de personais está disponível de segunda a sexta para te auxiliar com qualquer dúvida e corrigir seus exercícios, acompanhando sua evolução de perto pelo WhatsApp.",
   },
   {
+    q: "Caso eu tiver dúvida da execução, posso mandar um vídeo para saber se estou fazendo certo ou errado?",
+    a: "Sim, pode mandar via WhatsApp que te ajudo na execução.",
+  },
+  {
     q: "Posso treinar mesmo começando do zero?",
     a: "Sim. Os treinos são organizados por nível — iniciante, intermediário e avançado — e o suporte pelo WhatsApp ajuda você a começar pelo caminho mais adequado.",
   },

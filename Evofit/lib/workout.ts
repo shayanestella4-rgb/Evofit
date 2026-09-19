@@ -29,6 +29,7 @@ export interface Exercise {
   video?: string; // vídeo de demonstração — undefined se ainda não gravado (usa gif como fallback)
   jointCaution?: string; // aviso extra quando o exercício está na mesma região de uma condição articular da aluna
   biSetNote?: string; // presente só no primeiro exercício do par — nome do parceiro pra fazer em bi-set
+  beginnerCaution?: string; // aviso extra só pra quem está no nível Iniciante (ex: procurar apoio num unilateral liberado pra esse nível)
 }
 
 // Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
@@ -59,6 +60,7 @@ interface ExerciseDef {
   compound: boolean;       // compostos primeiro na ordenação
   avoidFor: string[];      // lesões que contra-indicam
   avoidForBeginner?: boolean; // tecnicamente exigente — fora do pool pra Iniciante e Intermediário (só entra no Avançado)
+  beginnerCaution?: string; // liberado pra Iniciante, mas mostra um aviso extra de segurança/execução só pra esse nível
 }
 
 interface SplitSlot {
@@ -87,14 +89,14 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "q17", name: "Agachamento búlgaro no Smith",    primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia"], avoidForBeginner: true },
     { id: "q4",  name: "Afundo com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
     { id: "q16", name: "Afundo no Smith",                 primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
-    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"] },
+    { id: "q11", name: "Avanço com halteres",             primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"], avoidForBeginner: true },
     { id: "q19", name: "Avanço alternado com halteres",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo", "Condromalácia"], avoidForBeginner: true },
     { id: "q22", name: "Levantamento terra",              primaryMuscle: "Quadríceps / Posteriores / Lombar", compound: true, avoidFor: ["Coluna/lombar", "Joelho", "Quadril", "Osteoporose"], avoidForBeginner: true },
     { id: "q18", name: "Agachamento guiado na máquina",   primaryMuscle: "Quadríceps / Glúteos",        compound: true,  avoidFor: ["Joelho"] },
     { id: "q21", name: "Agachamento no hack horizontal", primaryMuscle: "Quadríceps",                    compound: true,  avoidFor: ["Joelho"] },
-    { id: "q15", name: "Leg press 45° unilateral",        primaryMuscle: "Quadríceps (unilateral)",     compound: true,  avoidFor: [] },
+    { id: "q15", name: "Leg press 45° unilateral",        primaryMuscle: "Quadríceps (unilateral)",     compound: true,  avoidFor: [], avoidForBeginner: true },
     { id: "q5",  name: "Cadeira extensora",               primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
-    { id: "q12", name: "Cadeira extensora unilateral",    primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"] },
+    { id: "q12", name: "Cadeira extensora unilateral",    primaryMuscle: "Quadríceps (isolamento)",     compound: false, avoidFor: ["Joelho"], avoidForBeginner: true },
     { id: "q20", name: "Cadeira adutora",                 primaryMuscle: "Adutores",                    compound: false, avoidFor: ["Quadril"] },
   ],
 
@@ -109,7 +111,7 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "g8",  name: "Recuo com halteres",              primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Quadril"], avoidForBeginner: true },
     { id: "g17", name: "Recuo alternado com halteres",    primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], avoidForBeginner: true },
     { id: "g18", name: "Recuo no Smith",                  primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Joelho", "Quadril", "Condromalácia"], avoidForBeginner: true },
-    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], avoidForBeginner: true },
+    { id: "g3",  name: "Step-up com haltere",             primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], beginnerCaution: "🧷 Exercício unilateral — procure um apoio (parede, banco, barra) por perto pra se equilibrar melhor." },
     { id: "g19", name: "Step-up no hack squat",           primaryMuscle: "Glúteos / Quadríceps",        compound: true,  avoidFor: ["Joelho", "Quadril", "Tornozelo"], avoidForBeginner: true },
     { id: "g15", name: "Levantamento sumô com halteres",  primaryMuscle: "Glúteos / Isquiotibiais",     compound: true,  avoidFor: ["Coluna/lombar", "Joelho", "Quadril"], avoidForBeginner: true },
     { id: "g14", name: "Bom dia no hack squat",           primaryMuscle: "Glúteos / Isquiotibiais / Lombar", compound: true, avoidFor: ["Coluna/lombar", "Quadril", "Osteoporose"], avoidForBeginner: true },
@@ -169,9 +171,9 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "c25", name: "Puxada aberta no graviton",           primaryMuscle: "Dorsal / Teres maior",       compound: true,  avoidFor: ["Ombro"] },
     { id: "c19", name: "Pulley frente articulado pegada supinada", primaryMuscle: "Dorsal / Bíceps",       compound: true,  avoidFor: ["Ombro"] },
     { id: "c21", name: "Pulley frente articulado pegada neutra", primaryMuscle: "Dorsal",                  compound: true,  avoidFor: ["Ombro"] },
-    { id: "c20", name: "Pulley frente articulado unilateral", primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: ["Ombro"] },
+    { id: "c20", name: "Pulley frente articulado unilateral", primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: ["Ombro"], avoidForBeginner: true },
     { id: "c23", name: "Pulley frente triângulo",             primaryMuscle: "Dorsal inferior",            compound: false, avoidFor: ["Ombro"] },
-    { id: "c24", name: "Pulley frente unilateral",            primaryMuscle: "Dorsal (unilateral)",        compound: false, avoidFor: ["Ombro"] },
+    { id: "c24", name: "Pulley frente unilateral",            primaryMuscle: "Dorsal (unilateral)",        compound: false, avoidFor: ["Ombro"], avoidForBeginner: true },
     { id: "c32", name: "Remada curvada com barra livre",      primaryMuscle: "Dorsal / Trapézio médio",    compound: true,  avoidFor: ["Coluna/lombar", "Punho/Cotovelo", "Osteoporose"] },
     { id: "c33", name: "Remada curvada na máquina",           primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
     { id: "c31", name: "Remada cavalinho na máquina",         primaryMuscle: "Dorsal / Rombóides",         compound: true,  avoidFor: [] },
@@ -179,9 +181,9 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "c26", name: "Remada articulada pegada pronada",    primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
     { id: "c34", name: "Remada articulada pegada neutra",     primaryMuscle: "Dorsal / Trapézio",          compound: true,  avoidFor: [] },
     { id: "c36", name: "Remada articulada pegada supinada",   primaryMuscle: "Dorsal / Bíceps",            compound: true,  avoidFor: [] },
-    { id: "c27", name: "Remada articulada unilateral pegada pronada", primaryMuscle: "Dorsal (unilateral)", compound: true, avoidFor: [] },
+    { id: "c27", name: "Remada articulada unilateral pegada pronada", primaryMuscle: "Dorsal (unilateral)", compound: true, avoidFor: [], avoidForBeginner: true },
     { id: "c28", name: "Remada baixa com barra",              primaryMuscle: "Dorsal / Rombóides",         compound: true,  avoidFor: [] },
-    { id: "c30", name: "Remada baixa unilateral",             primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: [] },
+    { id: "c30", name: "Remada baixa unilateral",             primaryMuscle: "Dorsal (unilateral)",        compound: true,  avoidFor: [], avoidForBeginner: true },
     { id: "c17", name: "Face pull",                           primaryMuscle: "Trapézio / Deltóide posterior", compound: false, avoidFor: [] },
   ],
 
@@ -196,7 +198,7 @@ const LIBRARY: Record<MuscleGroup, ExerciseDef[]> = {
     { id: "o29", name: "Elevação lateral na máquina",         primaryMuscle: "Deltóide lateral",           compound: false, avoidFor: ["Ombro"] },
     { id: "o30", name: "Elevação lateral no cabo",            primaryMuscle: "Deltóide lateral",           compound: false, avoidFor: ["Ombro"] },
     { id: "o21", name: "Elevação frontal no cabo",             primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
-    { id: "o22", name: "Elevação frontal unilateral no cabo", primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
+    { id: "o22", name: "Elevação frontal unilateral no cabo", primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"], avoidForBeginner: true },
     { id: "o27", name: "Elevação frontal pegada neutra",      primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
     { id: "o28", name: "Elevação frontal pegada pronada",     primaryMuscle: "Deltóide anterior",          compound: false, avoidFor: ["Ombro"] },
     { id: "o31", name: "Remada alta no cabo",                 primaryMuscle: "Deltóide lateral / Trapézio", compound: true,  avoidFor: ["Ombro", "Punho/Cotovelo"] },
@@ -1336,6 +1338,7 @@ export function getWorkoutBySlot(
 
   const isFemale = sexo === "Feminino";
   const isBeginner = getNivelTier(nivel) <= 2;
+  const isTrueBeginner = getNivelTier(nivel) === 1;
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const timeProfile = getTimeProfile(tempoTreino);
   const { sets, reps, rest, tip } = getBaseSetsRest(objetivo, nivel, cycleNumber);
@@ -1360,6 +1363,7 @@ export function getWorkoutBySlot(
       video:  VIDEO_MAP[ex.id] ?? undefined,
       jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
       biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
+      beginnerCaution: isTrueBeginner ? ex.beginnerCaution : undefined,
     };
   });
 
@@ -1471,6 +1475,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
       video:  VIDEO_MAP[ex.id] ?? undefined,
       jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
       biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
+      beginnerCaution: isTrueBeginner ? ex.beginnerCaution : undefined,
     };
   });
   const mainCount = exercises.length;
@@ -1576,6 +1581,7 @@ export function getWorkoutFromExerciseIds(
   const injuries = resolveInjuries(lesoes, lesoesDetalhe);
   const cautionGroups = getCautionGroups(injuries);
   const base = getBaseSetsRest(objetivo, nivel, cycleNumber);
+  const isTrueBeginner = getNivelTier(nivel) === 1;
 
   const normalized: ManualExerciseEntry[] = entries.map((e) => (typeof e === "string" ? { id: e } : e));
 
@@ -1616,6 +1622,7 @@ export function getWorkoutFromExerciseIds(
           gif: GIF_MAP[def.id] ?? undefined, video: VIDEO_MAP[def.id] ?? undefined,
           jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
           biSetNote: `🔗 Bi-set com ${partnerDef.name} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.`,
+          beginnerCaution: isTrueBeginner ? def.beginnerCaution : undefined,
         });
         exercises.push({
           id: partnerDef.id, name: partnerDef.name, muscle: partnerDef.primaryMuscle,
@@ -1624,6 +1631,7 @@ export function getWorkoutFromExerciseIds(
           tip: base.tip,
           gif: GIF_MAP[partnerDef.id] ?? undefined, video: VIDEO_MAP[partnerDef.id] ?? undefined,
           jointCaution: cautionGroups.has(partnerDef.group) ? JOINT_CAUTION_TEXT : undefined,
+          beginnerCaution: isTrueBeginner ? partnerDef.beginnerCaution : undefined,
         });
         continue;
       }
@@ -1641,6 +1649,7 @@ export function getWorkoutFromExerciseIds(
       gif:    GIF_MAP[def.id] ?? undefined,
       video:  VIDEO_MAP[def.id] ?? undefined,
       jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
+      beginnerCaution: isTrueBeginner ? def.beginnerCaution : undefined,
     });
   }
 

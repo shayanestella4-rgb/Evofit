@@ -595,6 +595,14 @@ export default function TreinoPage() {
                 </div>
               )}
 
+              {gifModal.beginnerCaution && (
+                <div className="bg-[#0A2540] border border-[#1D4E89] rounded-[0.75rem] p-3 mb-4">
+                  <p className="text-[11px] text-[#7DD3FC] leading-relaxed">
+                    {gifModal.beginnerCaution}
+                  </p>
+                </div>
+              )}
+
               {/* Registro de carga */}
               <div className="bg-[#252525] rounded-[0.75rem] p-3 mb-4">
                 <p className="text-xs font-bold text-[#C0C0C0] mb-2">🏋️ Registrar carga</p>

@@ -691,6 +691,7 @@ export default function AdminPage() {
                         </div>
                         {ex.biSetNote && <p className="text-[10px] text-[#C084FC] mt-1">{ex.biSetNote}</p>}
                         {ex.jointCaution && <p className="text-[10px] text-yellow-500 mt-1">{ex.jointCaution}</p>}
+                        {ex.beginnerCaution && <p className="text-[10px] text-sky-400 mt-1">{ex.beginnerCaution}</p>}
                       </div>
                     ))}
                   </div>

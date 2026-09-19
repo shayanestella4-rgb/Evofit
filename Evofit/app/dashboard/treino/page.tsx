@@ -36,6 +36,18 @@ export default function TreinoPage() {
   const [selectedDay, setSelectedDay] = useState<number>(todayIdx);
   const [timeOverride, setTimeOverride] = useState<Record<number, string>>({});
 
+  // Selo "revisado pela equipe" — reforça na primeira abertura que alguém
+  // conferiu a anamnese, não é só o algoritmo. Some depois que a pessoa fecha.
+  const [showReviewBadge, setShowReviewBadge] = useState(false);
+  useEffect(() => {
+    const dismissed = typeof window !== "undefined" && localStorage.getItem("evofit_review_badge_dismissed") === "true";
+    setShowReviewBadge(!dismissed);
+  }, []);
+  function dismissReviewBadge() {
+    localStorage.setItem("evofit_review_badge_dismissed", "true");
+    setShowReviewBadge(false);
+  }
+
   // Se hoje é descanso, pré-seleciona o primeiro dia de treino da semana
   useEffect(() => {
     if (!anamnese) return;
@@ -222,6 +234,23 @@ export default function TreinoPage() {
           </div>
         ) : (
         <>
+
+        {/* Selo de revisão pela equipe — reforça confiança na primeira abertura */}
+        {showReviewBadge && (
+          <div className="flex items-start gap-3 bg-[#1E1035] border border-[#A855F7] rounded-[1rem] p-3.5 mb-5">
+            <span className="text-lg shrink-0">✓</span>
+            <p className="flex-1 text-xs text-[#E9D5FF] leading-relaxed">
+              Seu treino foi revisado pela nossa equipe antes de ser liberado.
+            </p>
+            <button
+              onClick={dismissReviewBadge}
+              aria-label="Fechar"
+              className="text-[#C084FC] hover:text-white shrink-0 text-sm leading-none px-1"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Seletor de dias de treino da semana */}
         {trainingDays.length > 0 && (

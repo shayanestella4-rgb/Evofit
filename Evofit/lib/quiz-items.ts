@@ -252,6 +252,11 @@ export const QUIZ_ITEMS: QuizItem[] = [
       { label: "Nenhuma dessas", value: "Nenhuma", icon: "✅" },
     ],
   },
+  {
+    type: "insight",
+    title: "Sua anamnese está passando por uma avaliação",
+    text: "Antes do seu treino ser liberado, nossa equipe confere suas respostas pra garantir que ele faz sentido pro seu corpo, sua rotina e suas condições de saúde — não é só um algoritmo cuspindo um treino genérico.",
+  },
 ];
 
 /** Rótulo curto de cada passo — usado no funil do painel de métricas. */

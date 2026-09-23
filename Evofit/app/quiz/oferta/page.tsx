@@ -136,7 +136,7 @@ const DEPOIMENTOS_FOTOS = [
 const COMPARACAO = [
   { item: "Personal trainer", custo: "R$ 300+/mês" },
   { item: "Nutricionista", custo: "R$ 200+/mês" },
-  { item: "Evofit (treino + dieta + suporte)", custo: "R$ 37/mês", destaque: true },
+  { item: "Evofit (treino + dieta + suporte)", custo: "R$ 97/mês", destaque: true },
 ];
 
 export default function OfertaPage() {
@@ -317,9 +317,9 @@ export default function OfertaPage() {
           <p className="text-xs text-[#8A8A8A] uppercase font-semibold tracking-wide mb-1">
             Plano mensal
           </p>
-          <p className="text-sm text-[#8A8A8A] mb-1">R$1,23 por dia</p>
+          <p className="text-sm text-[#8A8A8A] mb-1">R$3,23 por dia</p>
           <p className="text-3xl font-extrabold text-[#F0F0F0] mb-5">
-            R$37,00<span className="text-base font-semibold text-[#8A8A8A]">/mês</span>
+            R$97,00<span className="text-base font-semibold text-[#8A8A8A]">/mês</span>
           </p>
 
           <ul className="space-y-2 mb-6">

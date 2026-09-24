@@ -391,8 +391,10 @@ export default function TreinoPage() {
               </div>
             )}
 
-            {/* Por que Corpo Inteiro — só aparece pra quem está no nível Iniciante */}
-            {anamnese?.nivel?.includes("Iniciante") && !workout.isRest && (
+            {/* Por que Corpo Inteiro — checa o treino exibido de verdade (não o nível
+                salvo), pra sumir sozinha se esse dia tiver override manual ou se o
+                nível mudar e o treino deixar de ser corpo inteiro */}
+            {workout.name.startsWith("Corpo Inteiro") && !workout.isRest && (
               <div className="bg-[#1A1A1A] rounded-[1rem] p-3 border border-[#2D2D2D] mb-4">
                 <p className="text-xs font-bold text-[#C0C0C0] mb-2">🎯 Por que seu treino é Corpo Inteiro?</p>
                 <p className="text-xs text-[#CBD5E0] leading-relaxed mb-2">

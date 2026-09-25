@@ -902,10 +902,33 @@ const BISET_DUMBBELL_IDS = new Set([
   "an13", "an3",
 ]);
 
+// ── Bi-set: as duas técnicas ─────────────────────────────────────────────────
+// Agonista: os 2 exercícios treinam o MESMO grupo muscular (ex: hack squat +
+//   leg press, os dois pra quadríceps) — aumenta volume/intensidade e recruta
+//   mais fibras do músculo.
+// Antagonista: os 2 exercícios treinam grupos OPOSTOS (ex: peito↔costas,
+//   bíceps↔tríceps, quadríceps↔posteriores) — enquanto um grupo trabalha o
+//   outro descansa passivamente, mais eficiente em tempo e aumenta o fluxo
+//   sanguíneo na região.
+// applyBiSets busca, nessa ordem: 1) parceiro de grupo REALMENTE antagonista
+// (ver ANTAGONIST_PAIRS), 2) qualquer outro grupo disponível na mesma região
+// (cobre combos práticos e comuns de academia que não são antagonistas de
+// verdade, tipo costas+bíceps ou ombro+tríceps, quando não há antagonista
+// disponível no pool do dia), 3) o mesmo grupo (agonista de verdade), como
+// último recurso. Só os pares abaixo são tratados como antagonistas — os
+// demais grupos (ombros, core, trapézio, antebraço, panturrilha, glúteos) não
+// têm um oposto limpo nessa biblioteca, então caem direto pro passo 2.
+const ANTAGONIST_PAIRS: Partial<Record<MuscleGroup, MuscleGroup>> = {
+  peito: "costas", costas: "peito",
+  biceps: "triceps", triceps: "biceps",
+  quadriceps: "posteriores", posteriores: "quadriceps",
+};
+
 // Bi-set só pode juntar exercícios da MESMA região do corpo — numa academia
 // cheia os aparelhos de perna ficam num canto e os de superior/livre noutro,
 // então um par perna+superior obrigaria a aluna a atravessar a academia entre
 // uma série e outra, inviabilizando o "sem pausa entre a dupla" do bi-set.
+// (ANTAGONIST_PAIRS acima já é sempre dentro da mesma região por construção.)
 const LOWER_BODY_GROUPS = new Set<MuscleGroup>(["quadriceps", "gluteos", "posteriores", "panturrilha"]);
 function isLowerBody(g: MuscleGroup): boolean {
   return LOWER_BODY_GROUPS.has(g);
@@ -914,13 +937,14 @@ function isLowerBody(g: MuscleGroup): boolean {
 /**
  * Bi-set pra treinos de 40min: pareia 1 exercício de aparelho fixo (máquina/cabo)
  * com 1 exercício de halteres — nunca dois aparelhos, porque numa academia cheia
- * a aluna não consegue ocupar duas máquinas ao mesmo tempo. Prioriza um parceiro
- * de outro grupo muscular do dia (ex: bíceps num dia de costas) quando existir,
- * já que esse exercício entraria no treino de qualquer forma — só reordena pra
- * virar bi-set em vez de bloco sequencial. Nunca pareia entre pernas e superior
- * (ver isLowerBody) — sem parceiro coerente na mesma região, o exercício fica
- * fora do bi-set, no formato normal. Reordena a lista pra cada par ficar lado a
- * lado.
+ * a aluna não consegue ocupar duas máquinas ao mesmo tempo (e isso vale mesmo
+ * entre dois aparelhos diferentes — ela só solta o que está ocupando agora, não
+ * dois ao mesmo tempo). Busca primeiro um parceiro antagonista de verdade (ver
+ * ANTAGONIST_PAIRS), depois qualquer outro grupo da mesma região do dia, depois
+ * o mesmo grupo — sempre dentro da mesma região (ver isLowerBody). Sem nenhum
+ * parceiro coerente disponível, o exercício fica fora do bi-set, no formato
+ * normal. Não precisa ser o primeiro exercício do dia — qualquer exercício de
+ * aparelho pode formar par. Reordena a lista pra cada par ficar lado a lado.
  */
 function applyBiSets(
   defs: (ExerciseDef & { group: MuscleGroup })[]
@@ -934,8 +958,10 @@ function applyBiSets(
   for (const m of machines) {
     if (paired.has(m.id)) continue;
     const sameRegion = (d: ExerciseDef & { group: MuscleGroup }) => isLowerBody(d.group) === isLowerBody(m.group);
+    const antagonistGroup = ANTAGONIST_PAIRS[m.group];
     const partner =
-      dumbbells.find((d) => !paired.has(d.id) && d.group !== m.group && sameRegion(d)) ??
+      (antagonistGroup && dumbbells.find((d) => !paired.has(d.id) && d.group === antagonistGroup)) ||
+      dumbbells.find((d) => !paired.has(d.id) && d.group !== m.group && sameRegion(d)) ||
       dumbbells.find((d) => !paired.has(d.id) && sameRegion(d));
     if (!partner) continue;
     paired.add(m.id);

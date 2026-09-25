@@ -100,14 +100,16 @@ function calcMacros(targetKcal: number, weight: number, goal: Objetivo) {
 // pessoa já come, só troca a versão.
 // Colesterol/cardiovascular (Diretriz Brasileira de Dislipidemias — SBC):
 // priorizar alimentos minimamente processados, reduzir gordura saturada,
-// trocar manteiga/margarina por azeite, priorizar fibra solúvel (aveia).
+// priorizar fibra solúvel (aveia). Reduz a gordura em vez de trocar por
+// azeite — azeite é bom pro coração, mas custa muito mais que margarina no
+// mercado, e a dieta precisa continuar barata e fácil de achar.
 // Feito como troca de NOME (mesma caloria aproximada) em vez de reescrever
 // a dieta inteira — a pessoa continua comendo comida parecida, só a versão
 // mais adequada pra condição dela.
 
 const DIABETES_SWAPS: Record<string, string> = {
   "Pão de fôrma (2 fatias)": "Pão integral de fôrma (2 fatias)",
-  "Pão francês (1 un) com margarina": "Pão francês integral (1 un) com azeite",
+  "Pão francês (1 un) com margarina": "Pão francês integral (1 un)",
   "Pão francês (2 un) com requeijão light": "Pão francês integral (2 un) com requeijão light",
   "Arroz branco (5 col. sopa)": "Arroz integral (5 col. sopa)",
   "Arroz branco (3 col. sopa)": "Arroz integral (3 col. sopa)",
@@ -119,7 +121,7 @@ const DIABETES_SWAPS: Record<string, string> = {
 };
 
 const CARDIO_SWAPS: Record<string, string> = {
-  "Pão francês (1 un) com margarina": "Pão francês (1 un) com azeite",
+  "Pão francês (1 un) com margarina": "Pão francês (1 un) puro",
   "Carne moída refogada (150g)": "Carne moída magra (patinho) refogada (150g)",
   "Frango assado (180g)": "Frango assado sem pele (180g)",
   "Frango assado (200g)": "Frango assado sem pele (200g)",

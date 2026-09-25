@@ -359,6 +359,21 @@ export default function QuizPage() {
     setTimeout(() => advance(), 350);
   }
 
+  function toggleMulti(id: string, value: string) {
+    setAnswers((prev) => {
+      const current = Array.isArray(prev[id]) ? (prev[id] as string[]) : [];
+      let next: string[];
+      if (value === "Nenhuma") {
+        next = current.includes("Nenhuma") ? [] : ["Nenhuma"];
+      } else if (current.includes(value)) {
+        next = current.filter((v) => v !== value);
+      } else {
+        next = [...current.filter((v) => v !== "Nenhuma"), value];
+      }
+      return { ...prev, [id]: next };
+    });
+  }
+
   function submitName() {
     const n = firstName(nameInput);
     if (!n) { setNameError(true); return; }
@@ -530,6 +545,47 @@ export default function QuizPage() {
               })}
             </div>
           </div>
+        </QuizShell>
+      )}
+
+      {/* ── Perguntas de múltipla escolha ────────────────────────────────── */}
+      {started && step.type === "multi" && (
+        <QuizShell {...shellProps}>
+          <div className="flex-1 animate-fade-in overflow-y-auto" key={step.id}>
+            <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-2 leading-snug">{step.title}</h2>
+            {step.sub && <p className="text-xs text-[#8A8A8A] mb-6 leading-relaxed">{step.sub}</p>}
+            <div className="space-y-3">
+              {(step.options || []).map((opt) => {
+                const current = Array.isArray(answers[step.id]) ? (answers[step.id] as string[]) : [];
+                const selected = current.includes(opt.v);
+                return (
+                  <button
+                    key={opt.v}
+                    onClick={() => toggleMulti(step.id, opt.v)}
+                    className={`w-full flex items-center gap-3 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border transition-all ${
+                      selected ? "border-[#6B7F56] bg-[#1F2A1C] text-[#F0F0F0]" : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#6B7F56] hover:text-[#F0F0F0]"
+                    }`}
+                  >
+                    <span
+                      className={`w-5 h-5 rounded-[0.375rem] border-2 shrink-0 flex items-center justify-center ${
+                        selected ? "border-[#6B7F56] bg-[#6B7F56]" : "border-[#3A3A3A]"
+                      }`}
+                    >
+                      {selected && <span className="text-white text-xs">✓</span>}
+                    </span>
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <button
+            onClick={advance}
+            disabled={!Array.isArray(answers[step.id]) || (answers[step.id] as string[]).length === 0}
+            className="w-full mt-6 bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] disabled:opacity-40"
+          >
+            Continuar
+          </button>
         </QuizShell>
       )}
 

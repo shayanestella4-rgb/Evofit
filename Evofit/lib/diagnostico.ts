@@ -22,7 +22,7 @@ export interface Option {
   swatch?: string;
 }
 
-export type StepType = "single" | "text" | "range" | "glasses" | "insight" | "analise" | "email" | "resultado";
+export type StepType = "single" | "multi" | "text" | "range" | "glasses" | "insight" | "analise" | "email" | "resultado";
 
 export interface Step {
   id: string;
@@ -39,7 +39,7 @@ export interface Step {
   scored?: boolean;
 }
 
-export type Answers = Record<string, string | number | undefined>;
+export type Answers = Record<string, string | number | string[] | undefined>;
 
 // ─── Áreas avaliadas ───────────────────────────────────────────────────────────
 
@@ -342,6 +342,26 @@ export const STEPS: Step[] = [
     ],
   },
 
+  {
+    id: "lesoes", type: "multi", group: "perfil",
+    title: "Você tem alguma dessas condições?",
+    sub: "Selecione todas que se aplicam — seu treino é montado evitando o que puder piorar cada uma delas.",
+    options: [
+      { v: "Condromalácia", label: "Condromalácia (desgaste da cartilagem do joelho)" },
+      { v: "Joelho", label: "Outra lesão no joelho (menisco, ligamento, tendinite patelar)" },
+      { v: "Coluna/lombar", label: "Dor lombar ou hérnia de disco" },
+      { v: "Ombro", label: "Dor no ombro (tendinite, bursite, luxação)" },
+      { v: "Punho/Cotovelo", label: "Tendinite ou dor no punho/cotovelo" },
+      { v: "Quadril", label: "Dor no quadril (bursite, impacto femoroacetabular)" },
+      { v: "Tornozelo", label: "Entorses frequentes ou instabilidade no tornozelo" },
+      { v: "Osteoporose", label: "Osteoporose ou osteopenia" },
+      { v: "Cardiovascular", label: "Hipertensão ou outro problema cardiovascular" },
+      { v: "Diabetes", label: "Diabetes" },
+      { v: "Outra", label: "Outra condição não listada" },
+      { v: "Nenhuma", label: "Nenhuma dessas" },
+    ],
+  },
+
   { id: "analise", type: "analise", group: "final" },
   { id: "email", type: "email", group: "final" },
   { id: "resultado", type: "resultado", group: "final" },
@@ -351,7 +371,7 @@ export const STEP: Record<string, Step> = Object.fromEntries(STEPS.map((s) => [s
 export const STEP_INDEX: Record<string, number> = Object.fromEntries(STEPS.map((s, i) => [s.id, i]));
 
 /** Perguntas que a pessoa responde (sem telas de transição). */
-export const QUESTIONS = STEPS.filter((s) => ["single", "text", "range", "glasses"].includes(s.type));
+export const QUESTIONS = STEPS.filter((s) => ["single", "multi", "text", "range", "glasses"].includes(s.type));
 
 /** Grupos na ordem em que aparecem no quiz (barra de progresso). */
 export const FLOW_GROUPS: (DimKey | "perfil")[] = ["perfil", "rotina", "sono", "alimentacao", "agua", "praticidade", "resistencia", "disciplina"];

@@ -9,7 +9,7 @@ const SECTIONS = [
   },
   {
     title: "2. Descrição do Serviço",
-    body: `O Evofit é um aplicativo de condicionamento físico que oferece:\n\n• Planos de treino personalizados baseados em avaliação inicial (anamnese)\n• Orientações nutricionais com base em cálculo calórico individual\n• Tarefas diárias de bem-estar e hábitos saudáveis\n• Registro fotográfico de evolução corporal\n• Acompanhamento de progresso e histórico de treinos\n\nO serviço é fornecido mediante assinatura mensal e destina-se a fins informativos e de apoio à atividade física.`,
+    body: `O Evofit é um aplicativo de condicionamento físico que oferece:\n\n• Planos de treino personalizados baseados em avaliação inicial (anamnese)\n• Orientações nutricionais com base em cálculo calórico individual\n• Tarefas diárias de bem-estar e hábitos saudáveis\n• Acompanhamento de progresso e histórico de treinos\n\nO serviço é fornecido mediante assinatura mensal e destina-se a fins informativos e de apoio à atividade física.`,
   },
   {
     title: "3. Elegibilidade",
@@ -29,7 +29,7 @@ const SECTIONS = [
   },
   {
     title: "7. Dados Pessoais e Privacidade",
-    body: `Coletamos e tratamos seus dados em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).\n\nDados coletados:\n• Informações de identificação (nome, idade, sexo)\n• Dados físicos (peso, altura, IMC)\n• Histórico de treinos e atividades no App\n• Fotos de evolução corporal armazenadas localmente no dispositivo\n\nSeus dados não são vendidos a terceiros. As fotos registradas ficam armazenadas exclusivamente no seu dispositivo (localStorage) e não são enviadas aos nossos servidores.\n\nPara exercer seus direitos de acesso, correção ou exclusão de dados, entre em contato pelo nosso suporte.`,
+    body: `Coletamos e tratamos seus dados em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).\n\nDados coletados:\n• Informações de identificação (nome, idade, sexo)\n• Dados físicos (peso, altura, IMC)\n• Histórico de treinos e atividades no App\n\nSeus dados não são vendidos a terceiros.\n\nPara exercer seus direitos de acesso, correção ou exclusão de dados, entre em contato pelo nosso suporte.`,
   },
   {
     title: "8. Propriedade Intelectual",

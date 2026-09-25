@@ -60,7 +60,7 @@ const SEED_REVIEWS: Review[] = [
     name: "Diego Almeida",
     initial: "D",
     stars: 5,
-    comment: "O registro de fotos é genial para ver a evolução. A gente não percebe no espelho mas quando compara as fotos a diferença é absurda. Muito bom mesmo.",
+    comment: "Os vídeos mostrando a execução de cada exercício são ótimos, principalmente pra quem tem dúvida se está fazendo certo. Ajudou muito na minha confiança na academia.",
     dateLabel: "há 3 semanas",
     seed: true,
   },

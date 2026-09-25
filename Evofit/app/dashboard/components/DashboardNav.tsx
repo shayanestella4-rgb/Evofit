@@ -24,15 +24,15 @@ export default function DashboardNav() {
               key={item.href}
               href={item.href}
               className={`flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 relative transition-colors ${
-                active ? "text-[#C084FC]" : "text-[#CBD5E0]"
+                active ? "text-[#A8B78A]" : "text-[#CBD5E0]"
               }`}
             >
               <span className="text-[18px] leading-none">{item.icon}</span>
-              <span className={`text-[9px] font-semibold ${active ? "text-[#C084FC]" : "text-[#CBD5E0]"}`}>
+              <span className={`text-[9px] font-semibold ${active ? "text-[#A8B78A]" : "text-[#CBD5E0]"}`}>
                 {item.label}
               </span>
               {active && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#A855F7] rounded-full" />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#6B7F56] rounded-full" />
               )}
             </Link>
           );

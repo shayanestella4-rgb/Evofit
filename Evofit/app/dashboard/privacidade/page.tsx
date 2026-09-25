@@ -38,7 +38,7 @@ export default function PrivacidadePage() {
     <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-8 pb-8">
 
       {/* Header */}
-      <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-sm text-[#C084FC] font-semibold mb-6 hover:underline">
+      <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-sm text-[#A8B78A] font-semibold mb-6 hover:underline">
         ← Voltar
       </Link>
 
@@ -61,7 +61,7 @@ export default function PrivacidadePage() {
           placeholder="seu@email.com"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setError(""); setSaved(false); }}
-          className="w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#A855F7]/30 focus:border-[#A855F7] transition"
+          className="w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#6B7F56]/30 focus:border-[#6B7F56] transition"
         />
 
         {error && (
@@ -70,7 +70,7 @@ export default function PrivacidadePage() {
 
         <button
           onClick={handleSave}
-          className="w-full mt-3 bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors text-sm"
+          className="w-full mt-3 bg-[#6B7F56] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#556345] transition-colors text-sm"
         >
           {saved ? "✓ E-mail salvo!" : "Salvar e-mail"}
         </button>
@@ -109,8 +109,8 @@ export default function PrivacidadePage() {
       </div>
 
       {/* Card: LGPD */}
-      <div className="bg-[#1E1035] rounded-[1rem] border border-[#2D1B4E] p-4">
-        <p className="text-xs font-semibold text-[#C084FC] mb-1">⚖️ Seus direitos (LGPD)</p>
+      <div className="bg-[#1F2A1C] rounded-[1rem] border border-[#35402C] p-4">
+        <p className="text-xs font-semibold text-[#A8B78A] mb-1">⚖️ Seus direitos (LGPD)</p>
         <p className="text-xs text-[#C0C0C0] leading-relaxed">
           Você pode solicitar a exclusão total dos seus dados a qualquer momento pelo suporte ou pela opção <strong>"Sair da conta"</strong> no perfil, que remove todos os dados locais.
         </p>

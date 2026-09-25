@@ -32,7 +32,7 @@ export default function TarefasPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <p className="text-xs text-[#C084FC] font-semibold uppercase tracking-wide mb-1">
+        <p className="text-xs text-[#A8B78A] font-semibold uppercase tracking-wide mb-1">
           Motivação diária
         </p>
         <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Suas tarefas</h1>
@@ -50,10 +50,10 @@ export default function TarefasPage() {
           </p>
           <p className="text-xs text-[#FB923C]">Sequência atual</p>
         </div>
-        <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E]">
+        <div className="bg-[#1F2A1C] rounded-[1rem] p-4 border border-[#35402C]">
           <p className="text-2xl mb-1">⭐</p>
-          <p className="text-xl font-extrabold text-[#C084FC]">{totalXP} XP</p>
-          <p className="text-xs text-[#C084FC]">Pontos acumulados</p>
+          <p className="text-xl font-extrabold text-[#A8B78A]">{totalXP} XP</p>
+          <p className="text-xs text-[#A8B78A]">Pontos acumulados</p>
         </div>
       </div>
 
@@ -71,13 +71,13 @@ export default function TarefasPage() {
         >
           <div className="flex items-start gap-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 ${
-              todayTaskDone ? "bg-[#052E16]" : "bg-[#1E1035]"
+              todayTaskDone ? "bg-[#052E16]" : "bg-[#1F2A1C]"
             }`}>
               {todayTask.emoji}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] bg-[#1E1035] text-[#C084FC] px-2 py-0.5 rounded-full font-semibold">
+                <span className="text-[10px] bg-[#1F2A1C] text-[#A8B78A] px-2 py-0.5 rounded-full font-semibold">
                   {todayTask.category}
                 </span>
                 <span className="text-[10px] text-[#CBD5E0]">+{todayTask.xp} XP</span>
@@ -92,7 +92,7 @@ export default function TarefasPage() {
             className={`w-full mt-4 py-3.5 rounded-[0.75rem] font-bold text-sm transition-all active:scale-[0.98] ${
               todayTaskDone
                 ? "bg-[#10B981] text-white"
-                : "bg-[#A855F7] text-white hover:bg-[#9333EA] shadow-lg shadow-purple-950"
+                : "bg-[#6B7F56] text-white hover:bg-[#556345] shadow-lg shadow-[#141a10]"
             }`}
           >
             {todayTaskDone ? "✓ Tarefa concluída! Parabéns!" : "Marcar como feita"}
@@ -135,8 +135,8 @@ export default function TarefasPage() {
       </div>
 
       {/* Dica */}
-      <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E]">
-        <p className="text-xs font-semibold text-[#C084FC] mb-1">💡 Dica do dia</p>
+      <div className="bg-[#1F2A1C] rounded-[1rem] p-4 border border-[#35402C]">
+        <p className="text-xs font-semibold text-[#A8B78A] mb-1">💡 Dica do dia</p>
         <p className="text-xs text-[#C0C0C0] leading-relaxed">
           Completar pequenas tarefas diárias cria o hábito da disciplina. Em 21 dias consecutivos, isso vira rotina automática!
         </p>

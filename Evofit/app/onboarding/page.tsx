@@ -169,15 +169,15 @@ export default function OnboardingPage() {
       {/* Top bar */}
       <div className="px-6 pt-8 pb-4 max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+          <span className="text-sm font-semibold text-[#A8B78A]">Evofit</span>
           <span className="text-xs text-[#CBD5E0]">
             {step + 1} de {STEPS.length}
           </span>
         </div>
         {/* Progress bar */}
-        <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+            className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
                     placeholder={field.placeholder}
                     value={data[field.key] ?? ""}
                     onChange={(e) => setValue(field.key, e.target.value)}
-                    className="w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#A855F7] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
+                    className="w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#6B7F56] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
                   />
                 ) : field.type === "select" ? (
                   <div className="flex gap-3">
@@ -213,8 +213,8 @@ export default function OnboardingPage() {
                         onClick={() => setValue(field.key, opt)}
                         className={`flex-1 py-3 rounded-[0.75rem] text-sm font-semibold border transition-all ${
                           data[field.key] === opt
-                            ? "bg-[#A855F7] text-white border-[#A855F7]"
-                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A855F7]"
+                            ? "bg-[#6B7F56] text-white border-[#6B7F56]"
+                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#6B7F56]"
                         }`}
                       >
                         {opt}
@@ -229,17 +229,17 @@ export default function OnboardingPage() {
                         onClick={() => setValue(field.key, opt)}
                         className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
                           data[field.key] === opt
-                            ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
-                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
+                            ? "bg-[#1F2A1C] text-[#A8B78A] border-[#6B7F56]"
+                            : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A8B78A]"
                         }`}
                       >
                         <span
                           className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
-                            data[field.key] === opt ? "border-[#A855F7]" : "border-[#3A3A3A]"
+                            data[field.key] === opt ? "border-[#6B7F56]" : "border-[#3A3A3A]"
                           }`}
                         >
                           {data[field.key] === opt && (
-                            <span className="w-2 h-2 rounded-full bg-[#A855F7]" />
+                            <span className="w-2 h-2 rounded-full bg-[#6B7F56]" />
                           )}
                         </span>
                         {opt}
@@ -257,13 +257,13 @@ export default function OnboardingPage() {
                             onClick={() => toggleCheckbox(field.key, value)}
                             className={`w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
                               selected
-                                ? "bg-[#1E1035] text-[#C084FC] border-[#A855F7]"
-                                : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#C4B5FD]"
+                                ? "bg-[#1F2A1C] text-[#A8B78A] border-[#6B7F56]"
+                                : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A8B78A]"
                             }`}
                           >
                             <span
                               className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${
-                                selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                                selected ? "border-[#6B7F56] bg-[#6B7F56]" : "border-[#3A3A3A]"
                               }`}
                             >
                               {selected && <span className="text-white text-[10px]">✓</span>}
@@ -276,7 +276,7 @@ export default function OnboardingPage() {
                               value={(data.lesoesDetalhe as string) ?? ""}
                               onChange={(e) => setValue("lesoesDetalhe", e.target.value)}
                               placeholder="Qual condição? (ex: fibromialgia, pós-cirúrgico...)"
-                              className="w-full mt-2 border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#A855F7] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
+                              className="w-full mt-2 border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#CBD5E0] focus:outline-none focus:border-[#6B7F56] focus:ring-2 focus:ring-[#EDE9FE] transition-all"
                             />
                           )}
                         </div>
@@ -301,7 +301,7 @@ export default function OnboardingPage() {
           )}
           <button
             onClick={next}
-            className="flex-1 bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+            className="flex-1 bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
           >
             {step === STEPS.length - 1 ? "Ver meu plano 🚀" : "Continuar"}
           </button>

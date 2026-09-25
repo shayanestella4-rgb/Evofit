@@ -63,7 +63,7 @@ export default function TermosPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#C084FC] font-semibold mb-4 hover:underline">
+        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#A8B78A] font-semibold mb-4 hover:underline">
           ← Voltar ao perfil
         </Link>
         <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Termos de Uso</h1>
@@ -71,9 +71,9 @@ export default function TermosPage() {
       </div>
 
       {/* Aviso de destaque */}
-      <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E] mb-6">
-        <p className="text-xs font-bold text-[#C084FC] mb-1">⚠️ Leia com atenção</p>
-        <p className="text-xs text-[#C084FC] leading-relaxed">
+      <div className="bg-[#1F2A1C] rounded-[1rem] p-4 border border-[#35402C] mb-6">
+        <p className="text-xs font-bold text-[#A8B78A] mb-1">⚠️ Leia com atenção</p>
+        <p className="text-xs text-[#A8B78A] leading-relaxed">
           O Evofit oferece orientações gerais de condicionamento físico e nutrição. O App não substitui
           avaliação médica, prescrição de educador físico (CREF) ou nutricionista (CRN). Consulte um
           profissional de saúde antes de iniciar qualquer programa de exercícios.
@@ -114,7 +114,7 @@ export default function TermosPage() {
             href="https://wa.me/551145527512?text=Olá%2C%20tenho%20uma%20dúvida%20sobre%20os%20termos%20de%20uso"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#C084FC] font-semibold hover:underline"
+            className="text-[#A8B78A] font-semibold hover:underline"
           >
             Fale conosco pelo WhatsApp
           </a>

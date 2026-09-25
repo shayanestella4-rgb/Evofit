@@ -52,7 +52,7 @@ function LoginForm() {
           placeholder="seu@email.com"
           required
           autoComplete="email"
-          className="w-full bg-[#111111] border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3.5 text-sm text-[#F0F0F0] placeholder-[#4B5563] focus:outline-none focus:border-[#A855F7] transition-colors"
+          className="w-full bg-[#111111] border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3.5 text-sm text-[#F0F0F0] placeholder-[#4B5563] focus:outline-none focus:border-[#6B7F56] transition-colors"
         />
 
         {error && (
@@ -62,7 +62,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading || !email}
-          className="w-full bg-[#A855F7] text-white font-semibold py-3.5 rounded-[0.75rem] text-sm active:bg-[#9333EA] transition-colors disabled:opacity-50"
+          className="w-full bg-[#6B7F56] text-white font-semibold py-3.5 rounded-[0.75rem] text-sm active:bg-[#556345] transition-colors disabled:opacity-50"
         >
           {loading ? "Verificando..." : "Acessar"}
         </button>
@@ -73,7 +73,7 @@ function LoginForm() {
           Ainda não assinou?{" "}
           <button
             onClick={() => router.push("/quiz")}
-            className="text-[#C084FC] font-semibold"
+            className="text-[#A8B78A] font-semibold"
           >
             Assinar o Evofit
           </button>
@@ -88,7 +88,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8 animate-fade-in">
-          <Link href="/" className="text-2xl font-extrabold text-[#C084FC]">
+          <Link href="/" className="text-2xl font-extrabold text-[#A8B78A]">
             Evofit
           </Link>
           <p className="text-[#B8B8B8] text-sm mt-2">Seu personal trainer digital</p>

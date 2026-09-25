@@ -44,11 +44,11 @@ function FaqAccordion() {
 
   return (
     <div className="mb-4">
-      <span className="inline-block bg-[#1E1035] text-[#C084FC] text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">
+      <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">
         Perguntas frequentes
       </span>
       <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-1">
-        Ainda tem alguma <span className="text-[#C084FC]">dúvida?</span>
+        Ainda tem alguma <span className="text-[#A8B78A]">dúvida?</span>
       </h2>
       <p className="text-sm text-[#8A8A8A] mb-5">
         Tudo o que você precisa saber antes de começar o Evofit.
@@ -69,7 +69,7 @@ function FaqAccordion() {
                 <span className="text-sm font-semibold text-[#F0F0F0]">{item.q}</span>
                 <span
                   className={`shrink-0 w-6 h-6 rounded-full border border-[#3A3A3A] flex items-center justify-center text-[#8A8A8A] text-xs transition-transform ${
-                    isOpen ? "rotate-180 border-[#A855F7] text-[#C084FC]" : ""
+                    isOpen ? "rotate-180 border-[#6B7F56] text-[#A8B78A]" : ""
                   }`}
                 >
                   ▾
@@ -145,13 +145,13 @@ export default function OfertaPage() {
       <div className="max-w-md md:max-w-2xl lg:max-w-3xl w-full">
         {/* Headline */}
         <div className="text-center mb-10 animate-fade-in">
-          <span className="inline-block bg-[#1E1035] text-[#C084FC] text-xs font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">
+          <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-xs font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">
             Seu personal trainer digital
           </span>
           <h1 className="text-3xl font-extrabold text-[#F0F0F0] leading-tight mb-4">
             Chegou a hora de colocar
             <br />
-            <span className="text-[#C084FC]">você em primeiro lugar</span>
+            <span className="text-[#A8B78A]">você em primeiro lugar</span>
           </h1>
           <p className="text-[#8A8A8A] leading-relaxed">
             Sem academia lotada, sem plano genérico, sem gastar o que você não tem.
@@ -178,7 +178,7 @@ export default function OfertaPage() {
               key={b.title}
               className="bg-[#1A1A1A] rounded-[1rem] p-5 border border-[#2D2D2D] flex gap-4 items-start"
             >
-              <div className="w-11 h-11 shrink-0 bg-[#1E1035] rounded-xl flex items-center justify-center text-xl">
+              <div className="w-11 h-11 shrink-0 bg-[#1F2A1C] rounded-xl flex items-center justify-center text-xl">
                 {b.icon}
               </div>
               <div>
@@ -209,9 +209,9 @@ export default function OfertaPage() {
                 </div>
                 <div className="flex items-center gap-2 mt-1.5">
                   <div className="flex-1 h-2 bg-[#2D2D2D] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#A855F7] rounded-full" style={{ width: `${p.depois}%` }} />
+                    <div className="h-full bg-[#6B7F56] rounded-full" style={{ width: `${p.depois}%` }} />
                   </div>
-                  <span className="text-[10px] text-[#C084FC] w-12">Com Evofit</span>
+                  <span className="text-[10px] text-[#A8B78A] w-12">Com Evofit</span>
                 </div>
               </div>
             ))}
@@ -221,7 +221,7 @@ export default function OfertaPage() {
         {/* CTA intermediário */}
         <button
           onClick={goToCakto}
-          className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 mb-10 animate-slide-up"
+          className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] mb-10 animate-slide-up"
         >
           Escolher meu plano
         </button>
@@ -234,7 +234,7 @@ export default function OfertaPage() {
           <ul className="space-y-3">
             {PARA_QUEM.map((item) => (
               <li key={item} className="flex items-start gap-3 text-sm text-[#C0C0C0]">
-                <span className="text-[#C084FC] shrink-0">✓</span>
+                <span className="text-[#A8B78A] shrink-0">✓</span>
                 {item}
               </li>
             ))}
@@ -282,13 +282,13 @@ export default function OfertaPage() {
               <div
                 key={c.item}
                 className={`flex items-center justify-between px-5 py-4 ${
-                  c.destaque ? "bg-[#1E1035]" : "border-b border-[#2D2D2D]"
+                  c.destaque ? "bg-[#1F2A1C]" : "border-b border-[#2D2D2D]"
                 }`}
               >
-                <span className={`text-sm ${c.destaque ? "text-[#C084FC] font-bold" : "text-[#C0C0C0]"}`}>
+                <span className={`text-sm ${c.destaque ? "text-[#A8B78A] font-bold" : "text-[#C0C0C0]"}`}>
                   {c.item}
                 </span>
-                <span className={`text-sm font-semibold ${c.destaque ? "text-[#C084FC]" : "text-[#8A8A8A]"}`}>
+                <span className={`text-sm font-semibold ${c.destaque ? "text-[#A8B78A]" : "text-[#8A8A8A]"}`}>
                   {c.custo}
                 </span>
               </div>
@@ -333,12 +333,12 @@ export default function OfertaPage() {
 
           {/* Garantia de 7 dias */}
           <div className="bg-[#111] border border-[#2D2D2D] rounded-[1rem] p-4 mb-5 flex items-center gap-3">
-            <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#A855F7] to-[#6B21A8] flex flex-col items-center justify-center text-white shadow-lg shadow-purple-950 border-2 border-[#C084FC]/40">
+            <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#6B7F56] to-[#4A5940] flex flex-col items-center justify-center text-white shadow-lg shadow-[#141a10] border-2 border-[#A8B78A]/40">
               <span className="text-lg font-black leading-none">7</span>
               <span className="text-[7px] font-bold leading-none mt-0.5 tracking-wide">DIAS</span>
             </div>
             <div>
-              <span className="inline-block bg-[#1E1035] text-[#C084FC] text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full mb-1">
+              <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full mb-1">
                 Compra 100% segura
               </span>
               <p className="text-sm font-extrabold text-[#F0F0F0] mb-0.5">Garantia de 7 dias, sem burocracia</p>
@@ -352,7 +352,7 @@ export default function OfertaPage() {
 
           <button
             onClick={goToCakto}
-            className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+            className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
           >
             Escolher meu plano
           </button>

@@ -12,7 +12,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className="fixed top-0 inset-x-0 z-50 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#2D2D2D]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold text-[#C084FC] tracking-tight">Evofit</span>
+          <span className="text-xl font-bold text-[#A8B78A] tracking-tight">Evofit</span>
           <div className="flex items-center gap-3">
             <Link
               href="/auth/login"
@@ -22,7 +22,7 @@ export default function LandingPage() {
             </Link>
             <button
               onClick={goToQuiz}
-              className="bg-[#A855F7] text-white text-sm font-semibold px-5 py-2.5 rounded-[0.75rem] active:bg-[#9333EA] transition-colors"
+              className="bg-[#6B7F56] text-white text-sm font-semibold px-5 py-2.5 rounded-[0.75rem] active:bg-[#556345] transition-colors"
             >
               Assinar agora
             </button>
@@ -34,12 +34,12 @@ export default function LandingPage() {
         {/* Hero */}
         <section className="bg-[#0A0A0A] max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
           <div className="animate-fade-in">
-            <span className="inline-block bg-[#1E1035] text-[#C084FC] text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
+            <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
               Seu personal trainer digital
             </span>
             <h1 className="text-5xl sm:text-6xl font-extrabold text-[#F0F0F0] leading-tight mb-6">
               Transforme seu corpo<br />
-              <span className="text-[#C084FC]">sem complicação</span>
+              <span className="text-[#A8B78A]">sem complicação</span>
             </h1>
             <p className="text-lg text-[#8A8A8A] max-w-xl mx-auto mb-10 leading-relaxed">
               Treinos diários personalizados, plano alimentar e tarefas motivacionais —
@@ -48,7 +48,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={goToQuiz}
-                className="bg-[#A855F7] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors text-base shadow-lg shadow-purple-950"
+                className="bg-[#6B7F56] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors text-base shadow-lg shadow-[#141a10]"
               >
                 Começar agora
               </button>
@@ -63,11 +63,11 @@ export default function LandingPage() {
 
           {/* App Preview Card */}
           <div className="mt-16 animate-slide-up animate-delay-200">
-            <div className="bg-[#1E1035] rounded-[1.5rem] p-6 max-w-xs mx-auto shadow-2xl shadow-purple-950 border border-[#2D1B4E]">
+            <div className="bg-[#1F2A1C] rounded-[1.5rem] p-6 max-w-xs mx-auto shadow-2xl shadow-[#141a10] border border-[#35402C]">
               <div className="bg-[#1A1A1A] rounded-xl p-4 mb-3 text-left">
                 <p className="text-xs text-[#8A8A8A] mb-1">Bom dia, Ana 👋</p>
                 <p className="text-sm font-bold text-[#F0F0F0]">Treino de hoje</p>
-                <p className="text-xs text-[#C084FC] font-semibold mt-1">Pernas e Glúteos · 45 min</p>
+                <p className="text-xs text-[#A8B78A] font-semibold mt-1">Pernas e Glúteos · 45 min</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-[#1A1A1A] rounded-xl p-3 text-left">
@@ -114,7 +114,7 @@ export default function LandingPage() {
                   key={f.title}
                   className="bg-[#1A1A1A] rounded-[1rem] p-6 border border-[#2D2D2D] hover:shadow-md transition-shadow"
                 >
-                  <div className="w-12 h-12 bg-[#1E1035] rounded-xl flex items-center justify-center text-2xl mb-4">
+                  <div className="w-12 h-12 bg-[#1F2A1C] rounded-xl flex items-center justify-center text-2xl mb-4">
                     {f.icon}
                   </div>
                   <h3 className="font-bold text-[#F0F0F0] mb-2">{f.title}</h3>
@@ -148,15 +148,15 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Final */}
-        <section className="bg-[#A855F7] py-20">
+        <section className="bg-[#6B7F56] py-20">
           <div className="max-w-2xl mx-auto px-6 text-center">
             <h2 className="text-3xl font-extrabold text-white mb-4">Pronto para começar?</h2>
-            <p className="text-purple-300 mb-8">
+            <p className="text-[#A8B78A] mb-8">
               Junte-se a quem já parou de procurar e começou a treinar.
             </p>
             <button
               onClick={goToQuiz}
-              className="bg-white text-[#A855F7] font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#EDE9FE] transition-colors inline-block"
+              className="bg-white text-[#6B7F56] font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#EDE9FE] transition-colors inline-block"
             >
               Quero assinar agora
             </button>

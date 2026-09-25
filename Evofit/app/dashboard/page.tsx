@@ -141,7 +141,7 @@ export default function DashboardHome() {
         <div className="relative">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-10 h-10 rounded-full overflow-hidden bg-[#A855F7] flex items-center justify-center text-white font-bold hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#A855F7]/40"
+            className="w-10 h-10 rounded-full overflow-hidden bg-[#6B7F56] flex items-center justify-center text-white font-bold hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#6B7F56]/40"
             title="Trocar foto de perfil"
           >
             {profilePhoto ? (
@@ -179,9 +179,9 @@ export default function DashboardHome() {
               title={item.workoutName || "Descanso"}
               className={`flex-1 flex flex-col items-center py-2 rounded-xl text-xs font-semibold transition-all ${
                 isToday
-                  ? "bg-[#A855F7] text-white"
+                  ? "bg-[#6B7F56] text-white"
                   : didTrain
-                  ? "bg-[#1E1035] text-[#C084FC]"
+                  ? "bg-[#1F2A1C] text-[#A8B78A]"
                   : missed
                   ? "bg-[#1A1A1A] text-[#D1D5DB] border border-[#252525]"
                   : item.isTraining
@@ -206,25 +206,25 @@ export default function DashboardHome() {
           <p className="text-sm text-[#B8B8B8] mt-1 mb-3">
             Aproveite para se recuperar. Uma caminhada leve ou alongamento são ótimos hoje.
           </p>
-          <Link href="/dashboard/treino" className="text-xs text-[#C084FC] font-semibold hover:underline">
+          <Link href="/dashboard/treino" className="text-xs text-[#A8B78A] font-semibold hover:underline">
             Ver treinos da semana →
           </Link>
         </div>
       ) : (
         <Link href="/dashboard/treino">
-          <div className="bg-gradient-to-br from-[#1A0A2E] to-[#A855F7] rounded-[1rem] p-5 mb-4 shadow-lg shadow-purple-950 hover:shadow-xl transition-shadow cursor-pointer">
+          <div className="bg-gradient-to-br from-[#16200F] to-[#6B7F56] rounded-[1rem] p-5 mb-4 shadow-lg shadow-[#141a10] hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-purple-300 uppercase tracking-wide">
+              <span className="text-xs font-semibold text-[#A8B78A] uppercase tracking-wide">
                 {workout.emoji} Treino de hoje
               </span>
-              <span className="bg-[#A855F7] text-white text-xs px-2.5 py-1 rounded-full font-bold">
+              <span className="bg-[#6B7F56] text-white text-xs px-2.5 py-1 rounded-full font-bold">
                 {workout.duration} min
               </span>
             </div>
             <h2 className="text-xl font-extrabold text-white mb-1">{workout.name}</h2>
-            <p className="text-sm text-purple-300">{workout.muscleLabel} · {totalEx} exercícios</p>
+            <p className="text-sm text-[#A8B78A]">{workout.muscleLabel} · {totalEx} exercícios</p>
             <div className="mt-4 bg-white/5 rounded-xl p-3">
-              <div className="flex justify-between text-xs text-purple-300 mb-1.5">
+              <div className="flex justify-between text-xs text-[#A8B78A] mb-1.5">
                 <span>Progresso</span>
                 <span>{doneCount} / {totalEx} exercícios</span>
               </div>
@@ -245,8 +245,8 @@ export default function DashboardHome() {
           <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] hover:shadow-md transition-shadow cursor-pointer">
             <p className="text-xs text-[#B8B8B8] mb-1">🥗 Dieta hoje</p>
             <p className="text-base font-extrabold text-[#F0F0F0]">1.850 kcal</p>
-            <div className="mt-2 h-1.5 bg-[#1E1035] rounded-full">
-              <div className="h-full w-[60%] bg-[#A855F7] rounded-full" />
+            <div className="mt-2 h-1.5 bg-[#1F2A1C] rounded-full">
+              <div className="h-full w-[60%] bg-[#6B7F56] rounded-full" />
             </div>
             <p className="text-[10px] text-[#CBD5E0] mt-1">Meta diária</p>
           </div>
@@ -264,7 +264,7 @@ export default function DashboardHome() {
                   ✓ Concluída
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 bg-[#1E1035] text-[#C084FC] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-[#1F2A1C] text-[#A8B78A] text-[10px] font-bold px-2 py-0.5 rounded-full">
                   Pendente
                 </span>
               )}
@@ -274,8 +274,8 @@ export default function DashboardHome() {
       </div>
 
       {/* Frase motivacional */}
-      <div className="bg-[#1E1035] rounded-[1rem] p-4 border border-[#2D1B4E] mb-4">
-        <p className="text-xs text-[#C084FC] font-semibold mb-1">✨ Frase do dia</p>
+      <div className="bg-[#1F2A1C] rounded-[1rem] p-4 border border-[#35402C] mb-4">
+        <p className="text-xs text-[#A8B78A] font-semibold mb-1">✨ Frase do dia</p>
         <p className="text-sm text-[#C0C0C0] font-medium leading-relaxed italic">
           &ldquo;{quote.text}&rdquo;
         </p>
@@ -292,7 +292,7 @@ export default function DashboardHome() {
             { label: "Tarefas feitas", value: todayTaskDone ? "1" : "0", unit: "hoje" },
           ].map((s) => (
             <div key={s.label}>
-              <p className="text-xl font-extrabold text-[#C084FC]">
+              <p className="text-xl font-extrabold text-[#A8B78A]">
                 {s.value}
                 <span className="text-xs text-[#CBD5E0] font-normal ml-0.5">{s.unit}</span>
               </p>

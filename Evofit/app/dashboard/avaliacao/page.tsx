@@ -119,7 +119,7 @@ function Stars({ value, size = "md" }: { value: number; size?: "sm" | "md" | "lg
   return (
     <span className={sizes[size]}>
       {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} className={s <= value ? "text-[#C084FC]" : "text-[#E5E7EB]"}>★</span>
+        <span key={s} className={s <= value ? "text-[#A8B78A]" : "text-[#E5E7EB]"}>★</span>
       ))}
     </span>
   );
@@ -138,7 +138,7 @@ function ClickableStars({ value, onChange }: { value: number; onChange: (v: numb
           onMouseLeave={() => setHovered(0)}
           className="text-3xl leading-none transition-transform active:scale-90 hover:scale-110"
         >
-          <span className={(hovered || value) >= s ? "text-[#C084FC]" : "text-[#E5E7EB]"}>★</span>
+          <span className={(hovered || value) >= s ? "text-[#A8B78A]" : "text-[#E5E7EB]"}>★</span>
         </button>
       ))}
     </div>
@@ -199,7 +199,7 @@ export default function AvaliacaoPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#C084FC] font-semibold mb-4 hover:underline">
+        <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-xs text-[#A8B78A] font-semibold mb-4 hover:underline">
           ← Voltar ao perfil
         </Link>
         <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Avaliações</h1>
@@ -226,10 +226,10 @@ export default function AvaliacaoPage() {
               return (
                 <div key={star} className="flex items-center gap-2">
                   <span className="text-[10px] text-[#B8B8B8] w-3 shrink-0">{star}</span>
-                  <span className="text-[10px] text-[#C084FC]">★</span>
+                  <span className="text-[10px] text-[#A8B78A]">★</span>
                   <div className="flex-1 h-1.5 bg-[#252525] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+                      className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -288,7 +288,7 @@ export default function AvaliacaoPage() {
 
           <button
             type="submit"
-            className="w-full bg-[#A855F7] text-white font-bold py-3 rounded-[0.75rem] text-sm hover:bg-[#9333EA] transition-colors active:scale-[0.98]"
+            className="w-full bg-[#6B7F56] text-white font-bold py-3 rounded-[0.75rem] text-sm hover:bg-[#556345] transition-colors active:scale-[0.98]"
           >
             Enviar avaliação
           </button>
@@ -308,7 +308,7 @@ export default function AvaliacaoPage() {
           >
             <div className="flex items-start gap-3">
               {/* Avatar */}
-              <div className="w-9 h-9 rounded-full bg-[#A855F7] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#6B7F56] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {review.initial}
               </div>
 

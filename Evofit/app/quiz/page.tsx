@@ -250,7 +250,7 @@ export default function QuizPage() {
         <div className="flex-1 flex flex-col justify-center max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 py-16 text-center animate-fade-in">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F0F0F0] leading-tight mb-4">
             Esse aplicativo está ajudando homens e mulheres a{" "}
-            <span className="text-[#C084FC]">treinar e emagrecer</span> de forma
+            <span className="text-[#A8B78A]">treinar e emagrecer</span> de forma
             simples e eficaz
           </h1>
           <p className="text-[#8A8A8A] mb-8 leading-relaxed">
@@ -278,7 +278,7 @@ export default function QuizPage() {
 
           <button
             onClick={() => setPhase("quiz")}
-            className="bg-[#A855F7] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+            className="bg-[#6B7F56] text-white font-bold px-8 py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
           >
             Quero aprender mais
           </button>
@@ -293,14 +293,14 @@ export default function QuizPage() {
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+            <span className="text-sm font-semibold text-[#A8B78A]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
               {answerNumber} de {ANSWERABLE.length}
             </span>
           </div>
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
             <div
-              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
               style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
@@ -314,10 +314,10 @@ export default function QuizPage() {
                 <button
                   key={opt.label}
                   onClick={() => selectAnswer(currentItem.key, opt.label)}
-                  className="w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border border-[#2D2D2D] text-[#C0C0C0] bg-[#1A1A1A] hover:border-[#A855F7] hover:text-[#F0F0F0] transition-all"
+                  className="w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border border-[#2D2D2D] text-[#C0C0C0] bg-[#1A1A1A] hover:border-[#6B7F56] hover:text-[#F0F0F0] transition-all"
                 >
                   <span>{opt.label}</span>
-                  <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
+                  <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1F2A1C] rounded-lg">
                     {opt.icon}
                   </span>
                 </button>
@@ -331,14 +331,14 @@ export default function QuizPage() {
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+            <span className="text-sm font-semibold text-[#A8B78A]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
               {answerNumber} de {ANSWERABLE.length}
             </span>
           </div>
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
             <div
-              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
               style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
@@ -357,7 +357,7 @@ export default function QuizPage() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={currentItem.placeholder}
                 autoFocus
-                className="w-full border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-4 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#A855F7] transition-all"
+                className="w-full border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-4 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#6B7F56] transition-all"
               />
               {currentItem.suffix && (
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#6B7280]">
@@ -370,7 +370,7 @@ export default function QuizPage() {
           <button
             onClick={() => selectAnswer(currentItem.key, inputValue.trim())}
             disabled={!inputValue.trim()}
-            className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
+            className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] disabled:opacity-40"
           >
             Continuar
           </button>
@@ -389,14 +389,14 @@ export default function QuizPage() {
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
+            <span className="text-sm font-semibold text-[#A8B78A]">Evofit</span>
             <span className="text-xs text-[#8A8A8A]">
               {answerNumber} de {ANSWERABLE.length}
             </span>
           </div>
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
             <div
-              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
               style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
@@ -417,21 +417,21 @@ export default function QuizPage() {
                       onClick={() => toggleMultiOption(currentItem.key, opt.value)}
                       className={`w-full flex items-center justify-between gap-4 text-left px-4 py-4 rounded-[0.75rem] text-sm font-medium border transition-all ${
                         selected
-                          ? "border-[#A855F7] bg-[#1E1035] text-[#F0F0F0]"
-                          : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#A855F7] hover:text-[#F0F0F0]"
+                          ? "border-[#6B7F56] bg-[#1F2A1C] text-[#F0F0F0]"
+                          : "border-[#2D2D2D] bg-[#1A1A1A] text-[#C0C0C0] hover:border-[#6B7F56] hover:text-[#F0F0F0]"
                       }`}
                     >
                       <span className="flex items-center gap-3">
                         <span
                           className={`w-5 h-5 rounded-[0.375rem] border-2 shrink-0 flex items-center justify-center ${
-                            selected ? "border-[#A855F7] bg-[#A855F7]" : "border-[#3A3A3A]"
+                            selected ? "border-[#6B7F56] bg-[#6B7F56]" : "border-[#3A3A3A]"
                           }`}
                         >
                           {selected && <span className="text-white text-xs">✓</span>}
                         </span>
                         {opt.label}
                       </span>
-                      <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1E1035] rounded-lg">
+                      <span className="shrink-0 w-9 h-9 flex items-center justify-center text-lg bg-[#1F2A1C] rounded-lg">
                         {opt.icon}
                       </span>
                     </button>
@@ -442,7 +442,7 @@ export default function QuizPage() {
                         onChange={(e) => setOutraDetalhe(e.target.value)}
                         placeholder="Qual condição? (ex: fibromialgia, pós-cirúrgico...)"
                         autoFocus
-                        className="w-full mt-2 border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#A855F7] transition-all"
+                        className="w-full mt-2 border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#6B7F56] transition-all"
                       />
                     )}
                   </div>
@@ -454,7 +454,7 @@ export default function QuizPage() {
           <button
             onClick={() => goToNext()}
             disabled={(multiAnswers[currentItem.key] ?? []).length === 0}
-            className="w-full mt-6 bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
+            className="w-full mt-6 bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] disabled:opacity-40"
           >
             Continuar
           </button>
@@ -464,9 +464,9 @@ export default function QuizPage() {
       {phase === "quiz" && currentItem.type === "insight" && (
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
             <div
-              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
               style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
@@ -479,7 +479,7 @@ export default function QuizPage() {
             </div>
             <button
               onClick={() => goToNext()}
-              className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+              className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
             >
               Continuar
             </button>
@@ -490,9 +490,9 @@ export default function QuizPage() {
       {phase === "quiz" && currentItem.type === "social" && (
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
             <div
-              className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+              className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
               style={{ width: `${(answerNumber / ANSWERABLE.length) * 100}%` }}
             />
           </div>
@@ -508,7 +508,7 @@ export default function QuizPage() {
               <div className="absolute inset-8 rounded-full border border-dashed border-[#2D2D2D]" />
 
               {/* Avatar central */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full overflow-hidden border-2 border-[#A855F7] shadow-lg shadow-purple-950 z-10">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full overflow-hidden border-2 border-[#6B7F56] shadow-lg shadow-[#141a10] z-10">
                 <Image src={ORBIT_CENTER} alt="Usuário do Evofit" width={80} height={80} className="w-full h-full object-cover" />
               </div>
 
@@ -532,7 +532,7 @@ export default function QuizPage() {
 
             <button
               onClick={() => goToNext()}
-              className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950"
+              className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
             >
               Continuar
             </button>
@@ -542,8 +542,8 @@ export default function QuizPage() {
 
       {phase === "email" && (
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
-          <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
-            <div className="h-full bg-[#A855F7] rounded-full" style={{ width: "100%" }} />
+          <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-10">
+            <div className="h-full bg-[#6B7F56] rounded-full" style={{ width: "100%" }} />
           </div>
           <div className="flex-1 flex flex-col justify-center animate-fade-in">
             <h2 className="text-xl font-extrabold text-[#F0F0F0] mb-2 leading-snug">
@@ -559,14 +559,14 @@ export default function QuizPage() {
               onKeyDown={(e) => e.key === "Enter" && submitEmail()}
               placeholder="seuemail@exemplo.com"
               autoFocus
-              className="w-full border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-4 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#A855F7] transition-all mb-2"
+              className="w-full border border-[#2D2D2D] bg-[#1A1A1A] rounded-[0.75rem] px-4 py-4 text-sm text-[#F0F0F0] placeholder-[#6B7280] focus:outline-none focus:border-[#6B7F56] transition-all mb-2"
             />
             {emailError && <p className="text-xs text-red-400 mb-4">{emailError}</p>}
           </div>
           <button
             onClick={submitEmail}
             disabled={!emailValue.trim()}
-            className="w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 disabled:opacity-40"
+            className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] disabled:opacity-40"
           >
             Ver meu plano
           </button>
@@ -575,7 +575,7 @@ export default function QuizPage() {
 
       {phase === "analyzing" && (
         <div className="flex-1 flex flex-col items-center justify-center animate-fade-in">
-          <div className="w-10 h-10 border-4 border-[#2D2D2D] border-t-[#A855F7] rounded-full animate-spin mb-6" />
+          <div className="w-10 h-10 border-4 border-[#2D2D2D] border-t-[#6B7F56] rounded-full animate-spin mb-6" />
           <p className="text-[#8A8A8A] text-sm">Analisando suas respostas...</p>
         </div>
       )}
@@ -583,7 +583,7 @@ export default function QuizPage() {
       {phase === "chat" && (
         <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 py-10">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-full bg-[#A855F7] flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-[#6B7F56] flex items-center justify-center text-white font-bold">
               E
             </div>
             <div>
@@ -609,7 +609,7 @@ export default function QuizPage() {
                 if (sessionIdRef.current) trackQuiz({ action: "complete", id: sessionIdRef.current });
                 router.push("/quiz/oferta");
               }}
-              className="mt-8 w-full bg-[#A855F7] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#9333EA] transition-colors shadow-lg shadow-purple-950 animate-fade-in"
+              className="mt-8 w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10] animate-fade-in"
             >
               Ver como funciona agora
             </button>

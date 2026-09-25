@@ -40,7 +40,7 @@ export default function DietaPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <p className="text-xs text-[#C084FC] font-semibold uppercase tracking-wide mb-1">
+        <p className="text-xs text-[#A8B78A] font-semibold uppercase tracking-wide mb-1">
           Plano alimentar · {dayName}
         </p>
         <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Dieta de hoje</h1>
@@ -58,7 +58,7 @@ export default function DietaPage() {
             <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
               <circle cx="40" cy="40" r="32" fill="none" stroke="#2D2D2D" strokeWidth="8" />
               <circle cx="40" cy="40" r="32" fill="none"
-                stroke="#A855F7" strokeWidth="8"
+                stroke="#6B7F56" strokeWidth="8"
                 strokeDasharray={`${2 * Math.PI * 32}`}
                 strokeDashoffset={`${2 * Math.PI * 32 * (1 - progress / 100)}`}
                 strokeLinecap="round" className="transition-all duration-700"
@@ -74,17 +74,17 @@ export default function DietaPage() {
               <span>Consumido</span>
               <span className="font-semibold text-[#F0F0F0]">{consumed} / {diet.totalKcal} kcal</span>
             </div>
-            <div className="h-1.5 bg-[#1E1035] rounded-full mb-3">
-              <div className="h-full bg-[#A855F7] rounded-full transition-all duration-500"
+            <div className="h-1.5 bg-[#1F2A1C] rounded-full mb-3">
+              <div className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }} />
             </div>
             <div className="flex gap-4">
               <div className="text-center">
-                <p className="text-xs font-bold text-[#C084FC]">{diet.protein}g</p>
+                <p className="text-xs font-bold text-[#A8B78A]">{diet.protein}g</p>
                 <p className="text-[9px] text-[#CBD5E0]">Proteína</p>
               </div>
               <div className="text-center">
-                <p className="text-xs font-bold text-[#C084FC]">{diet.carbs}g</p>
+                <p className="text-xs font-bold text-[#A8B78A]">{diet.carbs}g</p>
                 <p className="text-[9px] text-[#CBD5E0]">Carbo</p>
               </div>
               <div className="text-center">
@@ -151,7 +151,7 @@ export default function DietaPage() {
                 <p className="text-xs text-[#CBD5E0] flex-1">🕐 {meal.time}</p>
                 <button
                   onClick={() => toggleExpand(meal.id)}
-                  className="text-xs text-[#C084FC] font-semibold px-3 py-1.5 rounded-full bg-[#1E1035] hover:bg-[#1E1035] transition-colors"
+                  className="text-xs text-[#A8B78A] font-semibold px-3 py-1.5 rounded-full bg-[#1F2A1C] hover:bg-[#1F2A1C] transition-colors"
                 >
                   {isExpanded ? "Fechar ▲" : "Ver itens ▼"}
                 </button>
@@ -176,7 +176,7 @@ export default function DietaPage() {
                   ))}
                   <div className="pt-1.5 mt-1.5 border-t border-[#252525] flex justify-between">
                     <p className="text-xs font-semibold text-[#C0C0C0]">Total da refeição</p>
-                    <p className="text-xs font-bold text-[#C084FC]">{meal.kcal} kcal</p>
+                    <p className="text-xs font-bold text-[#A8B78A]">{meal.kcal} kcal</p>
                   </div>
                 </div>
               )}

@@ -151,7 +151,7 @@ export default function PerfilPage() {
         <div className="relative shrink-0">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-16 h-16 rounded-full overflow-hidden bg-[#A855F7] flex items-center justify-center text-2xl font-black text-white hover:opacity-90 transition-opacity focus:outline-none"
+            className="w-16 h-16 rounded-full overflow-hidden bg-[#6B7F56] flex items-center justify-center text-2xl font-black text-white hover:opacity-90 transition-opacity focus:outline-none"
             title="Trocar foto de perfil"
           >
             {profilePhoto ? (
@@ -177,7 +177,7 @@ export default function PerfilPage() {
           <p className="text-sm text-[#B8B8B8]">{age > 0 ? `${age} anos` : "—"}</p>
           <div className="flex flex-wrap gap-2 mt-2">
             {goal !== "—" && (
-              <span className="bg-[#1E1035] text-[#C084FC] text-[10px] font-semibold px-2 py-0.5 rounded-full">
+              <span className="bg-[#1F2A1C] text-[#A8B78A] text-[10px] font-semibold px-2 py-0.5 rounded-full">
                 {goal}
               </span>
             )}
@@ -193,11 +193,11 @@ export default function PerfilPage() {
       {/* Stats rápidos */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
-          <p className="text-xl font-extrabold text-[#C084FC]">{age || "—"}</p>
+          <p className="text-xl font-extrabold text-[#A8B78A]">{age || "—"}</p>
           <p className="text-[10px] text-[#CBD5E0]">Idade</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
-          <p className="text-xl font-extrabold text-[#C084FC]">{height || "—"}</p>
+          <p className="text-xl font-extrabold text-[#A8B78A]">{height || "—"}</p>
           <p className="text-[10px] text-[#CBD5E0]">Altura (cm)</p>
         </div>
         <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] text-center">
@@ -228,7 +228,7 @@ export default function PerfilPage() {
           <div>
             {cycleLoaded ? (
               <>
-                <p className="text-3xl font-extrabold text-[#C084FC] leading-none">
+                <p className="text-3xl font-extrabold text-[#A8B78A] leading-none">
                   {completedInCycle}<span className="text-base text-[#CBD5E0]">/{WORKOUTS_PER_CYCLE}</span>
                 </p>
                 <p className="text-[10px] text-[#CBD5E0] mt-0.5">
@@ -249,9 +249,9 @@ export default function PerfilPage() {
         </div>
 
         {/* Barra de progresso do ciclo (120 treinos) */}
-        <div className="h-2.5 bg-[#1E1035] rounded-full overflow-hidden mb-1">
+        <div className="h-2.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-1">
           <div
-            className="h-full rounded-full transition-all duration-700 bg-[#A855F7]"
+            className="h-full rounded-full transition-all duration-700 bg-[#6B7F56]"
             style={{ width: `${Math.round((completedInCycle / WORKOUTS_PER_CYCLE) * 100)}%` }}
           />
         </div>
@@ -271,7 +271,7 @@ export default function PerfilPage() {
                 <div
                   key={i}
                   className={`aspect-square rounded-sm transition-colors ${
-                    trained ? "bg-[#C084FC]" : "bg-[#252525]"
+                    trained ? "bg-[#A8B78A]" : "bg-[#252525]"
                   }`}
                   title={trained ? "Treinou" : "Descanso"}
                 />
@@ -279,7 +279,7 @@ export default function PerfilPage() {
             </div>
             <div className="flex items-center gap-3 mb-5">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-sm bg-[#A855F7]" />
+                <div className="w-3 h-3 rounded-sm bg-[#6B7F56]" />
                 <span className="text-[10px] text-[#CBD5E0]">Treinou</span>
               </div>
               <div className="flex items-center gap-1">
@@ -315,7 +315,7 @@ export default function PerfilPage() {
                 <div className="flex-1 h-2 bg-[#252525] rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
-                      isLast ? "bg-[#A855F7]" : "bg-[#C4B5FD]"
+                      isLast ? "bg-[#6B7F56]" : "bg-[#A8B78A]"
                     }`}
                     style={{ width: `${barWidth}%` }}
                   />
@@ -330,11 +330,11 @@ export default function PerfilPage() {
 
         {/* Alerta de renovação */}
         {cycleStatus.remainingInCycle <= 5 && (
-          <div className="mt-4 bg-[#1E1035] rounded-[0.75rem] p-3 border border-[#2D1B4E]">
-            <p className="text-xs font-bold text-[#C084FC]">
+          <div className="mt-4 bg-[#1F2A1C] rounded-[0.75rem] p-3 border border-[#35402C]">
+            <p className="text-xs font-bold text-[#A8B78A]">
               ⏰ Faltam apenas {cycleStatus.remainingInCycle} treino{cycleStatus.remainingInCycle !== 1 ? "s" : ""} para renovar!
             </p>
-            <p className="text-[10px] text-[#C084FC] mt-0.5 leading-relaxed">
+            <p className="text-[10px] text-[#A8B78A] mt-0.5 leading-relaxed">
               Seu programa será atualizado em breve. Já vá pensando em seus novos objetivos.
             </p>
           </div>
@@ -347,7 +347,7 @@ export default function PerfilPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setWeight((w) => Math.max(30, Math.round((w - 0.5) * 10) / 10))}
-            className="w-10 h-10 rounded-full bg-[#252525] text-[#C0C0C0] font-bold text-lg hover:bg-[#1E1035] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#252525] text-[#C0C0C0] font-bold text-lg hover:bg-[#1F2A1C] transition-colors"
           >
             −
           </button>
@@ -357,14 +357,14 @@ export default function PerfilPage() {
           </div>
           <button
             onClick={() => setWeight((w) => Math.min(300, Math.round((w + 0.5) * 10) / 10))}
-            className="w-10 h-10 rounded-full bg-[#A855F7] text-white font-bold text-lg hover:bg-[#9333EA] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#6B7F56] text-white font-bold text-lg hover:bg-[#556345] transition-colors"
           >
             +
           </button>
         </div>
         <button
           onClick={handleSaveWeight}
-          className="w-full mt-3 border border-[#A855F7] text-[#C084FC] font-semibold py-2.5 rounded-[0.75rem] text-sm hover:bg-[#1E1035] transition-colors"
+          className="w-full mt-3 border border-[#6B7F56] text-[#A8B78A] font-semibold py-2.5 rounded-[0.75rem] text-sm hover:bg-[#1F2A1C] transition-colors"
         >
           Salvar peso
         </button>
@@ -414,7 +414,7 @@ export default function PerfilPage() {
                 <span className="text-base shrink-0">{item.icon}</span>
                 <p className="flex-1 text-left text-sm font-medium text-[#C0C0C0]">{item.label}</p>
                 {item.badge && (
-                  <span className="text-[10px] bg-[#1E1035] text-[#C084FC] px-2 py-0.5 rounded-full font-semibold">
+                  <span className="text-[10px] bg-[#1F2A1C] text-[#A8B78A] px-2 py-0.5 rounded-full font-semibold">
                     {item.badge}
                   </span>
                 )}
@@ -454,7 +454,7 @@ export default function PerfilPage() {
                 </p>
                 <button
                   onClick={() => { setShowCancelConfirm(false); setCancelStatus("idle"); }}
-                  className="w-full bg-[#A855F7] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#9333EA] transition-colors"
+                  className="w-full bg-[#6B7F56] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#556345] transition-colors"
                 >
                   Entendi
                 </button>

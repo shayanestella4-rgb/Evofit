@@ -383,14 +383,6 @@ export default function TreinoPage() {
               </div>
             )}
 
-            {/* Dica */}
-            {workout.exercises[0]?.tip && (
-              <div className="bg-[#1E1035] rounded-[1rem] p-3 border border-[#2D1B4E] mb-4 flex gap-2 items-start">
-                <span className="text-sm shrink-0">💡</span>
-                <p className="text-xs text-[#C0C0C0] leading-relaxed">{workout.exercises[0].tip}</p>
-              </div>
-            )}
-
             {/* Por que Corpo Inteiro — checa o treino exibido de verdade (não o nível
                 salvo), pra sumir sozinha se esse dia tiver override manual ou se o
                 nível mudar e o treino deixar de ser corpo inteiro */}

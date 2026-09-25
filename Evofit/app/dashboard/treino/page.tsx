@@ -446,8 +446,10 @@ export default function TreinoPage() {
                       className={`w-full text-left p-4 ${!isViewing ? "active:scale-[0.98] transition-transform" : "cursor-default"}`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-sm transition-all ${
-                          isDone ? "bg-[#10B981] text-white" : "bg-[#252525] text-[#B8B8B8]"
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-bold text-sm border-2 transition-all ${
+                          isDone
+                            ? "bg-[#10B981] border-[#10B981] text-white shadow-md shadow-emerald-900/40"
+                            : "bg-[#1A1A1A] border-[#4B5563] text-[#B8B8B8] shadow-[0_2px_0_0_#2D2D2D]"
                         }`}>
                           {isDone ? "✓" : i + 1}
                         </div>

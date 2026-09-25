@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { QUIZ_ITEMS, quizStepLabel } from "@/lib/quiz-items";
+import { TOTAL_STEPS, stepLabelByIndex } from "@/lib/diagnostico";
 import { computeCycleStatus } from "@/lib/cycle";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
   const stopMap = new Map<number, number>();
   for (const row of stepCounts) stopMap.set(row.lastStep, row._count.lastStep);
   const funnel: { step: number; label: string; reachedCount: number }[] = [];
-  for (let step = 1; step <= QUIZ_ITEMS.length; step++) {
+  for (let step = 1; step <= TOTAL_STEPS; step++) {
     let reachedCount = 0;
     for (const [s, c] of stopMap) if (s >= step) reachedCount += c;
-    funnel.push({ step, label: quizStepLabel(step - 1), reachedCount });
+    funnel.push({ step, label: stepLabelByIndex(step - 1), reachedCount });
   }
 
   const workoutsByUser = completionsByEmail.map((row) => ({

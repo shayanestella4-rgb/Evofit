@@ -167,7 +167,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[#1A1A1A] flex flex-col">
       {/* Top bar */}
-      <div className="px-6 pt-8 pb-4 max-w-lg mx-auto w-full">
+      <div className="px-6 pt-8 pb-4 max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
           <span className="text-xs text-[#CBD5E0]">
@@ -184,7 +184,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-6 pb-8">
+      <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-6 pb-8">
         <div className="animate-fade-in" key={step}>
           <div className="text-4xl mb-4">{current.emoji}</div>
           <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-1">{current.title}</h1>

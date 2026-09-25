@@ -247,7 +247,7 @@ export default function QuizPage() {
       </noscript>
 
       {phase === "hook" && (
-        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full px-6 py-16 text-center animate-fade-in">
+        <div className="flex-1 flex flex-col justify-center max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 py-16 text-center animate-fade-in">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F0F0F0] leading-tight mb-4">
             Esse aplicativo está ajudando homens e mulheres a{" "}
             <span className="text-[#C084FC]">treinar e emagrecer</span> de forma
@@ -290,7 +290,7 @@ export default function QuizPage() {
       )}
 
       {phase === "quiz" && currentItem.type === "question" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
@@ -328,7 +328,7 @@ export default function QuizPage() {
       )}
 
       {phase === "quiz" && currentItem.type === "input" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
@@ -386,7 +386,7 @@ export default function QuizPage() {
       )}
 
       {phase === "quiz" && currentItem.type === "multi" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[#C084FC]">Evofit</span>
@@ -462,7 +462,7 @@ export default function QuizPage() {
       )}
 
       {phase === "quiz" && currentItem.type === "insight" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
@@ -488,7 +488,7 @@ export default function QuizPage() {
       )}
 
       {phase === "quiz" && currentItem.type === "social" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           {BackButton}
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div
@@ -541,7 +541,7 @@ export default function QuizPage() {
       )}
 
       {phase === "email" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 pt-10 pb-8">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 pt-10 pb-8">
           <div className="h-1.5 bg-[#1E1035] rounded-full overflow-hidden mb-10">
             <div className="h-full bg-[#A855F7] rounded-full" style={{ width: "100%" }} />
           </div>
@@ -581,7 +581,7 @@ export default function QuizPage() {
       )}
 
       {phase === "chat" && (
-        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-6 py-10">
+        <div className="flex-1 flex flex-col max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto w-full px-6 py-10">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-full bg-[#A855F7] flex items-center justify-center text-white font-bold">
               E

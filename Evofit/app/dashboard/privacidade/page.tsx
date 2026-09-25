@@ -35,7 +35,7 @@ export default function PrivacidadePage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-8 pb-8">
+    <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-8 pb-8">
 
       {/* Header */}
       <Link href="/dashboard/perfil" className="inline-flex items-center gap-1 text-sm text-[#C084FC] font-semibold mb-6 hover:underline">

@@ -143,7 +143,7 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
+    <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-8 pb-4">
       <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-6">Perfil</h1>
 
       {/* Avatar */}

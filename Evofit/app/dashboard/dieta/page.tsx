@@ -36,7 +36,7 @@ export default function DietaPage() {
   const allDone   = done.length === diet.meals.length && diet.meals.length > 0;
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
+    <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-8 pb-4">
 
       {/* Header */}
       <div className="mb-6">

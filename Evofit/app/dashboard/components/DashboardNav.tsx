@@ -16,7 +16,7 @@ export default function DashboardNav() {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 bg-[#1A1A1A] border-t border-[#2D2D2D] z-50">
-      <div className="max-w-lg mx-auto flex">
+      <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex">
         {NAV.map((item) => {
           const active = pathname === item.href;
           return (

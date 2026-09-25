@@ -147,7 +147,7 @@ export default function TreinoPage() {
   // ── Sem anamnese ────────────────────────────────────────────────────────────
   if (!anamnese) {
     return (
-      <div className="max-w-lg mx-auto px-4 pt-16 pb-4 flex flex-col items-center text-center">
+      <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-16 pb-4 flex flex-col items-center text-center">
         <div className="text-5xl mb-4">📋</div>
         <h1 className="text-xl font-extrabold text-[#F0F0F0] mb-2">Anamnese necessária</h1>
         <p className="text-sm text-[#B8B8B8] mb-6">
@@ -166,7 +166,7 @@ export default function TreinoPage() {
   // ── Layout principal ────────────────────────────────────────────────────────
   return (
     <>
-      <div className="max-w-lg mx-auto px-4 pt-8 pb-4">
+      <div className="max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-8 pb-4">
 
         {/* Toggle Meu treino / Aulas */}
         <div className="flex gap-2 mb-5 bg-[#1A1A1A] p-1 rounded-[0.875rem] border border-[#2D2D2D]">

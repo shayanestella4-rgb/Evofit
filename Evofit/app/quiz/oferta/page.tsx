@@ -142,7 +142,7 @@ const COMPARACAO = [
 export default function OfertaPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center px-6 py-16">
-      <div className="max-w-md w-full">
+      <div className="max-w-md md:max-w-2xl lg:max-w-3xl w-full">
         {/* Headline */}
         <div className="text-center mb-10 animate-fade-in">
           <span className="inline-block bg-[#1E1035] text-[#C084FC] text-xs font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">

@@ -256,6 +256,42 @@ export default function OfertaPage() {
           </ul>
         </div>
 
+        {/* Especialista */}
+        <div className="mb-10 animate-slide-up">
+          <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">
+            Quem vai te acompanhar
+          </span>
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] overflow-hidden">
+            <div className="relative w-full aspect-[3/4]">
+              <Image
+                src="/img/shay/shayane-stella.webp"
+                alt="Shayane Stella, especialista do Evofit, sorrindo sentada numa poltrona"
+                fill
+                className="object-cover object-top"
+              />
+            </div>
+            <div className="p-5">
+              <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-0.5">Shayane Stella</h2>
+              <p className="text-xs text-[#A8B78A] font-semibold mb-4">Especialista do Evofit em musculação e Muay Thai</p>
+              <div className="space-y-3 text-sm text-[#C0C0C0] leading-relaxed mb-4">
+                <p>Comecei pela musculação e pelo Muay Thai. Com o tempo, os treinos mudaram meu corpo e também o jeito como eu enxergo a minha evolução. Foi daí que veio a vontade de estudar Educação Física e passar essa experiência pros meus alunos.</p>
+                <p>O Muay Thai me ensinou a continuar quando fica difícil. A musculação me mostrou que resultado vem de constância e paciência. Juntos, eles se completam: o Muay Thai tira o tédio do cardio e soma com a musculação, pro corpo e pra cabeça.</p>
+                <p>Vi na prática o que o treino faz: mais força, mais fôlego e, principalmente, alunos que passam a confiar em si mesmos. Hoje divido minha rotina, meus treinos e o que aprendo no caminho.</p>
+              </div>
+              <blockquote className="border-l-2 border-[#6B7F56] pl-3 mb-4">
+                <p className="text-sm text-[#A8B78A] italic leading-relaxed">
+                  &ldquo;Não existe transformação da noite para o dia. Existe processo, consistência e a decisão de não desistir de si mesmo.&rdquo;
+                </p>
+              </blockquote>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>🏋️</span>Musculação e Muay Thai</li>
+                <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>❤️</span>Treino pro corpo e pra cabeça</li>
+                <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>💬</span>Time de personais no WhatsApp</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* Resultados reais */}
         <div className="mb-10 animate-slide-up">
           <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-4 text-center">

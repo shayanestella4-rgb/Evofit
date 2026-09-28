@@ -4,11 +4,11 @@ import QuizClient from "./QuizClient";
 export const metadata: Metadata = {
   title: "Teste de condicionamento físico e hábitos grátis | Evofit",
   description:
-    "Responda 23 perguntas rápidas e receba sua nota de 0 a 100 em sono, alimentação, água, rotina, disciplina, treino e resistência. Grátis.",
+    "Responda 24 perguntas rápidas e receba sua nota de 0 a 100 em sono, alimentação, água, rotina, disciplina, treino e resistência. Grátis.",
   openGraph: {
     title: "Teste de condicionamento físico e hábitos grátis | Evofit",
     description:
-      "Responda 23 perguntas rápidas e receba sua nota de 0 a 100 em sono, alimentação, água, rotina, disciplina, treino e resistência. Grátis.",
+      "Responda 24 perguntas rápidas e receba sua nota de 0 a 100 em sono, alimentação, água, rotina, disciplina, treino e resistência. Grátis.",
     type: "website",
   },
 };

@@ -8,8 +8,8 @@
 /**
  * @typedef {'rotina'|'disciplina'|'sono'|'alimentacao'|'praticidade'|'agua'|'resistencia'} DimKey
  * @typedef {{ key: DimKey, label: string, icon: string, photo: string|null, alt: string }} Dimension
- * @typedef {{ v: string, label: string, s?: number, icon?: string, swatch?: string }} Option
- * @typedef {'single'|'text'|'range'|'glasses'|'insight'|'analise'|'email'|'resultado'} StepType
+ * @typedef {{ v: string, label: string, s?: number, icon?: string, swatch?: string, exclusive?: boolean }} Option
+ * @typedef {'single'|'multi'|'text'|'range'|'glasses'|'insight'|'analise'|'email'|'resultado'} StepType
  * @typedef {{
  *   id: string, type: StepType, group: 'perfil'|DimKey|'final',
  *   title?: string, sub?: string, options?: Option[], layout?: 'list'|'cards'|'chips'|'swatch',
@@ -111,6 +111,25 @@ export const STEPS = [
     title: 'Como posso te chamar?',
     sub: 'Seu diagnóstico sai com o seu nome.',
     placeholder: 'Seu primeiro nome',
+  },
+  {
+    id: 'condicoes', type: 'multi', group: 'perfil',
+    title: 'Você tem alguma dessas condições?',
+    sub: 'Pode marcar mais de uma. Isso ajuda a montar um treino mais seguro pra você.',
+    options: [
+      { v: 'condromalacia', label: 'Condromalácia (desgaste no joelho)' },
+      { v: 'joelho', label: 'Outra lesão no joelho (menisco, ligamento, tendinite)' },
+      { v: 'lombar', label: 'Dor lombar ou hérnia de disco' },
+      { v: 'ombro', label: 'Dor no ombro (tendinite, bursite, luxação)' },
+      { v: 'punho_cotovelo', label: 'Tendinite ou dor no punho/cotovelo' },
+      { v: 'quadril', label: 'Dor no quadril (bursite, impacto femoroacetabular)' },
+      { v: 'tornozelo', label: 'Entorses frequentes no tornozelo' },
+      { v: 'osteoporose', label: 'Osteoporose ou osteopenia' },
+      { v: 'cardiovascular', label: 'Hipertensão ou outro problema cardiovascular' },
+      { v: 'diabetes', label: 'Diabetes' },
+      { v: 'outra', label: 'Outra condição não listada' },
+      { v: 'nenhuma', label: 'Nenhuma dessas', exclusive: true },
+    ],
   },
 
   // Rotina
@@ -329,7 +348,7 @@ export const STEP = Object.fromEntries(STEPS.map((s) => [s.id, s]));
 export const STEP_INDEX = Object.fromEntries(STEPS.map((s, i) => [s.id, i]));
 
 /** Perguntas que a pessoa responde (sem telas de transição). */
-export const QUESTIONS = STEPS.filter((s) => ['single', 'text', 'range', 'glasses'].includes(s.type));
+export const QUESTIONS = STEPS.filter((s) => ['single', 'multi', 'text', 'range', 'glasses'].includes(s.type));
 
 /** Grupos na ordem em que aparecem no quiz (barra de progresso). */
 export const FLOW_GROUPS = ['perfil', 'rotina', 'sono', 'alimentacao', 'agua', 'praticidade', 'resistencia', 'disciplina'];

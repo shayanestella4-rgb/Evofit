@@ -14,6 +14,7 @@ const STEPS: StepMeta[] = [
   { id: "idade", title: "Qual a sua idade?" },
   { id: "objetivo", title: "O que você mais quer mudar agora?" },
   { id: "nome" },
+  { id: "condicoes", title: "Você tem alguma dessas condições?" },
   { id: "r_dia", title: "Como é um dia comum na sua vida?" },
   { id: "r_plano", title: "Você organiza a semana antes dela começar?" },
   { id: "s_horas", title: "Quantas horas você dorme numa noite normal?" },

@@ -26,7 +26,7 @@ export default function QuizClient() {
           <img className="brand__mark" src="/img/brand/evofit-mark.svg" alt="" width={34} height={34} />
           <svg className="brand__word" aria-hidden="true" focusable="false"><use href="/img/icons.svg#i-evofit-word" /></svg>
         </a>
-        <p className="topbar__count" hidden><span className="sr-only">Pergunta </span><span data-qnow>1</span><span aria-hidden="true">/</span><span className="sr-only"> de </span>23</p>
+        <p className="topbar__count" hidden><span className="sr-only">Pergunta </span><span data-qnow>1</span><span aria-hidden="true">/</span><span className="sr-only"> de </span>24</p>
       </header>
       <div className="progress" role="progressbar" aria-label="Progresso do diagnóstico" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} hidden>
         <span className="progress__seg" data-g="0"><span /></span><span className="progress__seg" data-g="1"><span /></span><span className="progress__seg" data-g="2"><span /></span><span className="progress__seg" data-g="3"><span /></span><span className="progress__seg" data-g="4"><span /></span><span className="progress__seg" data-g="5"><span /></span><span className="progress__seg" data-g="6"><span /></span><span className="progress__seg" data-g="7"><span /></span>
@@ -101,7 +101,7 @@ export default function QuizClient() {
                 <span className="w" style={{ "--i": 5 } as React.CSSProperties}><span>sua</span></span>{" "}
                 <span className="w hero__accent" style={{ "--i": 6 } as React.CSSProperties}><span>evolução?</span></span>
               </h1>
-              <p className="hero__lead">São 23 perguntas rápidas sobre sete áreas: rotina, disciplina, sono, alimentação, água, treino e fôlego. No fim, você vê sua nota de 0 a 100 em cada uma e sabe por onde começar.</p>
+              <p className="hero__lead">São 24 perguntas rápidas sobre sete áreas: rotina, disciplina, sono, alimentação, água, treino e fôlego. No fim, você vê sua nota de 0 a 100 em cada uma e sabe por onde começar.</p>
               <div className="hero__cta">
                 <button className="btn btn--shine hero__btn" id="start" type="button">
                   <span className="btn__label">Começar meu diagnóstico</span>

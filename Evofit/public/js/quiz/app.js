@@ -88,6 +88,18 @@ const T = {
     return `${head(step)}<div class="opts opts--${step.layout || 'list'}" role="radiogroup" aria-labelledby="t-${step.id}">${opts}</div>`;
   },
 
+  multi(step) {
+    const selected = Array.isArray(S.answers[step.id]) ? S.answers[step.id] : [];
+    const opts = (step.options || []).map((o, i) => {
+      const checked = selected.includes(o.v);
+      return `<button type="button" class="opt" role="checkbox" aria-checked="${checked}" tabindex="0" data-v="${escapeHtml(o.v)}" style="--i:${i}">
+        <span class="opt__label">${escapeHtml(o.label)}</span>
+        <span class="opt__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>
+      </button>`;
+    }).join('');
+    return `${head(step)}<div class="opts opts--${step.layout || 'list'}" role="group" aria-labelledby="t-${step.id}">${opts}</div>${continueBtn(selected.length === 0)}`;
+  },
+
   text(step) {
     return `${head(step)}
       <form class="field-form" novalidate>
@@ -462,6 +474,7 @@ function stepBack() {
 function bind(step, el) {
   el.querySelector('[data-next]')?.addEventListener('click', () => advance());
   if (step.type === 'single') bindSingle(step, el);
+  if (step.type === 'multi') bindMulti(step, el);
   if (step.type === 'text') bindName(step, el);
   if (step.type === 'range') {
     mountRuler(el, { min: step.min ?? 40, max: step.max ?? 160, value: Number(S.answers.peso) || PESO_DEFAULT[/** @type {'x'} */ (S.answers.sexo)] || PESO_DEFAULT.x, unit: step.unit || 'kg' },
@@ -508,6 +521,30 @@ function bindSingle(step, el) {
         : (idx + (k === 'ArrowDown' || k === 'ArrowRight' ? 1 : -1) + opts.length) % opts.length;
       opts.forEach((o, i) => { o.tabIndex = i === to ? 0 : -1; });
       opts[to].focus();
+    });
+  });
+}
+
+/** @param {Step} step @param {HTMLElement} el */
+function bindMulti(step, el) {
+  const opts = /** @type {HTMLButtonElement[]} */ ($$('.opt', el));
+  const btn = /** @type {HTMLButtonElement} */ (el.querySelector('[data-next]'));
+  const exclusiveV = step.options?.find((o) => o.exclusive)?.v;
+  opts.forEach((btn2) => {
+    btn2.addEventListener('click', (ev) => {
+      const checked = btn2.getAttribute('aria-checked') === 'true';
+      const v = btn2.dataset.v;
+      if (!checked && v === exclusiveV) {
+        opts.forEach((o) => { if (o !== btn2) o.setAttribute('aria-checked', 'false'); });
+      } else if (!checked && exclusiveV) {
+        opts.find((o) => o.dataset.v === exclusiveV)?.setAttribute('aria-checked', 'false');
+      }
+      btn2.setAttribute('aria-checked', String(!checked));
+      if (ev instanceof MouseEvent) ripple(btn2, ev);
+      const sel = opts.filter((o) => o.getAttribute('aria-checked') === 'true').map((o) => o.dataset.v || '');
+      S.answers[step.id] = sel;
+      persist();
+      btn.disabled = sel.length === 0;
     });
   });
 }

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const NAV = [
   { href: "/dashboard",         label: "Início",  icon: "🏠" },
   { href: "/dashboard/treino",  label: "Treino",  icon: "🏋️" },
-  { href: "/dashboard/dieta",   label: "Dieta",   icon: "🥗" },
+  { href: "/dashboard/dieta",   label: "Plano alimentar", icon: "🥗" },
   { href: "/dashboard/tarefas", label: "Tarefas", icon: "⚡" },
   { href: "/dashboard/perfil",  label: "Perfil",  icon: "👤" },
 ];

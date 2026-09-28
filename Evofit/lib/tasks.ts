@@ -30,7 +30,7 @@ const TASKS: DailyTask[] = [
   { emoji: "🚶", title: "Caminhar 20 min ao ar livre", category: "Ativo", xp: 50,
     desc: "Uma caminhada leve ativa a circulação, reduz o estresse e queima calorias extras sem cansar o corpo." },
   // 4 – Quinta
-  { emoji: "🍽️", title: "Não pular nenhuma refeição", category: "Dieta", xp: 50,
+  { emoji: "🍽️", title: "Não pular nenhuma refeição", category: "Plano alimentar", xp: 50,
     desc: "Comer nos horários certos mantém o metabolismo acelerado e evita fome compulsiva à noite." },
   // 5 – Sexta
   { emoji: "🤸", title: "Alongar por 15 minutos", category: "Recuperação", xp: 50,

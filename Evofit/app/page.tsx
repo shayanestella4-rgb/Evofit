@@ -102,7 +102,7 @@ export default function LandingPage() {
                 {
                   icon: "🥗",
                   title: "Plano alimentar",
-                  desc: "Dieta montada com base na sua anamnese. Café, almoço, jantar e lanches — tudo calculado para você.",
+                  desc: "Plano alimentar montado com base na sua anamnese. Café, almoço, jantar e lanches — tudo calculado para você.",
                 },
                 {
                   icon: "⚡",
@@ -134,7 +134,7 @@ export default function LandingPage() {
             {[
               { step: "01", title: "Assine o Evofit", desc: "Acesso completo ao seu personal trainer digital." },
               { step: "02", title: "Preencha a anamnese", desc: "Um questionário rápido sobre seu corpo, rotina e objetivos." },
-              { step: "03", title: "Receba seu plano", desc: "Treino, dieta e tarefas personalizados para você no mesmo dia." },
+              { step: "03", title: "Receba seu plano", desc: "Treino, plano alimentar e tarefas personalizados para você no mesmo dia." },
             ].map((s) => (
               <div key={s.step} className="flex gap-4 items-start">
                 <span className="text-4xl font-black text-[#EDE9FE] leading-none shrink-0">{s.step}</span>

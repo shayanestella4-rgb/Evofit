@@ -243,7 +243,7 @@ export default function DashboardHome() {
       <div className="grid grid-cols-2 gap-3 mb-4">
         <Link href="/dashboard/dieta">
           <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] hover:shadow-md transition-shadow cursor-pointer">
-            <p className="text-xs text-[#B8B8B8] mb-1">🥗 Dieta hoje</p>
+            <p className="text-xs text-[#B8B8B8] mb-1">🥗 Plano alimentar hoje</p>
             <p className="text-base font-extrabold text-[#F0F0F0]">1.850 kcal</p>
             <div className="mt-2 h-1.5 bg-[#1F2A1C] rounded-full">
               <div className="h-full w-[60%] bg-[#6B7F56] rounded-full" />

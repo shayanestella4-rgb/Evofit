@@ -8,7 +8,7 @@ const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "Evofit — Seu Personal Trainer Digital",
   description:
-    "Treinos personalizados, dieta e motivação diária em um só lugar. Comece hoje.",
+    "Treinos personalizados, plano alimentar e motivação diária em um só lugar. Comece hoje.",
   openGraph: {
     title: "Evofit",
     description: "Seu personal trainer digital. Acessível, motivador e eficiente.",

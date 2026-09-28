@@ -43,10 +43,10 @@ export default function DietaPage() {
         <p className="text-xs text-[#A8B78A] font-semibold uppercase tracking-wide mb-1">
           Plano alimentar · {dayName}
         </p>
-        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Dieta de hoje</h1>
+        <h1 className="text-2xl font-extrabold text-[#F0F0F0]">Plano alimentar de hoje</h1>
         <p className="text-sm text-[#B8B8B8] mt-1">
           {anamnese
-            ? `Personalizada para ${anamnese.nome?.split(" ")[0] ?? "você"} · ${anamnese.objetivo ?? "Condicionamento"}`
+            ? `Personalizado para ${anamnese.nome?.split(" ")[0] ?? "você"} · ${anamnese.objetivo ?? "Condicionamento"}`
             : "Complete a anamnese para personalizar"}
         </p>
       </div>
@@ -189,7 +189,7 @@ export default function DietaPage() {
       {allDone && (
         <div className="mt-4 bg-[#052E16] rounded-[1rem] p-4 border border-[#166534] text-center">
           <p className="text-base font-extrabold text-[#34D399]">🎉 Plano do dia concluído!</p>
-          <p className="text-xs text-[#B8B8B8] mt-1">Você seguiu toda a dieta de hoje. Incrível disciplina!</p>
+          <p className="text-xs text-[#B8B8B8] mt-1">Você seguiu todo o plano alimentar de hoje. Incrível disciplina!</p>
         </div>
       )}
 

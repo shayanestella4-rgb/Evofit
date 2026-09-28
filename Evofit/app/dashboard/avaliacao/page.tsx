@@ -33,7 +33,7 @@ const SEED_REVIEWS: Review[] = [
     name: "Camila Ferreira",
     initial: "C",
     stars: 5,
-    comment: "A dieta é o que me surpreendeu mais. Sem frescura, sem ingrediente caro — comida de verdade mesmo. Arroz, feijão, frango e resultado aparecendo! Super recomendo.",
+    comment: "O plano alimentar é o que mais me surpreendeu. Sem frescura, sem ingrediente caro — comida de verdade mesmo. Arroz, feijão, frango e resultado aparecendo! Super recomendo.",
     dateLabel: "há 5 dias",
     seed: true,
   },

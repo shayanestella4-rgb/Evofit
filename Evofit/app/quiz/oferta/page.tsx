@@ -182,12 +182,12 @@ export default function OfertaPage() {
         </div>
 
         {/* Vídeo real do app */}
-        <div className="mb-10 animate-slide-up">
+        <div className="mb-10 animate-slide-up flex flex-col items-center">
           <video
             src="/video-evofit.mp4"
             controls
             playsInline
-            className="w-full rounded-[1rem] border border-[#2D2D2D]"
+            className="w-full max-w-xs sm:max-w-sm rounded-[1rem] border border-[#2D2D2D]"
           />
           <p className="text-xs text-[#6B7280] text-center mt-2">
             Veja como o Evofit funciona por dentro

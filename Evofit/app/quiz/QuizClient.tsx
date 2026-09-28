@@ -93,12 +93,12 @@ export default function QuizClient() {
             <div className="screen__inner hero">
               <p className="kicker hero__kicker"><svg className="ico" aria-hidden="true"><use href="/img/icons.svg#i-sparkle" /></svg>Diagnóstico Evofit · grátis</p>
               <h1 className="hero__title" id="hero-title">
-                <span className="w" style={{ "--i": 0 } as React.CSSProperties}><span>Qual</span></span>
-                <span className="w" style={{ "--i": 1 } as React.CSSProperties}><span>hábito</span></span>
-                <span className="w" style={{ "--i": 2 } as React.CSSProperties}><span>está</span></span>
-                <span className="w" style={{ "--i": 3 } as React.CSSProperties}><span>segurando</span></span>
-                <span className="w" style={{ "--i": 4 } as React.CSSProperties}><span>a</span></span>
-                <span className="w" style={{ "--i": 5 } as React.CSSProperties}><span>sua</span></span>
+                <span className="w" style={{ "--i": 0 } as React.CSSProperties}><span>Qual</span></span>{" "}
+                <span className="w" style={{ "--i": 1 } as React.CSSProperties}><span>hábito</span></span>{" "}
+                <span className="w" style={{ "--i": 2 } as React.CSSProperties}><span>está</span></span>{" "}
+                <span className="w" style={{ "--i": 3 } as React.CSSProperties}><span>segurando</span></span>{" "}
+                <span className="w" style={{ "--i": 4 } as React.CSSProperties}><span>a</span></span>{" "}
+                <span className="w" style={{ "--i": 5 } as React.CSSProperties}><span>sua</span></span>{" "}
                 <span className="w hero__accent" style={{ "--i": 6 } as React.CSSProperties}><span>evolução?</span></span>
               </h1>
               <p className="hero__lead">São 23 perguntas rápidas sobre sete áreas: rotina, disciplina, sono, alimentação, água, treino e fôlego. No fim, você vê sua nota de 0 a 100 em cada uma e sabe por onde começar.</p>

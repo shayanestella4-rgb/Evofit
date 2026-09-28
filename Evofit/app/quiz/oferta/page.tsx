@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { CAKTO_CHECKOUT_URL } from "@/lib/constants";
+import { CAKTO_CHECKOUT_URL, CAKTO_CHECKOUT_URL_TRIMESTRAL } from "@/lib/constants";
 
 function goToCakto() {
   window.location.href = CAKTO_CHECKOUT_URL;
+}
+
+function goToCaktoTrimestral() {
+  window.location.href = CAKTO_CHECKOUT_URL_TRIMESTRAL;
 }
 
 const FAQ = [
@@ -108,10 +112,14 @@ function WhatsAppIcon() {
 }
 
 const PLANO_BENEFICIOS = [
-  "Treino personalizado todos os dias",
-  "Dieta feita pra sua rotina",
-  "Tarefas motivacionais diárias",
-  "Suporte via WhatsApp",
+  "Treinos que evoluem com você a cada ciclo",
+  "Todos os níveis: iniciante, intermediário e avançado",
+  "Treinos em casa e na academia, sem pagar a mais",
+  "Foco em força, hipertrofia, emagrecimento ou condicionamento",
+  "Plano alimentar feito pra sua rotina",
+  "Vídeo de execução de todos os exercícios",
+  "Aulas de Muay Thai (Hits) inclusas",
+  "Suporte com personal pelo WhatsApp",
   "Cancele quando quiser",
 ];
 
@@ -375,26 +383,70 @@ export default function OfertaPage() {
         </a>
 
         {/* Preço */}
-        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] p-6 animate-slide-up">
-          <p className="text-xs text-[#8A8A8A] uppercase font-semibold tracking-wide mb-1">
-            Plano mensal
-          </p>
-          <p className="text-sm text-[#8A8A8A] mb-1">R$3,23 por dia</p>
-          <p className="text-3xl font-extrabold text-[#F0F0F0] mb-5">
-            R$97,00<span className="text-base font-semibold text-[#8A8A8A]">/mês</span>
+        <div className="animate-slide-up">
+          <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-1 text-center">Escolha seu plano</h2>
+          <p className="text-xs text-[#8A8A8A] text-center mb-5">
+            Os dois planos dão acesso a tudo. A diferença é só quanto você paga por mês.
           </p>
 
-          <ul className="space-y-2 mb-6">
-            {PLANO_BENEFICIOS.map((b) => (
-              <li key={b} className="flex items-center gap-2 text-sm text-[#C0C0C0]">
-                <span className="text-[#10B981]">✓</span>
-                {b}
-              </li>
-            ))}
-          </ul>
+          <div className="grid sm:grid-cols-2 gap-4 mb-5">
+            {/* Mensal */}
+            <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] p-6">
+              <p className="text-xs text-[#8A8A8A] uppercase font-semibold tracking-wide mb-1">Plano mensal</p>
+              <p className="text-sm text-[#8A8A8A] mb-1">R$3,23 por dia</p>
+              <p className="text-3xl font-extrabold text-[#F0F0F0] mb-5">
+                R$97<span className="text-base font-semibold text-[#8A8A8A]">/mês</span>
+              </p>
+
+              <ul className="space-y-2 mb-6">
+                {PLANO_BENEFICIOS.map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-[#C0C0C0]">
+                    <span className="text-[#10B981] shrink-0">✓</span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={goToCakto}
+                className="w-full bg-[#252525] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#2D2D2D] transition-colors"
+              >
+                Quero o mensal
+              </button>
+            </div>
+
+            {/* Trimestral */}
+            <div className="relative bg-[#1F2A1C] border border-[#6B7F56] rounded-[1rem] p-6">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#6B7F56] text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full whitespace-nowrap">
+                Mais escolhido
+              </span>
+              <p className="text-xs text-[#A8B78A] uppercase font-semibold tracking-wide mb-1">Plano trimestral</p>
+              <p className="text-sm text-[#A8B78A] mb-1">R$2,90 por dia</p>
+              <p className="text-3xl font-extrabold text-[#F0F0F0] mb-1">
+                R$87<span className="text-base font-semibold text-[#A8B78A]">/mês</span>
+              </p>
+              <p className="text-[11px] text-[#8A8A8A] mb-5">Cobrado a cada 3 meses · total R$261</p>
+
+              <ul className="space-y-2 mb-6">
+                {PLANO_BENEFICIOS.map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-[#C0C0C0]">
+                    <span className="text-[#10B981] shrink-0">✓</span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={goToCaktoTrimestral}
+                className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
+              >
+                Quero os 3 meses
+              </button>
+            </div>
+          </div>
 
           {/* Garantia de 7 dias */}
-          <div className="bg-[#111] border border-[#2D2D2D] rounded-[1rem] p-4 mb-5 flex items-center gap-3">
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] p-4 flex items-center gap-3">
             <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#6B7F56] to-[#4A5940] flex flex-col items-center justify-center text-white shadow-lg shadow-[#141a10] border-2 border-[#A8B78A]/40">
               <span className="text-lg font-black leading-none">7</span>
               <span className="text-[7px] font-bold leading-none mt-0.5 tracking-wide">DIAS</span>
@@ -406,18 +458,11 @@ export default function OfertaPage() {
               <p className="text-sm font-extrabold text-[#F0F0F0] mb-0.5">Garantia de 7 dias, sem burocracia</p>
               <p className="text-[11px] text-[#8A8A8A] leading-relaxed">
                 Se por qualquer motivo você sentir que o Evofit não é pra você, é só entrar em contato
-                nos primeiros 7 dias e devolvemos <strong className="text-[#C0C0C0]">100% do seu investimento</strong>.
-                Sem pergunta, sem burocracia. O risco é todo nosso.
+                nos primeiros 7 dias e devolvemos <strong className="text-[#C0C0C0]">100% do seu investimento</strong>,
+                em qualquer um dos planos. Sem pergunta, sem burocracia. O risco é todo nosso.
               </p>
             </div>
           </div>
-
-          <button
-            onClick={goToCakto}
-            className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] active:bg-[#556345] transition-colors shadow-lg shadow-[#141a10]"
-          >
-            Escolher meu plano
-          </button>
         </div>
       </div>
     </div>

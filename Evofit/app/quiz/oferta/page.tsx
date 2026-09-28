@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { CAKTO_CHECKOUT_URL } from "@/lib/constants";
 
@@ -140,6 +140,21 @@ const COMPARACAO = [
 ];
 
 export default function OfertaPage() {
+  // Marca "viu a oferta" no funil do admin — o quiz (public/js/quiz/app.js,
+  // sem alterações) só dispara o pixel de ViewContent ao clicar, não avisa
+  // o backend; a sessão criada pelo quiz fica salva em sessionStorage.
+  useEffect(() => {
+    let sid: string | null = null;
+    try { sid = sessionStorage.getItem("evofit.sid"); } catch { /* ignora */ }
+    if (!sid) return;
+    fetch("/rest/v1/rpc/quiz_track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ p_sid: sid, p_data: { event: "offer" } }),
+      keepalive: true,
+    }).catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center px-6 py-16">
       <div className="max-w-md md:max-w-2xl lg:max-w-3xl w-full">

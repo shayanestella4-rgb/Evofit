@@ -1,0 +1,225 @@
+/* ==========================================================================
+   Evofit · base compartilhada (tokens, reset, tipografia, botões, atmosfera)
+   Fonte de verdade das cores: DESIGN.md (OKLCH, neutros puxados pro oliva)
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Cores */
+  --bg: oklch(0.165 0.008 125);
+  --bg-2: oklch(0.195 0.010 125);
+  --surface: oklch(0.225 0.012 125);
+  --surface-2: oklch(0.265 0.014 125);
+  --line: oklch(0.33 0.014 125);
+  --line-soft: oklch(0.33 0.014 125 / 0.6);
+  --muted: oklch(0.68 0.016 125);
+  --text-2: oklch(0.82 0.014 125);
+  --text: oklch(0.945 0.018 110);
+  --olive: oklch(0.564 0.066 128.6);
+  --olive-deep: oklch(0.44 0.055 128);
+  --olive-night: oklch(0.29 0.04 128);
+  --sage: oklch(0.757 0.067 124.6);
+  --sage-hi: oklch(0.84 0.07 124);
+  --ochre: oklch(0.78 0.115 78);
+  --terra: oklch(0.64 0.13 38);
+  --on-sage: oklch(0.2 0.02 128);
+  --whatsapp: oklch(0.77 0.17 152);
+
+  /* Tipografia */
+  --font: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-display: clamp(2.35rem, 1.2rem + 4.6vw, 4.75rem);
+  --fs-headline: clamp(1.6rem, 1.15rem + 1.7vw, 2.45rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-lead: clamp(1.02rem, 0.96rem + 0.3vw, 1.2rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.75rem;
+
+  /* Forma e espaço */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+  --gutter: clamp(16px, 4vw, 40px);
+
+  /* Movimento */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 150ms;
+  --t-base: 260ms;
+  --t-slow: 480ms;
+  --t-enter: 720ms;
+
+  /* Elevação */
+  --shadow-float: 0 24px 60px -24px oklch(0.05 0.01 125 / 0.7);
+  --glow-sage: 0 10px 40px -12px oklch(0.757 0.067 124.6 / 0.55);
+  --ring-sage: 0 0 0 4px oklch(0.757 0.067 124.6 / 0.25);
+}
+
+/* Reset enxuto */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+/* Nada pode deixar a página mais larga que a tela (no celular isso "solta" a página de lado).
+   clip não cria área de rolagem, então elementos sticky continuam funcionando. */
+html { overflow-x: clip; }
+@supports not (overflow-x: clip) { html, body { overflow-x: hidden; } }
+img, svg, video { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+img { height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+a { color: inherit; }
+h1, h2, h3, h4 { font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+p { text-wrap: pretty; }
+::selection { background: oklch(0.757 0.067 124.6 / 0.35); color: var(--text); }
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; border-radius: 6px; }
+
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 100;
+  padding: 10px 16px; border-radius: var(--r-pill); background: var(--sage); color: var(--on-sage);
+  font-weight: 600; text-decoration: none; transition: top var(--t-base) var(--ease-out);
+}
+.skip-link:focus { top: 12px; }
+
+/* Ícones do sprite */
+.ico { width: 1.25em; height: 1.25em; flex: none; fill: currentColor; }
+
+/* Marca */
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; }
+.brand__mark { width: 34px; height: 34px; border-radius: 9px; }
+.brand__word { width: 92px; height: 21px; color: var(--text); fill: currentColor; }
+
+/* Rótulo curto em caixa alta (uso pontual) */
+.kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--sage);
+}
+.kicker .ico { width: 16px; height: 16px; }
+
+/* ---------- Botões ---------- */
+.btn {
+  --btn-bg: var(--sage);
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 58px; padding: 16px 28px; border-radius: var(--r-pill);
+  background: var(--btn-bg); color: var(--on-sage);
+  font-weight: 600; font-size: 1rem; letter-spacing: 0.005em; text-decoration: none; text-align: center;
+  box-shadow: var(--glow-sage);
+  transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
+    transform var(--t-fast) var(--ease-out), opacity var(--t-base) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn .ico { width: 20px; height: 20px; transition: transform var(--t-base) var(--ease-out); }
+.btn::after { /* brilho que atravessa o botão de tempos em tempos */
+  content: ''; position: absolute; inset: 0 auto 0 -60%; width: 45%; z-index: -1;
+  background: linear-gradient(100deg, transparent, oklch(1 0 0 / 0.35), transparent);
+  transform: skewX(-18deg) translateX(0); opacity: 0;
+}
+.btn--shine::after { animation: shine 5.5s var(--ease-in-out) 2.2s infinite; }
+@keyframes shine {
+  0%, 72% { transform: skewX(-18deg) translateX(0); opacity: 0; }
+  76% { opacity: 1; }
+  100% { transform: skewX(-18deg) translateX(420%); opacity: 0; }
+}
+@media (hover: hover) {
+  .btn:hover { --btn-bg: var(--sage-hi); box-shadow: 0 14px 44px -12px oklch(0.84 0.07 124 / 0.6); }
+  .btn:hover .ico-go { transform: translateX(4px); }
+}
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: none; box-shadow: var(--ring-sage), var(--glow-sage); }
+.btn:disabled, .btn[aria-disabled='true'] { opacity: 0.35; box-shadow: none; cursor: not-allowed; transform: none; }
+.btn--block { width: 100%; }
+.btn--ghost {
+  --btn-bg: transparent; color: var(--text); box-shadow: none;
+  border: 1px solid oklch(0.945 0.018 110 / 0.28);
+}
+@media (hover: hover) { .btn--ghost:hover { --btn-bg: oklch(0.945 0.018 110 / 0.06); box-shadow: none; } }
+.btn.is-loading { pointer-events: none; }
+.btn.is-loading .btn__label { opacity: 0; }
+.btn.is-loading::before {
+  content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid oklch(0.2 0.02 128 / 0.25); border-top-color: var(--on-sage);
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Botão circular de ícone */
+.icon-btn {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  color: var(--text-2); border: 1px solid var(--line-soft);
+  transition: color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+}
+.icon-btn .ico { width: 20px; height: 20px; }
+@media (hover: hover) { .icon-btn:hover { color: var(--text); border-color: var(--line); } }
+.icon-btn:active { transform: scale(0.94); }
+
+/* ---------- Atmosfera ---------- */
+.atmosphere { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.atmosphere::before, .atmosphere::after {
+  content: ''; position: absolute; border-radius: 50%;
+  width: min(90vmax, 1500px); height: min(90vmax, 1500px); opacity: 0.55;
+  will-change: transform;
+}
+.atmosphere::before {
+  left: -35vmax; top: -45vmax;
+  background: radial-gradient(closest-side, oklch(0.44 0.055 128 / 0.55), transparent 70%);
+  animation: drift-a 26s var(--ease-in-out) infinite alternate;
+}
+.atmosphere::after {
+  right: -40vmax; bottom: -50vmax;
+  background: radial-gradient(closest-side, oklch(0.564 0.066 128.6 / 0.28), transparent 70%);
+  animation: drift-b 32s var(--ease-in-out) infinite alternate;
+}
+@keyframes drift-a { to { transform: translate(12vmax, 10vmax) scale(1.12); } }
+@keyframes drift-b { to { transform: translate(-10vmax, -8vmax) scale(0.92); } }
+
+.grain {
+  position: fixed; inset: -50%; z-index: 90; pointer-events: none; opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (pointer: fine) { .grain { animation: grain 900ms steps(6) infinite; } }
+@keyframes grain {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); }
+}
+
+/* Revelação ao rolar (ativada pelo JS com IntersectionObserver) */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity var(--t-enter) var(--ease-out), transform var(--t-enter) var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+.reveal.is-in { opacity: 1; transform: none; }
+.no-js .reveal { opacity: 1; transform: none; }
+
+/* Linha da marca: curvas que "fluem" (motivo do tile "Evolua com você") */
+.flow-lines path { fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-dasharray: 6 14; animation: flow 18s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -400; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

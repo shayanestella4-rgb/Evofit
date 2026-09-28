@@ -184,7 +184,7 @@ export default function OfertaPage() {
         {/* Vídeo real do app */}
         <div className="mb-10 animate-slide-up flex flex-col items-center">
           <video
-            src="/video-evofit.mp4"
+            src="/video-evofit-v2.mp4"
             controls
             playsInline
             className="w-full max-w-xs sm:max-w-sm rounded-[1rem] border border-[#2D2D2D]"

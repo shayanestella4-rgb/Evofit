@@ -292,7 +292,7 @@ function resultHTML() {
         <p class="kicker">${icon('sparkle')}Fase ${r.phase.n} · ${r.phase.name}</p>
         <h3 class="result__cta-title" id="h-cta">O plano da Evofit pra quem está nessa fase</h3>
         <p class="result__cta-text">${escapeHtml(r.phase.plan)} Treino, dieta e suporte no mesmo lugar, por menos de R$ 3,30 por dia.</p>
-        <a class="btn btn--shine" href="oferta" data-offer><span class="btn__label">Ver meu plano</span>${icon('arrow-right', 'ico-go')}</a>
+        <a class="btn btn--shine" href="/quiz/oferta" data-offer><span class="btn__label">Ver meu plano</span>${icon('arrow-right', 'ico-go')}</a>
         <button type="button" class="link-btn" data-restart>Refazer o diagnóstico</button>
       </section>
     </article>`;

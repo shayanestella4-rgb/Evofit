@@ -261,9 +261,9 @@ export default function OfertaPage() {
           <span className="inline-block bg-[#1F2A1C] text-[#A8B78A] text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full mb-3">
             Quem vai te acompanhar
           </span>
-          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] p-5">
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
-              <div className="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0 mx-auto sm:mx-0 rounded-2xl overflow-hidden border-2 border-[#6B7F56]">
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-[1rem] overflow-hidden">
+            <div className="flex flex-col sm:flex-row">
+              <div className="relative w-full sm:w-[42%] aspect-[4/5] sm:aspect-auto shrink-0">
                 <Image
                   src="/img/shay/shayane-stella.webp"
                   alt="Shayane Stella, especialista do Evofit, sorrindo sentada numa poltrona"
@@ -271,26 +271,35 @@ export default function OfertaPage() {
                   className="object-cover object-top"
                 />
               </div>
-              <div className="flex-1 text-center sm:text-left">
+              <div className="p-5 flex-1">
                 <h2 className="text-lg font-extrabold text-[#F0F0F0] mb-0.5">Shayane Stella</h2>
                 <p className="text-xs text-[#A8B78A] font-semibold mb-3">Especialista do Evofit em musculação e Muay Thai</p>
-                <div className="space-y-3 text-sm text-[#C0C0C0] leading-relaxed text-left">
+                <div className="space-y-3 text-sm text-[#C0C0C0] leading-relaxed mb-4">
                   <p>Comecei pela musculação e pelo Muay Thai. Com o tempo, os treinos mudaram meu corpo e também o jeito como eu enxergo a minha evolução. Foi daí que veio a vontade de estudar Educação Física e passar essa experiência pros meus alunos.</p>
                   <p>O Muay Thai me ensinou a continuar quando fica difícil. A musculação me mostrou que resultado vem de constância e paciência. Juntos, eles se completam: o Muay Thai tira o tédio do cardio e soma com a musculação, pro corpo e pra cabeça.</p>
                   <p>Vi na prática o que o treino faz: mais força, mais fôlego e, principalmente, alunos que passam a confiar em si mesmos. Hoje divido minha rotina, meus treinos e o que aprendo no caminho.</p>
                 </div>
+                <blockquote className="border-l-2 border-[#6B7F56] pl-3 mb-4">
+                  <p className="text-sm text-[#A8B78A] italic leading-relaxed">
+                    &ldquo;Não existe transformação da noite para o dia. Existe processo, consistência e a decisão de não desistir de si mesmo.&rdquo;
+                  </p>
+                </blockquote>
+                <div className="space-y-3">
+                  {[
+                    { n: "1", text: "Musculação e Muay Thai" },
+                    { n: "2", text: "Treino pro corpo e pra cabeça" },
+                    { n: "3", text: "Time de personais no WhatsApp" },
+                  ].map((f) => (
+                    <div key={f.n} className="flex items-center gap-3">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-[#6B7F56] text-white text-xs font-bold flex items-center justify-center">
+                        {f.n}
+                      </span>
+                      <p className="text-sm text-[#C0C0C0]">{f.text}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <blockquote className="border-l-2 border-[#6B7F56] pl-3 mt-4 mb-4">
-              <p className="text-sm text-[#A8B78A] italic leading-relaxed">
-                &ldquo;Não existe transformação da noite para o dia. Existe processo, consistência e a decisão de não desistir de si mesmo.&rdquo;
-              </p>
-            </blockquote>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>🏋️</span>Musculação e Muay Thai</li>
-              <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>❤️</span>Treino pro corpo e pra cabeça</li>
-              <li className="flex items-center gap-2 text-xs text-[#8A8A8A]"><span>💬</span>Time de personais no WhatsApp</li>
-            </ul>
           </div>
         </div>
 

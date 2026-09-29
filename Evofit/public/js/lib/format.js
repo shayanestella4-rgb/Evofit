@@ -41,3 +41,16 @@ const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
 export const normalizeEmail = (v) => String(v ?? '').trim().toLowerCase();
 /** @param {string} v */
 export const isValidEmail = (v) => v.length <= 254 && EMAIL_RE.test(v);
+
+/** Aplica a máscara (DDD) 91234-5678 enquanto a pessoa digita. @param {unknown} v */
+export function formatPhoneBR(v) {
+  const d = String(v ?? '').replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+/** DDD + número, só dígitos (10 ou 11 dígitos). @param {unknown} v */
+export const phoneDigits = (v) => String(v ?? '').replace(/\D/g, '');
+/** @param {unknown} v */
+export const isValidPhoneBR = (v) => /^\d{10,11}$/.test(phoneDigits(v));

@@ -21,6 +21,9 @@ export async function POST(request: NextRequest) {
   if (p_data && typeof p_data.email === "string" && p_data.email.includes("@")) {
     data.email = p_data.email.trim().toLowerCase();
   }
+  if (p_data && typeof p_data.whatsapp === "string" && p_data.whatsapp.replace(/\D/g, "").length >= 10) {
+    data.whatsapp = p_data.whatsapp.trim();
+  }
   if (p_data && (p_data.event === "offer" || p_data.event === "buy")) data.reachedOffer = true;
 
   try {

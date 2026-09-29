@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       where: { email: { not: null } },
       orderBy: { createdAt: "desc" },
       take: 200,
-      select: { id: true, email: true, answers: true, lastStep: true, totalSteps: true, reachedOffer: true, createdAt: true },
+      select: { id: true, email: true, whatsapp: true, answers: true, lastStep: true, totalSteps: true, reachedOffer: true, createdAt: true },
     }),
     prisma.subscription.findMany({ where: { status: { not: "INACTIVE" } }, select: { email: true } }),
   ]);
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
   const result = leads.map((l) => ({
     id: l.id,
     email: l.email,
+    whatsapp: l.whatsapp,
     answers: l.answers,
     progress: l.totalSteps > 0 ? Math.round((l.lastStep / l.totalSteps) * 100) : 0,
     reachedOffer: l.reachedOffer,

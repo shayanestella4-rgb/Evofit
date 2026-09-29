@@ -6,14 +6,14 @@ import { computeResult, PESO_DEFAULT } from './scoring.js';
 import { dimensionInsight, headline, planSteps, sleepInsight, waterInsight } from './insights.js';
 import { glassesHTML, mountGlasses, rulerHTML, mountRuler, scoreRingHTML, radarHTML } from './widgets.js';
 import { $, $$, icon, wait, countUp, observeReveal, ripple, loadJSON, saveJSON, markJs, reducedMotion } from '../lib/dom.js';
-import { escapeHtml, firstName, fmtLiters, normalizeEmail, isValidEmail } from '../lib/format.js';
+import { escapeHtml, firstName, fmtLiters, normalizeEmail, isValidEmail, formatPhoneBR, isValidPhoneBR } from '../lib/format.js';
 import { tracker } from '../lib/tracker.js';
 import { initPixel, pixel } from '../lib/pixel.js';
 
 /**
  * @typedef {import('./data.js').Step} Step
  * @typedef {import('./data.js').DimKey} DimKey
- * @typedef {{ v: 1, i: number, answers: Record<string, any>, email: string }} QuizState
+ * @typedef {{ v: 1, i: number, answers: Record<string, any>, email: string, whatsapp: string }} QuizState
  */
 
 const STORE = 'evofit.quiz';
@@ -22,7 +22,9 @@ const AUTO_ADVANCE_MS = 450;
 /** @type {QuizState} */
 const S = (() => {
   const saved = loadJSON(STORE);
-  return saved && saved.v === 1 && typeof saved.i === 'number' && saved.answers ? saved : { v: 1, i: 0, answers: {}, email: '' };
+  return saved && saved.v === 1 && typeof saved.i === 'number' && saved.answers
+    ? { whatsapp: '', ...saved }
+    : { v: 1, i: 0, answers: {}, email: '', whatsapp: '' };
 })();
 const persist = () => saveJSON(STORE, S);
 
@@ -150,14 +152,18 @@ const T = {
         </div>
         <p class="kicker">${icon('lock-simple')}Diagnóstico pronto</p>
         <h2 class="q-title" id="t-email" tabindex="-1">${who} diagnóstico está pronto.</h2>
-        <p class="q-sub">Deixe seu e-mail pra liberar o resultado. A equipe Evofit pode te mandar dicas pra colocar o plano em prática.</p>
+        <p class="q-sub">Deixe seu e-mail e WhatsApp pra liberar o resultado. A equipe Evofit pode te mandar dicas pra colocar o plano em prática.</p>
         <form class="field-form" novalidate>
           <label class="field-label" for="in-email">Seu melhor e-mail</label>
           <input class="field" id="in-email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false"
-            enterkeyhint="go" maxlength="254" placeholder="voce@email.com" value="${escapeHtml(S.email)}" required aria-describedby="err-email">
+            enterkeyhint="next" maxlength="254" placeholder="voce@email.com" value="${escapeHtml(S.email)}" required aria-describedby="err-email">
           <p class="field-error" id="err-email" role="alert" hidden>Confere o e-mail? Parece que falta alguma coisa.</p>
+          <label class="field-label" for="in-whats">Seu WhatsApp (com DDD)</label>
+          <input class="field" id="in-whats" type="tel" inputmode="numeric" autocomplete="tel" enterkeyhint="go"
+            maxlength="16" placeholder="(11) 91234-5678" value="${escapeHtml(formatPhoneBR(S.whatsapp))}" required aria-describedby="err-whats">
+          <p class="field-error" id="err-whats" role="alert" hidden>Confere o número? Parece que falta alguma coisa.</p>
           <button class="btn btn--block btn--shine" type="submit"><span class="btn__label">Ver meu diagnóstico</span>${icon('arrow-right', 'ico-go')}</button>
-          <p class="gate__privacy">${icon('shield-check')}<span>Seu e-mail fica só com a Evofit. Sem spam, e dá pra sair da lista quando quiser.</span></p>
+          <p class="gate__privacy">${icon('shield-check')}<span>Seus dados ficam só com a Evofit. Sem spam, e dá pra sair da lista quando quiser.</span></p>
         </form>
       </div>`;
   },
@@ -446,14 +452,14 @@ function leave(el, dir) {
 /** Próxima etapa navegável a partir de `i`. @param {number} i */
 function nextIndex(i) {
   let n = i + 1;
-  if (STEPS[n]?.id === 'email' && S.email) n += 1;
+  if (STEPS[n]?.id === 'email' && S.email && S.whatsapp) n += 1;
   return n;
 }
 
 /** Etapa anterior navegável (pula a análise e o e-mail já respondido). @param {number} i */
 function prevIndex(i) {
   let p = i - 1;
-  while (p > 0 && (STEPS[p].type === 'analise' || (STEPS[p].type === 'email' && S.email))) p -= 1;
+  while (p > 0 && (STEPS[p].type === 'analise' || (STEPS[p].type === 'email' && S.email && S.whatsapp))) p -= 1;
   return Math.max(0, p);
 }
 
@@ -577,18 +583,29 @@ function bindName(step, el) {
 /** @param {HTMLElement} el */
 function bindEmail(el) {
   const form = /** @type {HTMLFormElement} */ (el.querySelector('form'));
-  const input = /** @type {HTMLInputElement} */ (form.querySelector('input'));
-  const err = /** @type {HTMLElement} */ (form.querySelector('.field-error'));
+  const input = /** @type {HTMLInputElement} */ (form.querySelector('#in-email'));
+  const err = /** @type {HTMLElement} */ (form.querySelector('#err-email'));
+  const whatsInput = /** @type {HTMLInputElement} */ (form.querySelector('#in-whats'));
+  const whatsErr = /** @type {HTMLElement} */ (form.querySelector('#err-whats'));
   const btn = /** @type {HTMLButtonElement} */ (form.querySelector('button[type="submit"]'));
   input.addEventListener('input', () => { if (!err.hidden && isValidEmail(normalizeEmail(input.value))) fieldError(input, err, false); });
+  whatsInput.addEventListener('input', () => {
+    const at = whatsInput.selectionStart === whatsInput.value.length;
+    whatsInput.value = formatPhoneBR(whatsInput.value);
+    if (at) whatsInput.setSelectionRange(whatsInput.value.length, whatsInput.value.length);
+    if (!whatsErr.hidden && isValidPhoneBR(whatsInput.value)) fieldError(whatsInput, whatsErr, false);
+  });
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const email = normalizeEmail(input.value);
+    const whatsapp = formatPhoneBR(whatsInput.value);
     if (!isValidEmail(email)) { fieldError(input, err, true); input.focus(); return; }
+    if (!isValidPhoneBR(whatsapp)) { fieldError(whatsInput, whatsErr, true); whatsInput.focus(); return; }
     S.email = email;
+    S.whatsapp = whatsapp;
     persist();
     btn.classList.add('is-loading');
-    tracker.event('email', { email });
+    tracker.event('email', { email, whatsapp });
     pixel('Lead', { content_name: 'diagnostico' });
     input.blur();
     await wait(reducedMotion() ? 0 : 450);

@@ -180,6 +180,7 @@ enum SubscriptionStatus {
 model QuizSession {
   id           String   @id @default(cuid())
   email        String?
+  whatsapp     String?
   answers      Json?
   lastStep     Int      @default(0)
   totalSteps   Int      @default(0)

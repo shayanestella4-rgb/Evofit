@@ -50,6 +50,7 @@ interface Stats {
 interface Lead {
   id: string;
   email: string;
+  whatsapp: string | null;
   answers: Record<string, unknown> | null;
   progress: number;
   reachedOffer: boolean;
@@ -513,6 +514,17 @@ export default function AdminPage() {
                           {new Date(lead.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
+                      {lead.whatsapp && (
+                        <a
+                          href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[10px] font-semibold text-[#A8B78A] shrink-0 hover:underline"
+                        >
+                          📱 {lead.whatsapp}
+                        </a>
+                      )}
                       <span className="text-[10px] text-[#8A8A8A] shrink-0">{lead.progress}% do quiz</span>
                       {lead.purchased && (
                         <span className="text-[10px] font-semibold text-green-400 shrink-0">✓ comprou</span>

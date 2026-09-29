@@ -10,7 +10,7 @@ import { CONFIG, activeBackend } from '../config.js';
  *   step_max?: number, step_key?: string, answers?: Record<string, unknown>,
  *   name?: string, gender?: string, age_range?: string, goal?: string, blocker?: string, weight_kg?: number,
  *   scores?: Record<string, number|null>, score_total?: number, phase?: number, weakest?: string,
- *   email?: string, duration_s?: number, event?: 'email'|'result'|'offer'|'buy'
+ *   email?: string, whatsapp?: string, duration_s?: number, event?: 'email'|'result'|'offer'|'buy'
  * }} TrackPatch
  */
 

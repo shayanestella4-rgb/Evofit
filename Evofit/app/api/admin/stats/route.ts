@@ -7,7 +7,7 @@ const ADMIN_PASSWORD = "evofit-admin-2026";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { password } = body;
+  const { password, startDate, endDate } = body;
 
   if (password !== ADMIN_PASSWORD) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,6 +15,15 @@ export async function POST(request: NextRequest) {
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  // Filtro de data das métricas do quiz (sessão criada nesse período).
+  const quizDateWhere: { createdAt?: { gte?: Date; lte?: Date } } = {};
+  if (typeof startDate === "string" && startDate) {
+    quizDateWhere.createdAt = { ...quizDateWhere.createdAt, gte: new Date(`${startDate}T00:00:00`) };
+  }
+  if (typeof endDate === "string" && endDate) {
+    quizDateWhere.createdAt = { ...quizDateWhere.createdAt, lte: new Date(`${endDate}T23:59:59.999`) };
+  }
 
   const [
     totalUsers,
@@ -35,13 +44,13 @@ export async function POST(request: NextRequest) {
     prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
     prisma.subscription.count({ where: { status: "ACTIVE" } }),
     prisma.subscription.groupBy({ by: ["status"], _count: { status: true } }),
-    prisma.quizSession.count(),
-    prisma.quizSession.count({ where: { lastStep: { gt: 0 } } }),
-    prisma.quizSession.count({ where: { email: { not: null } } }),
-    prisma.quizSession.count({ where: { reachedOffer: true } }),
+    prisma.quizSession.count({ where: quizDateWhere }),
+    prisma.quizSession.count({ where: { ...quizDateWhere, lastStep: { gt: 0 } } }),
+    prisma.quizSession.count({ where: { ...quizDateWhere, email: { not: null } } }),
+    prisma.quizSession.count({ where: { ...quizDateWhere, reachedOffer: true } }),
     prisma.subscription.findMany({ where: { status: { not: "INACTIVE" } }, select: { email: true } }),
-    prisma.quizSession.findMany({ where: { email: { not: null } }, select: { email: true } }),
-    prisma.quizSession.groupBy({ by: ["lastStep"], _count: { lastStep: true } }),
+    prisma.quizSession.findMany({ where: { ...quizDateWhere, email: { not: null } }, select: { email: true } }),
+    prisma.quizSession.groupBy({ by: ["lastStep"], where: quizDateWhere, _count: { lastStep: true } }),
     prisma.workoutCompletion.count(),
     prisma.workoutCompletion.groupBy({
       by: ["email"],

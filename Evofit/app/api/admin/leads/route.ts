@@ -5,15 +5,24 @@ const ADMIN_PASSWORD = "evofit-admin-2026";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { password } = body;
+  const { password, startDate, endDate } = body;
 
   if (password !== ADMIN_PASSWORD) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Filtro de data (sessão criada nesse período) — mesmo critério do /api/admin/stats.
+  const dateWhere: { createdAt?: { gte?: Date; lte?: Date } } = {};
+  if (typeof startDate === "string" && startDate) {
+    dateWhere.createdAt = { ...dateWhere.createdAt, gte: new Date(`${startDate}T00:00:00`) };
+  }
+  if (typeof endDate === "string" && endDate) {
+    dateWhere.createdAt = { ...dateWhere.createdAt, lte: new Date(`${endDate}T23:59:59.999`) };
+  }
+
   const [leads, purchasedEmails] = await Promise.all([
     prisma.quizSession.findMany({
-      where: { email: { not: null } },
+      where: { email: { not: null }, ...dateWhere },
       orderBy: { createdAt: "desc" },
       take: 200,
       select: { id: true, email: true, whatsapp: true, answers: true, lastStep: true, totalSteps: true, reachedOffer: true, createdAt: true },

@@ -102,6 +102,8 @@ export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[] | null>(null);
   const [leadsError, setLeadsError] = useState("");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+  const [quizStart, setQuizStart] = useState("");
+  const [quizEnd, setQuizEnd] = useState("");
 
   const [anamneseEmail, setAnamneseEmail] = useState("");
   const [anamneseForm, setAnamneseForm] = useState<AnamneseForm | null>(null);
@@ -272,13 +274,13 @@ export default function AdminPage() {
     }
   }
 
-  const loadStats = useCallback(async () => {
+  const loadStats = useCallback(async (start?: string, end?: string) => {
     setStatsError("");
     try {
       const res = await fetch("/api/admin/stats", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+        body: JSON.stringify({ password: ADMIN_PASSWORD, startDate: start || undefined, endDate: end || undefined }),
       });
       const data = await res.json();
       if (res.ok) setStats(data);
@@ -288,13 +290,13 @@ export default function AdminPage() {
     }
   }, []);
 
-  const loadLeads = useCallback(async () => {
+  const loadLeads = useCallback(async (start?: string, end?: string) => {
     setLeadsError("");
     try {
       const res = await fetch("/api/admin/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+        body: JSON.stringify({ password: ADMIN_PASSWORD, startDate: start || undefined, endDate: end || undefined }),
       });
       const data = await res.json();
       if (res.ok) setLeads(data.leads);
@@ -303,6 +305,18 @@ export default function AdminPage() {
       setLeadsError("Erro de conexão ao carregar leads.");
     }
   }, []);
+
+  function applyQuizDateFilter() {
+    loadStats(quizStart, quizEnd);
+    loadLeads(quizStart, quizEnd);
+  }
+
+  function clearQuizDateFilter() {
+    setQuizStart("");
+    setQuizEnd("");
+    loadStats();
+    loadLeads();
+  }
 
   function handleAuth(e: React.FormEvent) {
     e.preventDefault();
@@ -414,6 +428,40 @@ export default function AdminPage() {
         <h1 className="text-white font-bold text-xl">Admin Evofit</h1>
 
         {statsError && <p className="text-red-400 text-xs">{statsError}</p>}
+
+        {/* Filtro de data das métricas e leads do quiz */}
+        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-4 flex flex-wrap items-end gap-3">
+          <div>
+            <label className="block text-[10px] text-[#8A8A8A] mb-1">De</label>
+            <input
+              type="date"
+              value={quizStart}
+              onChange={(e) => setQuizStart(e.target.value)}
+              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#6B7F56]"
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] text-[#8A8A8A] mb-1">Até</label>
+            <input
+              type="date"
+              value={quizEnd}
+              onChange={(e) => setQuizEnd(e.target.value)}
+              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#6B7F56]"
+            />
+          </div>
+          <button
+            onClick={applyQuizDateFilter}
+            className="bg-[#6B7F56] text-white font-semibold px-4 py-2 rounded-lg text-xs"
+          >
+            Filtrar
+          </button>
+          {(quizStart || quizEnd) && (
+            <button onClick={clearQuizDateFilter} className="text-[#8A8A8A] text-xs underline">
+              Limpar filtro
+            </button>
+          )}
+          <p className="text-[10px] text-[#6B7280] w-full">Filtra o funil do quiz e os leads por data em que a pessoa acessou o quiz.</p>
+        </div>
 
         {stats && (
           <>

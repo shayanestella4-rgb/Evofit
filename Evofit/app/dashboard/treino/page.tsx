@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { getWorkoutForDay, getWorkoutFromExerciseIds, getWeekSchedule } from "@/lib/workout";
+import { getWorkoutForDay, getWorkoutFromExerciseIds, getWeekSchedule, TECHNIQUE_EXECUTION, parseRestSeconds } from "@/lib/workout";
+import type { ManualTechnique, TechniqueStep } from "@/lib/workout";
 import { saveWorkoutLog, loadWorkoutLogs } from "@/lib/workoutLog";
 import { useCycleStatus } from "@/lib/useCycleStatus";
 import { useWorkoutOverrides } from "@/lib/useWorkoutOverrides";
@@ -20,6 +21,24 @@ function toAppDay(jsDay: number): number {
 }
 
 const DAY_NAMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+const TECHNIQUE_LABELS: Record<Exclude<ManualTechnique, "biset">, string> = {
+  dropset: "🔥 Dropset", cluster: "⚡ Cluster set", restpause: "⏸️ Rest-pause",
+};
+
+interface ExecState {
+  exercise: Exercise;
+  round: number;    // série atual (1-based)
+  micro: number;    // índice da micro-etapa atual dentro de TECHNIQUE_EXECUTION
+  resting: boolean;
+  restLeft: number;
+  restTotal: number;
+  done: boolean;
+}
+
+function execStepsFor(ex: Exercise): TechniqueStep[] {
+  return ex.technique && ex.technique !== "biset" ? TECHNIQUE_EXECUTION[ex.technique] : [];
+}
 
 export default function TreinoPage() {
   const { anamnese, completedExercises, toggleExercise } = useApp();
@@ -143,6 +162,65 @@ export default function TreinoPage() {
   function handleCloseMilestone() {
     setMilestone(null);
   }
+
+  // ── Execução guiada (dropset/cluster/rest-pause) ────────────────────────────
+  const [exec, setExec] = useState<ExecState | null>(null);
+
+  function openExec(ex: Exercise) {
+    setExec({ exercise: ex, round: 1, micro: 0, resting: false, restLeft: 0, restTotal: 0, done: false });
+  }
+  function closeExec() {
+    setExec(null);
+  }
+  function skipExecRest() {
+    setExec((prev) => (prev && prev.resting ? { ...prev, resting: false, restLeft: 0 } : prev));
+  }
+  function completeExecStep() {
+    setExec((prev) => {
+      if (!prev || prev.resting || prev.done) return prev;
+      const steps = execStepsFor(prev.exercise);
+      const totalRounds = parseInt(prev.exercise.sets, 10) || 1;
+      const curStep = steps[prev.micro];
+      const hasNextMicro = prev.micro + 1 < steps.length;
+      const hasNextRound = prev.round + 1 <= totalRounds;
+
+      if (hasNextMicro) {
+        const rest = curStep?.restAfterSeconds ?? 0;
+        return rest > 0
+          ? { ...prev, micro: prev.micro + 1, resting: true, restLeft: rest, restTotal: rest }
+          : { ...prev, micro: prev.micro + 1 };
+      }
+      if (hasNextRound) {
+        const rest = parseRestSeconds(prev.exercise.rest);
+        return rest > 0
+          ? { ...prev, round: prev.round + 1, micro: 0, resting: true, restLeft: rest, restTotal: rest }
+          : { ...prev, round: prev.round + 1, micro: 0 };
+      }
+      return { ...prev, done: true };
+    });
+  }
+
+  // Cronômetro de descanso — só agenda o próximo tick (setState vive dentro do
+  // callback do timeout, nunca direto no corpo do efeito).
+  useEffect(() => {
+    if (!exec || !exec.resting || exec.restLeft <= 0) return;
+    const t = setTimeout(() => {
+      setExec((prev) => {
+        if (!prev || !prev.resting) return prev;
+        const next = prev.restLeft - 1;
+        return next <= 0 ? { ...prev, resting: false, restLeft: 0 } : { ...prev, restLeft: next };
+      });
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [exec]);
+
+  // Marca o exercício como concluído automaticamente ao terminar a última série.
+  useEffect(() => {
+    if (exec?.done && !completedExercises.includes(exec.exercise.id)) {
+      toggleExercise(exec.exercise.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exec?.done]);
 
   // ── Sem anamnese ────────────────────────────────────────────────────────────
   if (!anamnese) {
@@ -453,6 +531,9 @@ export default function TreinoPage() {
                           {ex.biSetNote && (
                             <p className="text-[10px] font-semibold text-[#A8B78A] mt-0.5">🔗 Bi-set — sem pausa até o próximo</p>
                           )}
+                          {ex.technique && ex.technique !== "biset" && (
+                            <p className="text-[10px] font-semibold text-[#A8B78A] mt-0.5">{TECHNIQUE_LABELS[ex.technique]}</p>
+                          )}
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-xs font-bold text-[#A8B78A]">{ex.sets}</p>
@@ -461,13 +542,29 @@ export default function TreinoPage() {
                       </div>
                     </button>
 
-                    {(ex.video || ex.gif) && (
-                      <button
-                        onClick={() => setGifModal(ex)}
-                        className="w-full flex items-center justify-center gap-1.5 py-2 border-t border-[#252525] text-[10px] font-semibold text-[#A8B78A] hover:bg-[#1F2A1C] transition-colors rounded-b-[1rem]"
-                      >
-                        <span>▶</span> Ver demonstração
-                      </button>
+                    {(ex.video || ex.gif || (ex.technique && ex.technique !== "biset")) && (
+                      <div className="flex border-t border-[#252525]">
+                        {(ex.video || ex.gif) && (
+                          <button
+                            onClick={() => setGifModal(ex)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#A8B78A] hover:bg-[#1F2A1C] transition-colors ${
+                              ex.technique && ex.technique !== "biset" ? "rounded-bl-[1rem] border-r border-[#252525]" : "rounded-b-[1rem]"
+                            }`}
+                          >
+                            <span>▶</span> Ver demonstração
+                          </button>
+                        )}
+                        {ex.technique && ex.technique !== "biset" && (
+                          <button
+                            onClick={() => openExec(ex)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#A8B78A] hover:bg-[#1F2A1C] transition-colors ${
+                              (ex.video || ex.gif) ? "rounded-br-[1rem]" : "rounded-b-[1rem]"
+                            }`}
+                          >
+                            <span>⏱️</span> Execução guiada
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 );
@@ -653,6 +750,75 @@ export default function TreinoPage() {
                 Fechar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal de execução guiada (dropset/cluster/rest-pause) ───────────────── */}
+      {exec && (
+        <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4" onClick={closeExec}>
+          <div
+            className="bg-[#1A1A1A] rounded-[1.5rem] w-full max-w-sm overflow-hidden shadow-2xl p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-semibold text-[#A8B78A] uppercase tracking-wide mb-1">
+              {exec.exercise.technique && exec.exercise.technique !== "biset" && TECHNIQUE_LABELS[exec.exercise.technique]}
+            </p>
+            <p className="text-base font-extrabold text-[#F0F0F0] mb-4">{exec.exercise.name}</p>
+
+            {exec.done ? (
+              <div className="text-center py-4">
+                <div className="text-5xl mb-3">🎉</div>
+                <p className="text-lg font-extrabold text-[#F0F0F0] mb-1">Série concluída!</p>
+                <p className="text-sm text-[#B8B8B8] mb-6">
+                  Você completou as {parseInt(exec.exercise.sets, 10) || 1} séries. Exercício marcado como concluído.
+                </p>
+                <button
+                  onClick={closeExec}
+                  className="w-full bg-[#10B981] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#059669] transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            ) : exec.resting ? (
+              <div className="text-center py-2">
+                <p className="text-xs text-[#CBD5E0] mb-2">Descanso</p>
+                <div className="text-5xl font-extrabold text-[#A8B78A] mb-3 tabular-nums">{exec.restLeft}s</div>
+                <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-5">
+                  <div
+                    className="h-full bg-[#6B7F56] rounded-full transition-all duration-1000 ease-linear"
+                    style={{ width: `${exec.restTotal > 0 ? (exec.restLeft / exec.restTotal) * 100 : 0}%` }}
+                  />
+                </div>
+                <button
+                  onClick={skipExecRest}
+                  className="w-full bg-[#252525] text-[#C0C0C0] font-semibold py-2.5 rounded-[0.75rem] text-sm hover:bg-[#2D2D2D] transition-colors"
+                >
+                  Pular descanso
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-[#8A8A8A] mb-4">Série {exec.round} de {parseInt(exec.exercise.sets, 10) || 1}</p>
+                <div className="bg-[#1F2A1C] rounded-[1rem] p-4 mb-5">
+                  <p className="text-sm font-semibold text-[#E6E7D9] leading-relaxed">
+                    {execStepsFor(exec.exercise)[exec.micro]?.label}
+                  </p>
+                </div>
+                <button
+                  onClick={completeExecStep}
+                  className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#556345] transition-colors active:scale-[0.98]"
+                >
+                  ✓ Concluí essa etapa
+                </button>
+              </>
+            )}
+
+            {!exec.done && (
+              <button onClick={closeExec} className="w-full text-xs text-[#6B7280] mt-3 py-1">
+                Fechar
+              </button>
+            )}
           </div>
         </div>
       )}

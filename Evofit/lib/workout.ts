@@ -30,6 +30,7 @@ export interface Exercise {
   jointCaution?: string; // aviso extra quando o exercício está na mesma região de uma condição articular da aluna
   biSetNote?: string; // presente só no primeiro exercício do par — nome do parceiro pra fazer em bi-set
   beginnerCaution?: string; // aviso extra só pra quem está no nível Iniciante (ex: procurar apoio num unilateral liberado pra esse nível)
+  technique?: ManualTechnique; // dropset/cluster/rest-pause/bi-set — habilita a execução guiada na tela de treino
 }
 
 // Mapeamento de IDs → URLs no Vercel Blob (gerado por scripts/upload-gifs.mjs)
@@ -817,7 +818,7 @@ function getBaseSetsRest(
  * treino), e só em 1-2 dias de treino da semana (ver isFinisherDay) — nunca no
  * treino inteiro.
  */
-function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, injuries: string[] = []): SetsRest | null {
+function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, injuries: string[] = []): (SetsRest & { technique: ManualTechnique }) | null {
   const isInter = getNivelTier(nivel) === 3;
   if (!isInter) return null;
   // Dropset/bi-set/rest-pause elevam bastante o duplo produto (FC × pressão) —
@@ -835,18 +836,18 @@ function getAdvancedTechnique(goal: string, nivel: string, cycleNumber: number, 
 
   if (goal?.includes("gordura") || goal?.includes("condicionamento")) {
     if (advancedRound === 0) {
-      return { sets: 3, reps: "12+8", rest: "60s",
+      return { sets: 3, reps: "12+8", rest: "60s", technique: "dropset",
         tip: "🔥 Dropset: complete as 12 reps normais, reduza 20% da carga sem pausar e execute mais 8 reps. Máximo esforço metabólico nessa série." };
     }
-    return { sets: 4, reps: "10-12", rest: "sem pausa entre a dupla · 90s depois",
+    return { sets: 4, reps: "10-12", rest: "sem pausa entre a dupla · 90s depois", technique: "biset",
       tip: "🔗 Bi-set: execute este exercício direto com o próximo, sem descansar entre eles. Descanse só depois de completar a dupla." };
   }
 
   if (advancedRound === 0) {
-    return { sets: 4, reps: "8+4", rest: "90s",
+    return { sets: 4, reps: "8+4", rest: "90s", technique: "cluster",
       tip: "⚡ Cluster set: execute 4 reps, pausa de 10s sem soltar o peso, mais 4 reps. As últimas 4 devem ser muito difíceis — permite carga maior com técnica perfeita." };
   }
-  return { sets: 4, reps: "6-8 + rest-pause", rest: "2min",
+  return { sets: 4, reps: "6-8 + rest-pause", rest: "2min", technique: "restpause",
     tip: "⏸️ Rest-pause: leve a série quase à falha, descanse só 15s sem soltar o peso, e faça mais 4-6 reps. Repita esse mini-descanso mais uma vez." };
 }
 
@@ -1323,7 +1324,7 @@ function buildCardioExercise(cycleNumber: number, dayIdx: number, cardioLabel: s
  * lê "2min" como 2 (segundos!) em vez de 120 — por isso o formato precisa ser
  * reconhecido explicitamente, não só o prefixo numérico.
  */
-function parseRestSeconds(rest: string): number {
+export function parseRestSeconds(rest: string): number {
   const match = rest.match(/(\d+)\s*(min)?/);
   if (!match) return 60;
   const value = parseInt(match[1], 10);
@@ -1402,6 +1403,7 @@ export function getWorkoutBySlot(
       jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
       biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
       beginnerCaution: isTrueBeginner ? ex.beginnerCaution : undefined,
+      technique: partner ? "biset" : undefined,
     };
   });
 
@@ -1488,7 +1490,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
   // Dropset exige troca de carga instantânea, sem sair andando pra pegar outro
   // peso — por isso só pode cair num exercício de máquina/cabo, nunca em peso
   // livre. Se o último exercício não for de aparelho, usa o último que for.
-  const isDropset = !!advanced && advanced.tip.startsWith("🔥 Dropset");
+  const isDropset = advanced?.technique === "dropset";
   let finisherIndex = defs.length - 1;
   if (isFinisherDay && isDropset) {
     for (let i = defs.length - 1; i >= 0; i--) {
@@ -1514,6 +1516,7 @@ export function getWorkoutForDay(anamnese: AnamneseData | null, dayIdx: number, 
       jointCaution: cautionGroups.has(ex.group) ? JOINT_CAUTION_TEXT : undefined,
       biSetNote: partner ? `🔗 Bi-set com ${partner} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.` : undefined,
       beginnerCaution: isTrueBeginner ? ex.beginnerCaution : undefined,
+      technique: partner ? "biset" : isFinisherExercise ? advanced!.technique : undefined,
     };
   });
   const mainCount = exercises.length;
@@ -1601,6 +1604,34 @@ const MANUAL_TECHNIQUE_PRESCRIPTIONS: Record<Exclude<ManualTechnique, "biset">, 
   },
 };
 
+export interface TechniqueStep {
+  label: string;            // o que fazer nessa micro-etapa
+  restAfterSeconds: number; // descanso imediato depois dela (0 = direto pra próxima, sem soltar o peso)
+}
+
+/**
+ * Passo a passo de cada técnica avançada pra execução guiada na tela de
+ * treino (toque pra marcar + cronômetro de descanso automático) — mesmos
+ * números já descritos no `tip` de cada técnica acima. Bi-set fica de fora:
+ * envolve 2 exercícios diferentes alternados, não uma sequência de micro-séries
+ * dentro de um só.
+ */
+export const TECHNIQUE_EXECUTION: Record<Exclude<ManualTechnique, "biset">, TechniqueStep[]> = {
+  dropset: [
+    { label: "Faça 12 reps com a carga normal", restAfterSeconds: 0 },
+    { label: "Sem descansar: reduza ~20% da carga e faça mais 8 reps", restAfterSeconds: 0 },
+  ],
+  cluster: [
+    { label: "Faça 4 reps", restAfterSeconds: 10 },
+    { label: "Sem soltar o peso: mais 4 reps", restAfterSeconds: 0 },
+  ],
+  restpause: [
+    { label: "Faça a série quase até a falha (6 a 8 reps)", restAfterSeconds: 15 },
+    { label: "Sem soltar o peso: mais 4 a 6 reps", restAfterSeconds: 15 },
+    { label: "Mais uma vez: 4 a 6 reps", restAfterSeconds: 0 },
+  ],
+};
+
 /**
  * Monta o treino do dia a partir de uma lista fixa de exercícios escolhida
  * manualmente (via /admin) — ignora o algoritmo de seleção automática pra
@@ -1661,6 +1692,7 @@ export function getWorkoutFromExerciseIds(
           jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
           biSetNote: `🔗 Bi-set com ${partnerDef.name} — faça os dois direto, sem descansar entre eles. Descanse só depois de completar a dupla.`,
           beginnerCaution: isTrueBeginner ? def.beginnerCaution : undefined,
+          technique: "biset",
         });
         exercises.push({
           id: partnerDef.id, name: partnerDef.name, muscle: partnerDef.primaryMuscle,
@@ -1670,6 +1702,7 @@ export function getWorkoutFromExerciseIds(
           gif: GIF_MAP[partnerDef.id] ?? undefined, video: VIDEO_MAP[partnerDef.id] ?? undefined,
           jointCaution: cautionGroups.has(partnerDef.group) ? JOINT_CAUTION_TEXT : undefined,
           beginnerCaution: isTrueBeginner ? partnerDef.beginnerCaution : undefined,
+          technique: "biset",
         });
         continue;
       }
@@ -1688,6 +1721,7 @@ export function getWorkoutFromExerciseIds(
       video:  VIDEO_MAP[def.id] ?? undefined,
       jointCaution: cautionGroups.has(def.group) ? JOINT_CAUTION_TEXT : undefined,
       beginnerCaution: isTrueBeginner ? def.beginnerCaution : undefined,
+      technique,
     });
   }
 

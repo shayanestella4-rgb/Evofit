@@ -23,7 +23,8 @@ export default function AcessoPage() {
     if (res.ok) {
       router.push(`/auth/login?email=${encodeURIComponent(email.trim().toLowerCase())}`);
     } else {
-      setError("Erro ao ativar acesso. Tente novamente.");
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Erro ao ativar acesso. Tente novamente.");
       setLoading(false);
     }
   }

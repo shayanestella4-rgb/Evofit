@@ -92,6 +92,7 @@ const labelClass = "block text-sm font-semibold text-[#C0C0C0] mb-3";
 export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig }) {
   const [nome, setNome] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [email, setEmail] = useState("");
   const [idade, setIdade] = useState("");
   const [sexo, setSexo] = useState("");
   const [nivel, setNivel] = useState("");
@@ -119,7 +120,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tipo: tipoConfig.slug,
-          nome, whatsapp, idade, sexo, nivel, observacoes,
+          nome, whatsapp, email, idade, sexo, nivel, observacoes,
           respostas: extras,
         }),
       });
@@ -165,6 +166,17 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
               onChange={(e) => setWhatsapp(formatPhoneBR(e.target.value))}
               placeholder="(11) 91234-5678"
               inputMode="numeric"
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Seu e-mail (opcional)</label>
+            <input
+              className={fieldClass}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="seu@email.com"
             />
           </div>
 

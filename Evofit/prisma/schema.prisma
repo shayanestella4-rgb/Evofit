@@ -247,6 +247,7 @@ model ConsultLead {
   tipo        String   @default("comum") // qual link/perfil ela respondeu (ver lib/consultoria-tipos.ts)
   nome        String?
   whatsapp    String?
+  email       String? // opcional — ajuda a achar a pessoa depois em "Editar treino de um usuário" (busca por email)
   idade       String?
   sexo        String?
   objetivo    String?

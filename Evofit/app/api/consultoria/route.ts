@@ -5,7 +5,7 @@ import { CONSULTORIA_TIPOS } from "@/lib/consultoria-tipos";
 /** Recebe a anamnese curta de /consultoria (e variantes /consultoria/[tipo]) — público, sem login (lead ainda não comprou). */
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
-  const { tipo, nome, whatsapp, idade, sexo, nivel, observacoes, respostas } = body;
+  const { tipo, nome, whatsapp, email, idade, sexo, nivel, observacoes, respostas } = body;
 
   if (!nome || typeof nome !== "string" || !whatsapp || typeof whatsapp !== "string") {
     return NextResponse.json({ error: "Nome e WhatsApp são obrigatórios" }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       tipo: tipoValido,
       nome: nome.trim().slice(0, 120),
       whatsapp: whatsapp.trim().slice(0, 30),
+      email: typeof email === "string" && email.includes("@") ? email.trim().toLowerCase().slice(0, 160) : undefined,
       idade: typeof idade === "string" ? idade.trim().slice(0, 10) : undefined,
       sexo: typeof sexo === "string" ? sexo.trim().slice(0, 40) : undefined,
       nivel: typeof nivel === "string" ? nivel.trim().slice(0, 120) : undefined,

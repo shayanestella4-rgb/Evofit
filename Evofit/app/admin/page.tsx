@@ -64,6 +64,7 @@ interface ConsultLead {
   tipo: string;
   nome: string | null;
   whatsapp: string | null;
+  email: string | null;
   idade: string | null;
   sexo: string | null;
   objetivo: string | null;
@@ -125,6 +126,12 @@ export default function AdminPage() {
   const [expandedConsultLeadId, setExpandedConsultLeadId] = useState<string | null>(null);
   const [copiedTipo, setCopiedTipo] = useState<string | null>(null);
 
+  function montarTreinoDoLead(email: string) {
+    setAnamneseEmail(email);
+    loadAnamnese(email);
+    document.getElementById("editar-treino")?.scrollIntoView({ behavior: "smooth" });
+  }
+
   function copyConsultoriaLink(slug: string) {
     const url = `${window.location.origin}/consultoria${slug === "comum" ? "" : `/${slug}`}`;
     navigator.clipboard.writeText(url).then(() => {
@@ -160,8 +167,8 @@ export default function AdminPage() {
   const [previewDay, setPreviewDay] = useState(0);
   const [previewCompletedTotal, setPreviewCompletedTotal] = useState(0);
 
-  async function loadAnamnese() {
-    const target = anamneseEmail.trim().toLowerCase();
+  async function loadAnamnese(emailOverride?: string) {
+    const target = (emailOverride ?? anamneseEmail).trim().toLowerCase();
     if (!target) return;
     setAnamneseStatus("loading");
     setAnamneseMessage("");
@@ -729,6 +736,17 @@ export default function AdminPage() {
                     </button>
                     {isOpen && (
                       <div className="px-3 py-3 bg-[#111] border-t border-[#2D2D2D] grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        {lead.email && (
+                          <div className="text-xs col-span-2 flex items-center gap-2 flex-wrap">
+                            <span className="text-[#6B7280]">Email:</span> <span className="text-[#C0C0C0]">{lead.email}</span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); montarTreinoDoLead(lead.email!); }}
+                              className="ml-auto text-[10px] font-semibold text-white bg-[#6B7F56] hover:bg-[#556345] px-2.5 py-1 rounded-full transition-colors"
+                            >
+                              Montar treino →
+                            </button>
+                          </div>
+                        )}
                         {[
                           ["Idade", lead.idade], ["Sexo", lead.sexo], ["Nível", lead.nivel],
                         ].filter(([, v]) => v).map(([label, value]) => (
@@ -757,7 +775,7 @@ export default function AdminPage() {
         </div>
 
         {/* Editar treino/anamnese de um usuário */}
-        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
+        <div id="editar-treino" className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
           <div>
             <h2 className="text-white font-bold text-sm">Editar treino de um usuário</h2>
             <p className="text-[#8A8A8A] text-xs mt-1">
@@ -776,7 +794,7 @@ export default function AdminPage() {
               className="flex-1 bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
             />
             <button
-              onClick={loadAnamnese}
+              onClick={() => loadAnamnese()}
               disabled={anamneseStatus === "loading" || !anamneseEmail}
               className="bg-[#252525] text-white font-semibold px-5 rounded-lg text-sm disabled:opacity-50 shrink-0"
             >

@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { getExerciseCatalog, getWorkoutForDay, getWorkoutFromExerciseIds, getWeekSchedule } from "@/lib/workout";
 import type { ManualExerciseEntry, ManualTechnique } from "@/lib/workout";
 import { computeCycleStatus } from "@/lib/cycle";
+import { TIPO_LABELS } from "@/lib/consultoria-tipos";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
 const DAY_NAMES = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -58,6 +59,22 @@ interface Lead {
   createdAt: string;
 }
 
+interface ConsultLead {
+  id: string;
+  tipo: string;
+  nome: string | null;
+  whatsapp: string | null;
+  idade: string | null;
+  sexo: string | null;
+  objetivo: string | null;
+  nivel: string | null;
+  diasTreino: string | null;
+  lesoes: string | null;
+  observacoes: string | null;
+  respostas: Record<string, unknown> | null;
+  createdAt: string;
+}
+
 interface AnamneseForm {
   nome: string; idade: string; sexo: string; peso: string; altura: string;
   objetivo: string; nivel: string; diasTreino: string; tempoTreino: string; sono: string;
@@ -102,6 +119,18 @@ export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[] | null>(null);
   const [leadsError, setLeadsError] = useState("");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+  const [consultLeads, setConsultLeads] = useState<ConsultLead[] | null>(null);
+  const [consultLeadsError, setConsultLeadsError] = useState("");
+  const [expandedConsultLeadId, setExpandedConsultLeadId] = useState<string | null>(null);
+  const [copiedTipo, setCopiedTipo] = useState<string | null>(null);
+
+  function copyConsultoriaLink(slug: string) {
+    const url = `${window.location.origin}/consultoria${slug === "comum" ? "" : `/${slug}`}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedTipo(slug);
+      setTimeout(() => setCopiedTipo(null), 1500);
+    });
+  }
   const [quizStart, setQuizStart] = useState("");
   const [quizEnd, setQuizEnd] = useState("");
 
@@ -306,6 +335,22 @@ export default function AdminPage() {
     }
   }, []);
 
+  const loadConsultLeads = useCallback(async () => {
+    setConsultLeadsError("");
+    try {
+      const res = await fetch("/api/admin/consultoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      });
+      const data = await res.json();
+      if (res.ok) setConsultLeads(data.leads);
+      else setConsultLeadsError(data.error || "Erro ao carregar leads.");
+    } catch {
+      setConsultLeadsError("Erro de conexão ao carregar leads.");
+    }
+  }, []);
+
   function applyQuizDateFilter() {
     loadStats(quizStart, quizEnd);
     loadLeads(quizStart, quizEnd);
@@ -324,6 +369,7 @@ export default function AdminPage() {
       setAuthed(true);
       loadStats();
       loadLeads();
+      loadConsultLeads();
     } else {
       setAuthError("Senha incorreta.");
     }
@@ -590,6 +636,98 @@ export default function AdminPage() {
                             <span className="text-[#C0C0C0]">{Array.isArray(value) ? value.join(", ") : String(value)}</span>
                           </div>
                         ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Links de consultoria por perfil — um pra cada característica de aluno */}
+        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6">
+          <h2 className="text-white font-bold text-sm mb-1">Links de consultoria por perfil</h2>
+          <p className="text-[#8A8A8A] text-xs mb-4">
+            Manda o link certo conforme a característica da pessoa que te chamou no WhatsApp.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(TIPO_LABELS).map(([slug, label]) => (
+              <button
+                key={slug}
+                onClick={() => copyConsultoriaLink(slug)}
+                className="text-left px-3 py-2.5 rounded-lg border border-[#2D2D2D] hover:border-[#6B7F56] transition-colors"
+              >
+                <p className="text-xs font-semibold text-[#F0F0F0]">{label}</p>
+                <p className="text-[10px] text-[#A8B78A] mt-0.5">
+                  {copiedTipo === slug ? "✓ link copiado!" : `/consultoria${slug === "comum" ? "" : `/${slug}`}`}
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Leads de consultoria 1 a 1 (link /consultoria, pra quem chama no WhatsApp) */}
+        <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6">
+          <h2 className="text-white font-bold text-sm mb-1">Leads de consultoria (WhatsApp)</h2>
+          <p className="text-[#8A8A8A] text-xs mb-4">
+            Quem respondeu a anamnese curta de /consultoria, mais recente primeiro{consultLeads ? ` (${consultLeads.length})` : ""}.
+          </p>
+          {consultLeadsError && <p className="text-red-400 text-xs">{consultLeadsError}</p>}
+          {consultLeads && consultLeads.length === 0 && (
+            <p className="text-[#6B7280] text-xs">Ninguém respondeu ainda.</p>
+          )}
+          {consultLeads && consultLeads.length > 0 && (
+            <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
+              {consultLeads.map((lead) => {
+                const isOpen = expandedConsultLeadId === lead.id;
+                return (
+                  <div key={lead.id} className="border border-[#2D2D2D] rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => setExpandedConsultLeadId(isOpen ? null : lead.id)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#1F2A1C]/40 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-[#F0F0F0] truncate">{lead.nome || "Sem nome"}</p>
+                        <p className="text-[10px] text-[#6B7280]">
+                          {TIPO_LABELS[lead.tipo] || lead.tipo} ·{" "}
+                          {new Date(lead.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                      {lead.whatsapp && (
+                        <a
+                          href={`https://wa.me/55${lead.whatsapp.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[10px] font-semibold text-[#A8B78A] shrink-0 hover:underline"
+                        >
+                          📱 {lead.whatsapp}
+                        </a>
+                      )}
+                      <span className="text-[#6B7280] shrink-0">{isOpen ? "▲" : "▼"}</span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-3 py-3 bg-[#111] border-t border-[#2D2D2D] grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        {[
+                          ["Idade", lead.idade], ["Sexo", lead.sexo], ["Objetivo", lead.objetivo],
+                          ["Nível", lead.nivel], ["Dias de treino", lead.diasTreino], ["Lesões", lead.lesoes],
+                        ].filter(([, v]) => v).map(([label, value]) => (
+                          <div key={label} className="text-xs">
+                            <span className="text-[#6B7280]">{label}:</span> <span className="text-[#C0C0C0]">{value}</span>
+                          </div>
+                        ))}
+                        {lead.respostas && Object.entries(lead.respostas).filter(([, v]) => v && (!Array.isArray(v) || v.length > 0)).map(([key, value]) => (
+                          <div key={key} className="text-xs col-span-2">
+                            <span className="text-[#6B7280]">{key}:</span>{" "}
+                            <span className="text-[#C0C0C0]">{Array.isArray(value) ? value.join(", ") : String(value)}</span>
+                          </div>
+                        ))}
+                        {lead.observacoes && (
+                          <div className="text-xs col-span-2">
+                            <span className="text-[#6B7280]">Observações:</span> <span className="text-[#C0C0C0]">{lead.observacoes}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

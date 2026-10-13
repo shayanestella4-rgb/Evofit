@@ -237,3 +237,25 @@ model UserWorkoutOverride {
   @@unique([email, dayIdx])
   @@map("user_workout_overrides")
 }
+
+// Anamnese curta de quem chama no WhatsApp pra consultoria 1 a 1 (fora do
+// funil do quiz) — preenchida pelo link público de /consultoria, pra dar
+// contexto antes de fechar a venda. Não vira Subscription/User sozinha;
+// é só controle interno (ver app/admin/page.tsx).
+model ConsultLead {
+  id          String   @id @default(cuid())
+  tipo        String   @default("comum") // qual link/perfil ela respondeu (ver lib/consultoria-tipos.ts)
+  nome        String?
+  whatsapp    String?
+  idade       String?
+  sexo        String?
+  objetivo    String?
+  nivel       String?
+  diasTreino  String?
+  lesoes      String?
+  observacoes String?
+  respostas   Json? // perguntas extras específicas do perfil (tipo)
+  createdAt   DateTime @default(now())
+
+  @@map("consult_leads")
+}

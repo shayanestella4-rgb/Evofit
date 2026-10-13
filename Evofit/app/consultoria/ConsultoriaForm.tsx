@@ -18,6 +18,7 @@ function formatPhoneBR(v: string) {
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 const isValidPhoneBR = (v: string) => /^\d{10,11}$/.test(v.replace(/\D/g, ""));
+const isValidEmail = (v: string) => /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/.test(v.trim());
 
 const radioClass = (selected: boolean) =>
   `w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
@@ -112,6 +113,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
     setError("");
     if (!nome.trim()) { setError("Digite seu nome."); return; }
     if (!isValidPhoneBR(whatsapp)) { setError("Confere o WhatsApp? Parece que falta alguma coisa."); return; }
+    if (!isValidEmail(email)) { setError("Digite um e-mail válido."); return; }
 
     setLoading(true);
     try {
@@ -170,7 +172,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
           </div>
 
           <div>
-            <label className={labelClass}>Seu e-mail (opcional)</label>
+            <label className={labelClass}>Seu e-mail</label>
             <input
               className={fieldClass}
               type="email"

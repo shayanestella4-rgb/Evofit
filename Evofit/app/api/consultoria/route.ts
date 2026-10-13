@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
   if (!nome || typeof nome !== "string" || !whatsapp || typeof whatsapp !== "string") {
     return NextResponse.json({ error: "Nome e WhatsApp são obrigatórios" }, { status: 400 });
   }
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return NextResponse.json({ error: "Email é obrigatório" }, { status: 400 });
+  }
 
   const tipoValido = typeof tipo === "string" && CONSULTORIA_TIPOS[tipo] ? tipo : "comum";
 
@@ -18,7 +21,7 @@ export async function POST(request: NextRequest) {
       tipo: tipoValido,
       nome: nome.trim().slice(0, 120),
       whatsapp: whatsapp.trim().slice(0, 30),
-      email: typeof email === "string" && email.includes("@") ? email.trim().toLowerCase().slice(0, 160) : undefined,
+      email: email.trim().toLowerCase().slice(0, 160),
       idade: typeof idade === "string" ? idade.trim().slice(0, 10) : undefined,
       sexo: typeof sexo === "string" ? sexo.trim().slice(0, 40) : undefined,
       nivel: typeof nivel === "string" ? nivel.trim().slice(0, 120) : undefined,

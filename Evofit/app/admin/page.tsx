@@ -120,6 +120,7 @@ export default function AdminPage() {
   const [leadsError, setLeadsError] = useState("");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
   const [consultLeads, setConsultLeads] = useState<ConsultLead[] | null>(null);
+  const [consultSearch, setConsultSearch] = useState("");
   const [consultLeadsError, setConsultLeadsError] = useState("");
   const [expandedConsultLeadId, setExpandedConsultLeadId] = useState<string | null>(null);
   const [copiedTipo, setCopiedTipo] = useState<string | null>(null);
@@ -144,6 +145,15 @@ export default function AdminPage() {
   const [overrideDay, setOverrideDay] = useState(0);
   const [overrideSearch, setOverrideSearch] = useState("");
   const [overrideStatus, setOverrideStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const filteredConsultLeads = useMemo(() => {
+    if (!consultLeads) return consultLeads;
+    const q = consultSearch.trim().toLowerCase();
+    if (!q) return consultLeads;
+    return consultLeads.filter(
+      (lead) => lead.nome?.toLowerCase().includes(q) || lead.whatsapp?.toLowerCase().includes(q)
+    );
+  }, [consultLeads, consultSearch]);
+
   const catalog = useMemo(() => getExerciseCatalog(), []);
   const catalogById = useMemo(() => new Map(catalog.map((e) => [e.id, e])), [catalog]);
 
@@ -670,16 +680,26 @@ export default function AdminPage() {
         {/* Leads de consultoria 1 a 1 (link /consultoria, pra quem chama no WhatsApp) */}
         <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6">
           <h2 className="text-white font-bold text-sm mb-1">Leads de consultoria (WhatsApp)</h2>
-          <p className="text-[#8A8A8A] text-xs mb-4">
+          <p className="text-[#8A8A8A] text-xs mb-3">
             Quem respondeu a anamnese curta de /consultoria, mais recente primeiro{consultLeads ? ` (${consultLeads.length})` : ""}.
           </p>
+          <input
+            type="text"
+            value={consultSearch}
+            onChange={(e) => setConsultSearch(e.target.value)}
+            placeholder="Buscar por nome ou WhatsApp..."
+            className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-2.5 text-white text-sm mb-4 focus:outline-none focus:border-[#6B7F56]"
+          />
           {consultLeadsError && <p className="text-red-400 text-xs">{consultLeadsError}</p>}
           {consultLeads && consultLeads.length === 0 && (
             <p className="text-[#6B7280] text-xs">Ninguém respondeu ainda.</p>
           )}
-          {consultLeads && consultLeads.length > 0 && (
+          {filteredConsultLeads && filteredConsultLeads.length === 0 && consultLeads && consultLeads.length > 0 && (
+            <p className="text-[#6B7280] text-xs">Ninguém encontrado com esse nome ou WhatsApp.</p>
+          )}
+          {filteredConsultLeads && filteredConsultLeads.length > 0 && (
             <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
-              {consultLeads.map((lead) => {
+              {filteredConsultLeads.map((lead) => {
                 const isOpen = expandedConsultLeadId === lead.id;
                 return (
                   <div key={lead.id} className="border border-[#2D2D2D] rounded-lg overflow-hidden">

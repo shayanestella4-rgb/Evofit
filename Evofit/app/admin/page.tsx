@@ -730,8 +730,7 @@ export default function AdminPage() {
                     {isOpen && (
                       <div className="px-3 py-3 bg-[#111] border-t border-[#2D2D2D] grid grid-cols-2 gap-x-4 gap-y-1.5">
                         {[
-                          ["Idade", lead.idade], ["Sexo", lead.sexo], ["Objetivo", lead.objetivo],
-                          ["Nível", lead.nivel], ["Dias de treino", lead.diasTreino], ["Lesões", lead.lesoes],
+                          ["Idade", lead.idade], ["Sexo", lead.sexo], ["Nível", lead.nivel],
                         ].filter(([, v]) => v).map(([label, value]) => (
                           <div key={label} className="text-xs">
                             <span className="text-[#6B7280]">{label}:</span> <span className="text-[#C0C0C0]">{value}</span>

@@ -3,13 +3,11 @@
 import { useState } from "react";
 import type { ExtraField, TipoConfig } from "@/lib/consultoria-tipos";
 
-const OBJETIVO_OPTIONS = ["Perder gordura", "Ganhar músculo", "Melhorar condicionamento", "Mais disposição e saúde"];
 const NIVEL_OPTIONS = [
   "Iniciante (nunca treinei)",
   "Intermediário (já tenho uma certa experiência com os exercícios)",
   "Avançado (treino regularmente)",
 ];
-const DIAS_OPTIONS = ["2 dias", "3 dias", "4 dias", "5+ dias"];
 const SEXO_OPTIONS = ["Feminino", "Masculino"];
 
 function formatPhoneBR(v: string) {
@@ -96,10 +94,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
   const [whatsapp, setWhatsapp] = useState("");
   const [idade, setIdade] = useState("");
   const [sexo, setSexo] = useState("");
-  const [objetivo, setObjetivo] = useState("");
   const [nivel, setNivel] = useState("");
-  const [diasTreino, setDiasTreino] = useState("");
-  const [lesoes, setLesoes] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [extras, setExtras] = useState<Record<string, string | string[]>>({});
 
@@ -124,7 +119,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tipo: tipoConfig.slug,
-          nome, whatsapp, idade, sexo, objetivo, nivel, diasTreino, lesoes, observacoes,
+          nome, whatsapp, idade, sexo, nivel, observacoes,
           respostas: extras,
         }),
       });
@@ -196,20 +191,12 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
             </div>
           </div>
 
-          <div>
-            <label className={labelClass}>Qual é o seu principal objetivo?</label>
-            <RadioGroup options={OBJETIVO_OPTIONS} value={objetivo} onChange={setObjetivo} />
-          </div>
-
-          <div>
-            <label className={labelClass}>Seu nível de experiência</label>
-            <RadioGroup options={NIVEL_OPTIONS} value={nivel} onChange={setNivel} />
-          </div>
-
-          <div>
-            <label className={labelClass}>Quantos dias por semana você pode treinar?</label>
-            <RadioGroup options={DIAS_OPTIONS} value={diasTreino} onChange={setDiasTreino} />
-          </div>
+          {tipoConfig.temNivel && (
+            <div>
+              <label className={labelClass}>Nível de treinamento</label>
+              <RadioGroup options={NIVEL_OPTIONS} value={nivel} onChange={setNivel} />
+            </div>
+          )}
 
           {tipoConfig.extras.map((field: ExtraField) => (
             <div key={field.key}>
@@ -238,12 +225,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
           ))}
 
           <div>
-            <label className={labelClass}>Tem alguma lesão, dor ou condição de saúde que eu deva saber?</label>
-            <input className={fieldClass} value={lesoes} onChange={(e) => setLesoes(e.target.value)} placeholder="Ex: dor no joelho, nenhuma..." />
-          </div>
-
-          <div>
-            <label className={labelClass}>Quer contar mais alguma coisa?</label>
+            <label className={labelClass}>Se tiver outras informações que julgar relevante, descreva abaixo</label>
             <textarea
               className={`${fieldClass} min-h-[90px] resize-none`}
               value={observacoes}

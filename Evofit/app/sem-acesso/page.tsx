@@ -34,7 +34,7 @@ export default function SemAcessoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
+    <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center px-6 text-center">
       <div className="max-w-sm w-full space-y-6">
         <div className="text-6xl">🔒</div>
 
@@ -51,7 +51,7 @@ export default function SemAcessoPage() {
             onClick={() => {
               window.location.href = "https://pay.cakto.com.br/aprvkwz_909423";
             }}
-            className="block w-full py-3 px-4 rounded-xl bg-[#6B7F56] active:bg-[#556345] text-white font-semibold text-sm transition-colors"
+            className="block w-full py-3 px-4 rounded-xl bg-[#E08A9B] active:bg-[#B5546A] text-white font-semibold text-sm transition-colors"
           >
             Quero assinar agora
           </button>
@@ -75,7 +75,7 @@ export default function SemAcessoPage() {
               </p>
               <Link
                 href="/auth/login"
-                className="block w-full py-3 px-4 rounded-xl bg-[#6B7F56] text-white font-semibold text-sm transition-colors"
+                className="block w-full py-3 px-4 rounded-xl bg-[#E08A9B] text-white font-semibold text-sm transition-colors"
               >
                 Fazer login agora
               </Link>
@@ -87,12 +87,12 @@ export default function SemAcessoPage() {
                 placeholder="Seu e-mail de cadastro"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#2D2D2D] text-white text-sm placeholder-[#4B5563] focus:outline-none focus:border-[#6B7F56]"
+                className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#2D2D2D] text-white text-sm placeholder-[#4B5563] focus:outline-none focus:border-[#E08A9B]"
               />
               <button
                 onClick={verificarRenovacao}
                 disabled={loading || !email.includes("@")}
-                className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#6B7F56] text-[#6B7F56] font-semibold text-sm transition-colors disabled:opacity-50"
+                className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] border border-[#E08A9B] text-[#E08A9B] font-semibold text-sm transition-colors disabled:opacity-50"
               >
                 {loading ? "Verificando..." : "Verificar renovação"}
               </button>
@@ -123,7 +123,7 @@ export default function SemAcessoPage() {
           Já assinou e ainda sem acesso?{" "}
           <a
             href="mailto:suporte@evofit.com.br"
-            className="text-[#6B7F56] underline"
+            className="text-[#E08A9B] underline"
           >
             Fale com o suporte
           </a>

@@ -233,7 +233,7 @@ export default function TreinoPage() {
         </p>
         <Link
           href="/onboarding"
-          className="bg-[#6B7F56] text-white font-bold px-6 py-3 rounded-[0.75rem] hover:bg-[#556345] transition-colors"
+          className="bg-[#E08A9B] text-white font-bold px-6 py-3 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors"
         >
           Fazer anamnese
         </Link>
@@ -251,7 +251,7 @@ export default function TreinoPage() {
           <button
             onClick={() => setView("treino")}
             className={`flex-1 py-2.5 rounded-[0.75rem] text-sm font-bold transition-all ${
-              view === "treino" ? "bg-[#6B7F56] text-white" : "text-[#CBD5E0]"
+              view === "treino" ? "bg-[#E08A9B] text-white" : "text-[#CBD5E0]"
             }`}
           >
             Meu treino
@@ -259,7 +259,7 @@ export default function TreinoPage() {
           <button
             onClick={() => setView("aulas")}
             className={`flex-1 py-2.5 rounded-[0.75rem] text-sm font-bold transition-all ${
-              view === "aulas" ? "bg-[#6B7F56] text-white" : "text-[#CBD5E0]"
+              view === "aulas" ? "bg-[#E08A9B] text-white" : "text-[#CBD5E0]"
             }`}
           >
             Hits de Muay Thai
@@ -281,11 +281,11 @@ export default function TreinoPage() {
                   disabled={!disponivel}
                   className={`w-full flex items-center gap-3 p-3 rounded-[1rem] border text-left transition-all ${
                     disponivel
-                      ? "bg-[#1A1A1A] border-[#2D2D2D] hover:border-[#6B7F56] active:scale-[0.98]"
+                      ? "bg-[#1A1A1A] border-[#2D2D2D] hover:border-[#E08A9B] active:scale-[0.98]"
                       : "bg-[#151515] border-[#2D2D2D] opacity-60 cursor-default"
                   }`}
                 >
-                  <div className="w-16 h-16 rounded-[0.75rem] shrink-0 overflow-hidden bg-[#1F2A1C] flex items-center justify-center relative">
+                  <div className="w-16 h-16 rounded-[0.75rem] shrink-0 overflow-hidden bg-[#2B151A] flex items-center justify-center relative">
                     {thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={thumb} alt={aula.title} className="w-full h-full object-cover" />
@@ -315,7 +315,7 @@ export default function TreinoPage() {
 
         {/* Selo de revisão pela equipe — reforça confiança na primeira abertura */}
         {showReviewBadge && (
-          <div className="flex items-start gap-3 bg-[#1F2A1C] border border-[#6B7F56] rounded-[1rem] p-3.5 mb-5">
+          <div className="flex items-start gap-3 bg-[#2B151A] border border-[#E08A9B] rounded-[1rem] p-3.5 mb-5">
             <span className="text-lg shrink-0">✓</span>
             <p className="flex-1 text-xs text-[#E6E7D9] leading-relaxed">
               Seu treino foi revisado pela nossa equipe antes de ser liberado.
@@ -323,7 +323,7 @@ export default function TreinoPage() {
             <button
               onClick={dismissReviewBadge}
               aria-label="Fechar"
-              className="text-[#A8B78A] hover:text-white shrink-0 text-sm leading-none px-1"
+              className="text-[#F2C4CC] hover:text-white shrink-0 text-sm leading-none px-1"
             >
               ✕
             </button>
@@ -346,16 +346,16 @@ export default function TreinoPage() {
                     onClick={() => setSelectedDay(idx)}
                     className={`flex flex-col items-center px-4 py-2.5 rounded-[0.875rem] shrink-0 min-w-[64px] transition-all ${
                       isSelected
-                        ? "bg-[#6B7F56] text-white shadow-md shadow-[#D4DDC4]"
-                        : "bg-[#252525] text-[#C0C0C0] hover:bg-[#1F2A1C]"
+                        ? "bg-[#E08A9B] text-white shadow-md shadow-[#F2C4CC]"
+                        : "bg-[#252525] text-[#C0C0C0] hover:bg-[#2B151A]"
                     }`}
                   >
                     <span className="text-lg leading-none">{emoji}</span>
-                    <span className={`text-xs font-bold mt-1 ${isToday && !isSelected ? "text-[#A8B78A]" : ""}`}>
+                    <span className={`text-xs font-bold mt-1 ${isToday && !isSelected ? "text-[#F2C4CC]" : ""}`}>
                       {day}
                     </span>
                     {isToday && (
-                      <span className={`text-[9px] font-semibold mt-0.5 ${isSelected ? "text-[#D4DDC4]" : "text-[#A8B78A]"}`}>
+                      <span className={`text-[9px] font-semibold mt-0.5 ${isSelected ? "text-[#F2C4CC]" : "text-[#F2C4CC]"}`}>
                         hoje
                       </span>
                     )}
@@ -368,9 +368,9 @@ export default function TreinoPage() {
 
         {/* Banner de visualização */}
         {isViewing && !workout.isRest && (
-          <div className="bg-[#1F2A1C] rounded-[0.75rem] px-3 py-2 mb-4 flex items-center gap-2">
+          <div className="bg-[#2B151A] rounded-[0.75rem] px-3 py-2 mb-4 flex items-center gap-2">
             <span className="text-sm">👀</span>
-            <p className="text-xs font-semibold text-[#A8B78A]">
+            <p className="text-xs font-semibold text-[#F2C4CC]">
               Visualizando treino de {DAY_NAMES[selectedDay]}
             </p>
           </div>
@@ -384,8 +384,8 @@ export default function TreinoPage() {
             <p className="text-sm text-[#B8B8B8] max-w-xs leading-relaxed mb-8">
               Seu corpo cresce durante o descanso. Aproveite para recuperar e voltar mais forte amanhã.
             </p>
-            <div className="bg-[#1F2A1C] rounded-[1rem] p-4 border border-[#35402C] w-full text-left">
-              <p className="text-xs font-semibold text-[#A8B78A] mb-2">💡 Sugestões para hoje</p>
+            <div className="bg-[#2B151A] rounded-[1rem] p-4 border border-[#4A2730] w-full text-left">
+              <p className="text-xs font-semibold text-[#F2C4CC] mb-2">💡 Sugestões para hoje</p>
               <ul className="space-y-1.5 text-sm text-[#C0C0C0]">
                 <li>• Alongamento leve por 15 minutos</li>
                 <li>• Caminhada de 20-30 minutos</li>
@@ -393,7 +393,7 @@ export default function TreinoPage() {
                 <li>• Durma cedo para recuperar</li>
               </ul>
             </div>
-            <Link href="/dashboard" className="mt-6 text-sm text-[#A8B78A] font-semibold hover:underline">
+            <Link href="/dashboard" className="mt-6 text-sm text-[#F2C4CC] font-semibold hover:underline">
               ← Voltar ao início
             </Link>
           </div>
@@ -411,8 +411,8 @@ export default function TreinoPage() {
                     onClick={() => setTimeOverride((prev) => ({ ...prev, [selectedDay]: opt }))}
                     className={`flex-1 py-2 rounded-[0.75rem] text-xs font-bold border transition-all ${
                       selectedTempo === opt
-                        ? "bg-[#6B7F56] text-white border-[#6B7F56]"
-                        : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#6B7F56]"
+                        ? "bg-[#E08A9B] text-white border-[#E08A9B]"
+                        : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#E08A9B]"
                     }`}
                   >
                     {opt}
@@ -423,18 +423,18 @@ export default function TreinoPage() {
 
             {/* Header */}
             <div className="mb-5">
-              <p className="text-xs text-[#A8B78A] font-semibold uppercase tracking-wide mb-1">
+              <p className="text-xs text-[#F2C4CC] font-semibold uppercase tracking-wide mb-1">
                 {workout.emoji} {isViewing ? `Treino de ${DAY_NAMES[selectedDay]}` : "Treino de hoje"}
               </p>
               <h1 className="text-2xl font-extrabold text-[#F0F0F0]">{workout.name}</h1>
               <div className="flex flex-wrap gap-2 mt-2">
-                <span className="bg-[#1F2A1C] text-[#A8B78A] text-xs px-2.5 py-1 rounded-full font-semibold">
+                <span className="bg-[#2B151A] text-[#F2C4CC] text-xs px-2.5 py-1 rounded-full font-semibold">
                   {workout.duration} min
                 </span>
-                <span className="bg-[#1F2A1C] text-[#A8B78A] text-xs px-2.5 py-1 rounded-full font-semibold">
+                <span className="bg-[#2B151A] text-[#F2C4CC] text-xs px-2.5 py-1 rounded-full font-semibold">
                   {totalEx} exercícios
                 </span>
-                <span className="bg-[#1F2A1C] text-[#A8B78A] text-xs px-2.5 py-1 rounded-full font-semibold">
+                <span className="bg-[#2B151A] text-[#F2C4CC] text-xs px-2.5 py-1 rounded-full font-semibold">
                   {workout.muscleLabel}
                 </span>
               </div>
@@ -445,11 +445,11 @@ export default function TreinoPage() {
               <div className="bg-[#1A1A1A] rounded-[1rem] p-4 border border-[#2D2D2D] mb-5">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-semibold text-[#C0C0C0]">Progresso</span>
-                  <span className="text-xs text-[#A8B78A] font-bold">{doneCount} / {totalEx}</span>
+                  <span className="text-xs text-[#F2C4CC] font-bold">{doneCount} / {totalEx}</span>
                 </div>
-                <div className="h-2 bg-[#1F2A1C] rounded-full overflow-hidden">
+                <div className="h-2 bg-[#2B151A] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#6B7F56] rounded-full transition-all duration-500"
+                    className="h-full bg-[#E08A9B] rounded-full transition-all duration-500"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -491,7 +491,7 @@ export default function TreinoPage() {
 
             {/* Aviso de cardio opcional — treinos de 40min priorizam só a musculação */}
             {selectedTempo === "40 min" && !workout.isRest && (
-              <div className="bg-[#1F2A1C] rounded-[1rem] p-3 border border-[#35402C] mb-4 flex gap-2 items-start">
+              <div className="bg-[#2B151A] rounded-[1rem] p-3 border border-[#4A2730] mb-4 flex gap-2 items-start">
                 <span className="text-sm shrink-0">🏃</span>
                 <p className="text-xs text-[#C0C0C0] leading-relaxed">
                   Como seu tempo hoje é mais curto, esse treino não inclui cardio fixo — priorizamos a musculação. Se quiser, faça o cardio num dia em que tiver mais tempo disponível.
@@ -529,14 +529,14 @@ export default function TreinoPage() {
                           </p>
                           <p className="text-xs text-[#CBD5E0] mt-0.5">{ex.muscle}</p>
                           {ex.biSetNote && (
-                            <p className="text-[10px] font-semibold text-[#A8B78A] mt-0.5">🔗 Bi-set — sem pausa até o próximo</p>
+                            <p className="text-[10px] font-semibold text-[#F2C4CC] mt-0.5">🔗 Bi-set — sem pausa até o próximo</p>
                           )}
                           {ex.technique && ex.technique !== "biset" && (
-                            <p className="text-[10px] font-semibold text-[#A8B78A] mt-0.5">{TECHNIQUE_LABELS[ex.technique]}</p>
+                            <p className="text-[10px] font-semibold text-[#F2C4CC] mt-0.5">{TECHNIQUE_LABELS[ex.technique]}</p>
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-xs font-bold text-[#A8B78A]">{ex.sets}</p>
+                          <p className="text-xs font-bold text-[#F2C4CC]">{ex.sets}</p>
                           <p className="text-[10px] text-[#CBD5E0]">Descanso {ex.rest}</p>
                         </div>
                       </div>
@@ -547,7 +547,7 @@ export default function TreinoPage() {
                         {(ex.video || ex.gif) && (
                           <button
                             onClick={() => setGifModal(ex)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#A8B78A] hover:bg-[#1F2A1C] transition-colors ${
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#F2C4CC] hover:bg-[#2B151A] transition-colors ${
                               ex.technique && ex.technique !== "biset" ? "rounded-bl-[1rem] border-r border-[#252525]" : "rounded-b-[1rem]"
                             }`}
                           >
@@ -557,7 +557,7 @@ export default function TreinoPage() {
                         {ex.technique && ex.technique !== "biset" && (
                           <button
                             onClick={() => openExec(ex)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#A8B78A] hover:bg-[#1F2A1C] transition-colors ${
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-semibold text-[#F2C4CC] hover:bg-[#2B151A] transition-colors ${
                               (ex.video || ex.gif) ? "rounded-br-[1rem]" : "rounded-b-[1rem]"
                             }`}
                           >
@@ -597,18 +597,18 @@ export default function TreinoPage() {
               Você completou <strong>{WORKOUTS_PER_CYCLE} treinos</strong> com o Evofit.
               Isso é dedicação de verdade. Parabéns! 🎉
             </p>
-            <div className="bg-[#1F2A1C] rounded-[0.75rem] p-3 mb-5 border border-[#35402C] text-left">
-              <p className="text-xs font-bold text-[#A8B78A] mb-1">
+            <div className="bg-[#2B151A] rounded-[0.75rem] p-3 mb-5 border border-[#4A2730] text-left">
+              <p className="text-xs font-bold text-[#F2C4CC] mb-1">
                 🔄 Hora de atualizar seu plano
               </p>
-              <p className="text-xs text-[#A8B78A] leading-relaxed">
+              <p className="text-xs text-[#F2C4CC] leading-relaxed">
                 Depois de {WORKOUTS_PER_CYCLE} treinos seu corpo se adaptou aos exercícios atuais.
                 Para continuar evoluindo, atualize sua anamnese e receba um novo programa personalizado.
               </p>
             </div>
             <div className="space-y-2">
               <Link href="/onboarding" onClick={handleCloseMilestone}>
-                <button className="w-full bg-[#6B7F56] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#556345] transition-colors">
+                <button className="w-full bg-[#E08A9B] text-white font-bold py-3.5 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors">
                   🔄 Atualizar minha anamnese
                 </button>
               </Link>
@@ -658,7 +658,7 @@ export default function TreinoPage() {
               <p className="text-xs text-[#CBD5E0] mb-3">{gifModal.muscle}</p>
 
               <div className="flex gap-2 mb-3">
-                <span className="bg-[#1F2A1C] text-[#A8B78A] text-xs font-bold px-3 py-1 rounded-full">
+                <span className="bg-[#2B151A] text-[#F2C4CC] text-xs font-bold px-3 py-1 rounded-full">
                   {gifModal.sets}
                 </span>
                 <span className="bg-[#252525] text-[#C0C0C0] text-xs font-semibold px-3 py-1 rounded-full">
@@ -666,15 +666,15 @@ export default function TreinoPage() {
                 </span>
               </div>
 
-              <div className="bg-[#1F2A1C] rounded-[0.75rem] p-3 mb-4">
-                <p className="text-[11px] text-[#A8B78A] leading-relaxed">
+              <div className="bg-[#2B151A] rounded-[0.75rem] p-3 mb-4">
+                <p className="text-[11px] text-[#F2C4CC] leading-relaxed">
                   💡 {gifModal.tip}
                 </p>
               </div>
 
               {gifModal.biSetNote && (
-                <div className="bg-[#1F2A1C] border border-[#6B7F56] rounded-[0.75rem] p-3 mb-4">
-                  <p className="text-[11px] text-[#A8B78A] leading-relaxed">
+                <div className="bg-[#2B151A] border border-[#E08A9B] rounded-[0.75rem] p-3 mb-4">
+                  <p className="text-[11px] text-[#F2C4CC] leading-relaxed">
                     {gifModal.biSetNote}
                   </p>
                 </div>
@@ -707,7 +707,7 @@ export default function TreinoPage() {
                     placeholder="Ex: 20"
                     value={weightInput}
                     onChange={(e) => { setWeightInput(e.target.value); setWeightSaved(false); }}
-                    className="flex-1 border border-[#3A3A3A] rounded-[0.5rem] px-3 py-2 text-sm font-semibold text-[#F0F0F0] focus:outline-none focus:ring-2 focus:ring-[#6B7F56]"
+                    className="flex-1 border border-[#3A3A3A] rounded-[0.5rem] px-3 py-2 text-sm font-semibold text-[#F0F0F0] focus:outline-none focus:ring-2 focus:ring-[#E08A9B]"
                   />
                   <span className="text-sm font-semibold text-[#B8B8B8]">kg</span>
                   <button
@@ -715,7 +715,7 @@ export default function TreinoPage() {
                     className={`px-4 py-2 rounded-[0.5rem] text-xs font-bold transition-colors ${
                       weightSaved
                         ? "bg-[#10B981] text-white"
-                        : "bg-[#6B7F56] text-white hover:bg-[#556345]"
+                        : "bg-[#E08A9B] text-white hover:bg-[#B5546A]"
                     }`}
                   >
                     {weightSaved ? "✓ Salvo" : "Salvar"}
@@ -731,7 +731,7 @@ export default function TreinoPage() {
                           key={i}
                           className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                             i === 0
-                              ? "bg-[#1F2A1C] text-[#A8B78A]"
+                              ? "bg-[#2B151A] text-[#F2C4CC]"
                               : "bg-white text-[#B8B8B8] border border-[#2D2D2D]"
                           }`}
                         >
@@ -745,7 +745,7 @@ export default function TreinoPage() {
 
               <button
                 onClick={() => setGifModal(null)}
-                className="w-full bg-[#6B7F56] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#556345] transition-colors"
+                className="w-full bg-[#E08A9B] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors"
               >
                 Fechar
               </button>
@@ -761,7 +761,7 @@ export default function TreinoPage() {
             className="bg-[#1A1A1A] rounded-[1.5rem] w-full max-w-sm overflow-hidden shadow-2xl p-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-[10px] font-semibold text-[#A8B78A] uppercase tracking-wide mb-1">
+            <p className="text-[10px] font-semibold text-[#F2C4CC] uppercase tracking-wide mb-1">
               {exec.exercise.technique && exec.exercise.technique !== "biset" && TECHNIQUE_LABELS[exec.exercise.technique]}
             </p>
             <p className="text-base font-extrabold text-[#F0F0F0] mb-4">{exec.exercise.name}</p>
@@ -783,10 +783,10 @@ export default function TreinoPage() {
             ) : exec.resting ? (
               <div className="text-center py-2">
                 <p className="text-xs text-[#CBD5E0] mb-2">Descanso</p>
-                <div className="text-5xl font-extrabold text-[#A8B78A] mb-3 tabular-nums">{exec.restLeft}s</div>
-                <div className="h-1.5 bg-[#1F2A1C] rounded-full overflow-hidden mb-5">
+                <div className="text-5xl font-extrabold text-[#F2C4CC] mb-3 tabular-nums">{exec.restLeft}s</div>
+                <div className="h-1.5 bg-[#2B151A] rounded-full overflow-hidden mb-5">
                   <div
-                    className="h-full bg-[#6B7F56] rounded-full transition-all duration-1000 ease-linear"
+                    className="h-full bg-[#E08A9B] rounded-full transition-all duration-1000 ease-linear"
                     style={{ width: `${exec.restTotal > 0 ? (exec.restLeft / exec.restTotal) * 100 : 0}%` }}
                   />
                 </div>
@@ -800,14 +800,14 @@ export default function TreinoPage() {
             ) : (
               <>
                 <p className="text-xs text-[#8A8A8A] mb-4">Série {exec.round} de {parseInt(exec.exercise.sets, 10) || 1}</p>
-                <div className="bg-[#1F2A1C] rounded-[1rem] p-4 mb-5">
+                <div className="bg-[#2B151A] rounded-[1rem] p-4 mb-5">
                   <p className="text-sm font-semibold text-[#E6E7D9] leading-relaxed">
                     {execStepsFor(exec.exercise)[exec.micro]?.label}
                   </p>
                 </div>
                 <button
                   onClick={completeExecStep}
-                  className="w-full bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#556345] transition-colors active:scale-[0.98]"
+                  className="w-full bg-[#E08A9B] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors active:scale-[0.98]"
                 >
                   ✓ Concluí essa etapa
                 </button>
@@ -848,7 +848,7 @@ export default function TreinoPage() {
               )}
               <button
                 onClick={() => setAulaModal(null)}
-                className="w-full bg-[#6B7F56] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#556345] transition-colors"
+                className="w-full bg-[#E08A9B] text-white font-bold py-3 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors"
               >
                 Fechar
               </button>

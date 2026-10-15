@@ -21,7 +21,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className={montserrat.variable}>
-      <body className="min-h-screen bg-[#0A0A0A] text-[#F0F0F0] antialiased">
+      <body className="min-h-screen bg-[#0D0D0D] text-[#F0F0F0] antialiased">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

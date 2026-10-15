@@ -453,7 +453,7 @@ export default function AdminPage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4">
         <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-8 w-full max-w-sm">
           <h1 className="text-white font-bold text-lg mb-4">Admin Evofit</h1>
           <form onSubmit={handleAuth} className="space-y-3">
@@ -462,10 +462,10 @@ export default function AdminPage() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Senha admin"
-              className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
+              className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E08A9B]"
             />
             {authError && <p className="text-red-400 text-xs">{authError}</p>}
-            <button type="submit" className="w-full bg-[#6B7F56] text-white font-semibold py-3 rounded-lg text-sm">
+            <button type="submit" className="w-full bg-[#E08A9B] text-white font-semibold py-3 rounded-lg text-sm">
               Entrar
             </button>
           </form>
@@ -486,7 +486,7 @@ export default function AdminPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] px-4 py-10">
+    <div className="min-h-screen bg-[#0D0D0D] px-4 py-10">
       <div className="max-w-3xl mx-auto space-y-6">
         <h1 className="text-white font-bold text-xl">Admin Evofit</h1>
 
@@ -500,7 +500,7 @@ export default function AdminPage() {
               type="date"
               value={quizStart}
               onChange={(e) => setQuizStart(e.target.value)}
-              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#6B7F56]"
+              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#E08A9B]"
             />
           </div>
           <div>
@@ -509,12 +509,12 @@ export default function AdminPage() {
               type="date"
               value={quizEnd}
               onChange={(e) => setQuizEnd(e.target.value)}
-              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#6B7F56]"
+              className="bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#E08A9B]"
             />
           </div>
           <button
             onClick={applyQuizDateFilter}
-            className="bg-[#6B7F56] text-white font-semibold px-4 py-2 rounded-lg text-xs"
+            className="bg-[#E08A9B] text-white font-semibold px-4 py-2 rounded-lg text-xs"
           >
             Filtrar
           </button>
@@ -553,7 +553,7 @@ export default function AdminPage() {
                     <span className="text-[#6B7280] w-5 shrink-0 text-right">{f.step}</span>
                     <div className="flex-1 bg-[#111] rounded h-6 relative overflow-hidden">
                       <div
-                        className="absolute inset-y-0 left-0 bg-[#6B7F56]/40 rounded"
+                        className="absolute inset-y-0 left-0 bg-[#E08A9B]/40 rounded"
                         style={{ width: `${Math.max(2, (f.reachedCount / maxFunnelCount) * 100)}%` }}
                       />
                       <span className="absolute inset-0 flex items-center px-2 text-[#F0F0F0] truncate">{f.label}</span>
@@ -617,7 +617,7 @@ export default function AdminPage() {
                   <div key={lead.id} className="border border-[#2D2D2D] rounded-lg overflow-hidden">
                     <button
                       onClick={() => setExpandedLeadId(isOpen ? null : lead.id)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#1F2A1C]/40 transition-colors"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#2B151A]/40 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-[#F0F0F0] truncate">{lead.email}</p>
@@ -631,7 +631,7 @@ export default function AdminPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-[10px] font-semibold text-[#A8B78A] shrink-0 hover:underline"
+                          className="text-[10px] font-semibold text-[#F2C4CC] shrink-0 hover:underline"
                         >
                           📱 {lead.whatsapp}
                         </a>
@@ -673,10 +673,10 @@ export default function AdminPage() {
               <button
                 key={slug}
                 onClick={() => copyConsultoriaLink(slug)}
-                className="text-left px-3 py-2.5 rounded-lg border border-[#2D2D2D] hover:border-[#6B7F56] transition-colors"
+                className="text-left px-3 py-2.5 rounded-lg border border-[#2D2D2D] hover:border-[#E08A9B] transition-colors"
               >
                 <p className="text-xs font-semibold text-[#F0F0F0]">{label}</p>
-                <p className="text-[10px] text-[#A8B78A] mt-0.5">
+                <p className="text-[10px] text-[#F2C4CC] mt-0.5">
                   {copiedTipo === slug ? "✓ link copiado!" : `/consultoria${slug === "comum" ? "" : `/${slug}`}`}
                 </p>
               </button>
@@ -695,7 +695,7 @@ export default function AdminPage() {
             value={consultSearch}
             onChange={(e) => setConsultSearch(e.target.value)}
             placeholder="Buscar por nome ou WhatsApp..."
-            className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-2.5 text-white text-sm mb-4 focus:outline-none focus:border-[#6B7F56]"
+            className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-2.5 text-white text-sm mb-4 focus:outline-none focus:border-[#E08A9B]"
           />
           {consultLeadsError && <p className="text-red-400 text-xs">{consultLeadsError}</p>}
           {consultLeads && consultLeads.length === 0 && (
@@ -712,7 +712,7 @@ export default function AdminPage() {
                   <div key={lead.id} className="border border-[#2D2D2D] rounded-lg overflow-hidden">
                     <button
                       onClick={() => setExpandedConsultLeadId(isOpen ? null : lead.id)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#1F2A1C]/40 transition-colors"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-[#2B151A]/40 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-[#F0F0F0] truncate">{lead.nome || "Sem nome"}</p>
@@ -727,7 +727,7 @@ export default function AdminPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-[10px] font-semibold text-[#A8B78A] shrink-0 hover:underline"
+                          className="text-[10px] font-semibold text-[#F2C4CC] shrink-0 hover:underline"
                         >
                           📱 {lead.whatsapp}
                         </a>
@@ -741,7 +741,7 @@ export default function AdminPage() {
                             <span className="text-[#6B7280]">Email:</span> <span className="text-[#C0C0C0]">{lead.email}</span>
                             <button
                               onClick={(e) => { e.stopPropagation(); montarTreinoDoLead(lead.email!); }}
-                              className="ml-auto text-[10px] font-semibold text-white bg-[#6B7F56] hover:bg-[#556345] px-2.5 py-1 rounded-full transition-colors"
+                              className="ml-auto text-[10px] font-semibold text-white bg-[#E08A9B] hover:bg-[#B5546A] px-2.5 py-1 rounded-full transition-colors"
                             >
                               Montar treino →
                             </button>
@@ -791,7 +791,7 @@ export default function AdminPage() {
               onChange={(e) => setAnamneseEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && loadAnamnese()}
               placeholder="email@cliente.com"
-              className="flex-1 bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
+              className="flex-1 bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E08A9B]"
             />
             <button
               onClick={() => loadAnamnese()}
@@ -830,7 +830,7 @@ export default function AdminPage() {
                       onClick={() => toggleAnamneseLesao(value)}
                       className={`text-left px-3 py-2 rounded-lg text-[11px] border transition-colors ${
                         anamneseForm.lesoes.includes(value)
-                          ? "bg-[#1F2A1C] border-[#6B7F56] text-[#A8B78A]"
+                          ? "bg-[#2B151A] border-[#E08A9B] text-[#F2C4CC]"
                           : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
                       }`}
                     >
@@ -844,7 +844,7 @@ export default function AdminPage() {
                     value={anamneseForm.lesoesDetalhe}
                     onChange={(e) => setAnamneseForm((p) => p && { ...p, lesoesDetalhe: e.target.value })}
                     placeholder="Qual condição?"
-                    className="w-full mt-2 bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#6B7F56]"
+                    className="w-full mt-2 bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-[#E08A9B]"
                   />
                 )}
               </div>
@@ -856,7 +856,7 @@ export default function AdminPage() {
               <button
                 onClick={saveAnamneseAdmin}
                 disabled={anamneseStatus === "saving"}
-                className="w-full bg-[#6B7F56] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
+                className="w-full bg-[#E08A9B] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
               >
                 {anamneseStatus === "saving" ? "Salvando..." : "💾 Salvar treino dessa pessoa"}
               </button>
@@ -887,11 +887,11 @@ export default function AdminPage() {
                     onClick={() => setPreviewDay(i)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                       previewDay === i
-                        ? "bg-[#6B7F56] border-[#6B7F56] text-white"
+                        ? "bg-[#E08A9B] border-[#E08A9B] text-white"
                         : !isTraining
                         ? "bg-[#111] border-[#2D2D2D] text-[#4B5563]"
                         : isManual
-                        ? "bg-[#1F2A1C] border-[#6B7F56] text-[#A8B78A]"
+                        ? "bg-[#2B151A] border-[#E08A9B] text-[#F2C4CC]"
                         : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
                     }`}
                   >
@@ -912,7 +912,7 @@ export default function AdminPage() {
                       <p className="text-[11px] text-[#8A8A8A]">{previewWorkout.muscleLabel} · ~{previewWorkout.duration} min</p>
                     </div>
                     {(overridesByDay[previewDay] ?? []).length > 0 && (
-                      <span className="text-[10px] font-semibold text-[#A8B78A] bg-[#1F2A1C] border border-[#6B7F56] px-2 py-1 rounded-lg shrink-0">
+                      <span className="text-[10px] font-semibold text-[#F2C4CC] bg-[#2B151A] border border-[#E08A9B] px-2 py-1 rounded-lg shrink-0">
                         ✏️ Manual
                       </span>
                     )}
@@ -924,7 +924,7 @@ export default function AdminPage() {
                           <span className="text-[#F0F0F0] font-medium">{ex.name}</span>
                           <span className="text-[#8A8A8A] shrink-0">{ex.sets} · {ex.rest}</span>
                         </div>
-                        {ex.biSetNote && <p className="text-[10px] text-[#A8B78A] mt-1">{ex.biSetNote}</p>}
+                        {ex.biSetNote && <p className="text-[10px] text-[#F2C4CC] mt-1">{ex.biSetNote}</p>}
                         {ex.jointCaution && <p className="text-[10px] text-yellow-500 mt-1">{ex.jointCaution}</p>}
                         {ex.beginnerCaution && <p className="text-[10px] text-sky-400 mt-1">{ex.beginnerCaution}</p>}
                       </div>
@@ -959,9 +959,9 @@ export default function AdminPage() {
                     onClick={() => { setOverrideDay(i); setOverrideStatus("idle"); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                       overrideDay === i
-                        ? "bg-[#6B7F56] border-[#6B7F56] text-white"
+                        ? "bg-[#E08A9B] border-[#E08A9B] text-white"
                         : count > 0
-                        ? "bg-[#1F2A1C] border-[#6B7F56] text-[#A8B78A]"
+                        ? "bg-[#2B151A] border-[#E08A9B] text-[#F2C4CC]"
                         : "bg-[#111] border-[#2D2D2D] text-[#8A8A8A]"
                     }`}
                   >
@@ -982,13 +982,13 @@ export default function AdminPage() {
                   {(overridesByDay[overrideDay] ?? []).map((entry) => (
                     <div
                       key={entry.id}
-                      className="flex items-center gap-1.5 bg-[#1F2A1C] border border-[#6B7F56] text-[#A8B78A] text-[11px] pl-2.5 pr-1 py-1 rounded-lg"
+                      className="flex items-center gap-1.5 bg-[#2B151A] border border-[#E08A9B] text-[#F2C4CC] text-[11px] pl-2.5 pr-1 py-1 rounded-lg"
                     >
                       <span>{catalogById.get(entry.id)?.name ?? entry.id}</span>
                       <select
                         value={entry.technique ?? ""}
                         onChange={(e) => setOverrideTechnique(entry.id, e.target.value as "" | ManualTechnique)}
-                        className="bg-[#111] border border-[#35402C] rounded text-[10px] text-[#A8B78A] px-1 py-0.5 focus:outline-none"
+                        className="bg-[#111] border border-[#4A2730] rounded text-[10px] text-[#F2C4CC] px-1 py-0.5 focus:outline-none"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {Object.entries(TECHNIQUE_LABELS).map(([value, label]) => (
@@ -1014,7 +1014,7 @@ export default function AdminPage() {
                 value={overrideSearch}
                 onChange={(e) => setOverrideSearch(e.target.value)}
                 placeholder="Buscar exercício pra adicionar (ex: supino, glúteo, esteira...)"
-                className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm mb-2 focus:outline-none focus:border-[#6B7F56]"
+                className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm mb-2 focus:outline-none focus:border-[#E08A9B]"
               />
               <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
                 {catalog
@@ -1031,7 +1031,7 @@ export default function AdminPage() {
                         onClick={() => toggleOverrideExercise(ex.id)}
                         className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg text-xs text-left border transition-colors ${
                           selected
-                            ? "bg-[#1F2A1C] border-[#6B7F56] text-[#A8B78A]"
+                            ? "bg-[#2B151A] border-[#E08A9B] text-[#F2C4CC]"
                             : "bg-[#111] border-[#2D2D2D] text-[#C0C0C0] hover:border-[#3A3A3A]"
                         }`}
                       >
@@ -1050,7 +1050,7 @@ export default function AdminPage() {
               <button
                 onClick={saveOverrideDay}
                 disabled={overrideStatus === "saving"}
-                className="bg-[#6B7F56] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
+                className="bg-[#E08A9B] text-white font-bold py-3 rounded-lg text-sm disabled:opacity-50"
               >
                 {overrideStatus === "saving" ? "Salvando..." : `💾 Salvar ${DAY_NAMES[overrideDay]}`}
               </button>
@@ -1073,7 +1073,7 @@ export default function AdminPage() {
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="email@cliente.com"
-            className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
+            className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#E08A9B]"
           />
 
           {message && (
@@ -1086,7 +1086,7 @@ export default function AdminPage() {
             <button
               onClick={() => handleAction("grant")}
               disabled={status === "loading" || !email}
-              className="bg-[#6B7F56] text-white font-semibold py-3 rounded-lg text-sm disabled:opacity-50"
+              className="bg-[#E08A9B] text-white font-semibold py-3 rounded-lg text-sm disabled:opacity-50"
             >
               ✓ Liberar acesso
             </button>
@@ -1162,7 +1162,7 @@ function FieldText({ label, value, onChange, type = "text" }: { label: string; v
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
+        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#E08A9B]"
       />
     </div>
   );
@@ -1175,7 +1175,7 @@ function FieldSelect({ label, value, options, onChange }: { label: string; value
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#6B7F56]"
+        className="w-full bg-[#111] border border-[#2D2D2D] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#E08A9B]"
       >
         <option value="">—</option>
         {options.map((opt) => (

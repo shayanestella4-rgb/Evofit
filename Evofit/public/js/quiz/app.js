@@ -304,8 +304,8 @@ function resultHTML() {
 
       <section class="result__cta reveal" aria-labelledby="h-cta">
         <svg class="flow-lines result__lines" viewBox="0 0 600 240" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M-20 200 C 120 120, 260 260, 420 150 S 620 60, 640 90" stroke="oklch(0.84 0.07 124 / .35)"/>
-          <path d="M-20 230 C 160 150, 300 280, 460 170 S 620 110, 640 130" stroke="oklch(0.84 0.07 124 / .2)"/>
+          <path d="M-20 200 C 120 120, 260 260, 420 150 S 620 60, 640 90" stroke="oklch(0.863 0.053 7 / .35)"/>
+          <path d="M-20 230 C 160 150, 300 280, 460 170 S 620 110, 640 130" stroke="oklch(0.863 0.053 7 / .2)"/>
         </svg>
         <p class="kicker">${icon('sparkle')}Fase ${r.phase.n} · ${r.phase.name}</p>
         <h3 class="result__cta-title" id="h-cta">O plano da Evofit pra quem está nessa fase</h3>

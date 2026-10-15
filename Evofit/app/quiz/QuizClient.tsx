@@ -23,8 +23,8 @@ export default function QuizClient() {
         </button>
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- navegação real de página (igual ao site original), não SPA */}
         <a className="brand" href="/" aria-label="Evofit, voltar ao início">
-          <img className="brand__mark" src="/img/brand/evofit-mark.svg" alt="" width={34} height={34} />
-          <svg className="brand__word" aria-hidden="true" focusable="false"><use href="/img/icons.svg#i-evofit-word" /></svg>
+          {/* eslint-disable-next-line @next/next/no-img-element -- logo pequeno e estático, não precisa de otimização do next/image */}
+          <img className="brand__logo" src="/img/brand/evofit-logo.png" alt="Evofit" height={34} />
         </a>
         <p className="topbar__count" hidden><span className="sr-only">Pergunta </span><span data-qnow>1</span><span aria-hidden="true">/</span><span className="sr-only"> de </span>24</p>
       </header>
@@ -59,8 +59,8 @@ export default function QuizClient() {
           </div>
           <div className="panel__shade" />
           <svg className="flow-lines panel__lines" viewBox="0 0 400 600" preserveAspectRatio="none">
-            <path d="M-10 520 C 90 430, 190 560, 300 440 S 420 330, 420 300" stroke="oklch(0.84 0.07 124 / .35)" />
-            <path d="M-10 560 C 110 470, 210 600, 320 480 S 430 380, 430 360" stroke="oklch(0.84 0.07 124 / .18)" />
+            <path d="M-10 520 C 90 430, 190 560, 300 440 S 420 330, 420 300" stroke="oklch(0.863 0.053 7 / .35)" />
+            <path d="M-10 560 C 110 470, 210 600, 320 480 S 430 380, 430 360" stroke="oklch(0.863 0.053 7 / .18)" />
           </svg>
 
           <div className="panel__chips">

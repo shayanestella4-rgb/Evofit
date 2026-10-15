@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6B7F56;
-  --color-primary-hover: #556345;
+  --color-primary: #E08A9B;
+  --color-primary-hover: #B5546A;
   --color-primary-light: #E6E7D9;
-  --color-primary-muted: #A8B78A;
+  --color-primary-muted: #F2C4CC;
   --color-surface: #1A1A1A;
   --color-border: #2D2D2D;
   --color-text: #F0F0F0;
@@ -25,7 +25,7 @@ html {
 }
 
 body {
-  background: #0A0A0A;
+  background: #0D0D0D;
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

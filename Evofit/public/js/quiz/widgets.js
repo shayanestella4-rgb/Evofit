@@ -176,7 +176,7 @@ export function scoreRingHTML(score) {
     <div class="ring" style="--target:${(RING_C * (1 - score / 100)).toFixed(1)};--c:${RING_C.toFixed(1)}">
       <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         <defs><linearGradient id="ring-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="oklch(0.84 0.07 124)"/><stop offset="1" stop-color="oklch(0.564 0.066 128.6)"/></linearGradient></defs>
+          <stop offset="0" stop-color="oklch(0.863 0.053 7)"/><stop offset="1" stop-color="oklch(0.572 0.127 7)"/></linearGradient></defs>
         <circle class="ring__track" cx="100" cy="100" r="${RING_R}"/>
         <circle class="ring__bar" cx="100" cy="100" r="${RING_R}"/>
       </svg>

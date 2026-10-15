@@ -22,7 +22,7 @@ const isValidEmail = (v: string) => /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/
 
 const radioClass = (selected: boolean) =>
   `w-full text-left px-4 py-3 rounded-[0.75rem] text-sm font-medium border transition-all flex items-center gap-3 ${
-    selected ? "bg-[#1F2A1C] text-[#A8B78A] border-[#6B7F56]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#A8B78A]"
+    selected ? "bg-[#2B151A] text-[#F2C4CC] border-[#E08A9B]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#F2C4CC]"
   }`;
 
 function RadioGroup({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
@@ -30,8 +30,8 @@ function RadioGroup({ options, value, onChange }: { options: string[]; value: st
     <div className="space-y-2">
       {options.map((opt) => (
         <button key={opt} type="button" onClick={() => onChange(opt)} className={radioClass(value === opt)}>
-          <span className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${value === opt ? "border-[#6B7F56]" : "border-[#3A3A3A]"}`}>
-            {value === opt && <span className="w-2 h-2 rounded-full bg-[#6B7F56]" />}
+          <span className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${value === opt ? "border-[#E08A9B]" : "border-[#3A3A3A]"}`}>
+            {value === opt && <span className="w-2 h-2 rounded-full bg-[#E08A9B]" />}
           </span>
           {opt}
         </button>
@@ -55,7 +55,7 @@ function CheckboxGroup({ options, value, onChange }: { options: string[]; value:
         const selected = value.includes(opt);
         return (
           <button key={opt} type="button" onClick={() => toggle(opt)} className={radioClass(selected)}>
-            <span className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${selected ? "border-[#6B7F56] bg-[#6B7F56]" : "border-[#3A3A3A]"}`}>
+            <span className={`w-4 h-4 rounded-[0.25rem] border-2 shrink-0 flex items-center justify-center ${selected ? "border-[#E08A9B] bg-[#E08A9B]" : "border-[#3A3A3A]"}`}>
               {selected && <span className="text-white text-[10px]">✓</span>}
             </span>
             {opt}
@@ -76,7 +76,7 @@ function ScaleInput({ value, onChange }: { value: string; onChange: (v: string) 
           type="button"
           onClick={() => onChange(String(i))}
           className={`w-9 h-9 rounded-full text-xs font-bold border transition-all ${
-            n === i ? "bg-[#6B7F56] text-white border-[#6B7F56]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#6B7F56]"
+            n === i ? "bg-[#E08A9B] text-white border-[#E08A9B]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#E08A9B]"
           }`}
         >
           {i}
@@ -87,7 +87,7 @@ function ScaleInput({ value, onChange }: { value: string; onChange: (v: string) 
 }
 
 const fieldClass =
-  "w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#6B7280] bg-[#1A1A1A] focus:outline-none focus:border-[#6B7F56] focus:ring-2 focus:ring-[#1F2A1C] transition-all";
+  "w-full border border-[#2D2D2D] rounded-[0.75rem] px-4 py-3 text-sm text-[#F0F0F0] placeholder-[#6B7280] bg-[#1A1A1A] focus:outline-none focus:border-[#E08A9B] focus:ring-2 focus:ring-[#2B151A] transition-all";
 const labelClass = "block text-sm font-semibold text-[#C0C0C0] mb-3";
 
 export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig }) {
@@ -137,7 +137,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
 
   if (done) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center px-6 text-center">
         <div className="text-5xl mb-4">✅</div>
         <h1 className="text-xl font-extrabold text-[#F0F0F0] mb-2">Recebi suas informações!</h1>
         <p className="text-sm text-[#B8B8B8] max-w-xs">
@@ -148,9 +148,9 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] px-6 py-10">
+    <div className="min-h-screen bg-[#0D0D0D] px-6 py-10">
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
-        <p className="text-sm font-semibold text-[#A8B78A] mb-1">Evofit</p>
+        <p className="text-sm font-semibold text-[#F2C4CC] mb-1">Evofit</p>
         <h1 className="text-2xl font-extrabold text-[#F0F0F0] mb-2">{tipoConfig.titulo}</h1>
         <p className="text-sm text-[#B8B8B8] mb-8">{tipoConfig.subtitulo}</p>
 
@@ -196,7 +196,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
                   type="button"
                   onClick={() => setSexo(opt)}
                   className={`flex-1 py-3 rounded-[0.75rem] text-sm font-semibold border transition-all ${
-                    sexo === opt ? "bg-[#6B7F56] text-white border-[#6B7F56]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#6B7F56]"
+                    sexo === opt ? "bg-[#E08A9B] text-white border-[#E08A9B]" : "bg-[#1A1A1A] text-[#C0C0C0] border-[#2D2D2D] hover:border-[#E08A9B]"
                   }`}
                 >
                   {opt}
@@ -254,7 +254,7 @@ export default function ConsultoriaForm({ tipoConfig }: { tipoConfig: TipoConfig
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-8 bg-[#6B7F56] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#556345] transition-colors disabled:opacity-50"
+          className="w-full mt-8 bg-[#E08A9B] text-white font-bold py-4 rounded-[0.75rem] hover:bg-[#B5546A] transition-colors disabled:opacity-50"
         >
           {loading ? "Enviando..." : "Enviar"}
         </button>

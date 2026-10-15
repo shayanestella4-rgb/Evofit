@@ -6,24 +6,25 @@
 :root {
   color-scheme: dark;
 
-  /* Cores */
-  --bg: oklch(0.165 0.008 125);
-  --bg-2: oklch(0.195 0.010 125);
-  --surface: oklch(0.225 0.012 125);
-  --surface-2: oklch(0.265 0.014 125);
-  --line: oklch(0.33 0.014 125);
-  --line-soft: oklch(0.33 0.014 125 / 0.6);
-  --muted: oklch(0.68 0.016 125);
-  --text-2: oklch(0.82 0.014 125);
-  --text: oklch(0.945 0.018 110);
-  --olive: oklch(0.564 0.066 128.6);
-  --olive-deep: oklch(0.44 0.055 128);
-  --olive-night: oklch(0.29 0.04 128);
-  --sage: oklch(0.757 0.067 124.6);
-  --sage-hi: oklch(0.84 0.07 124);
+  /* Cores — paleta EVOFIT rosa (ver logo/Apresentação de Identidade EVOFIT.png).
+     Neutros puxados pro mesmo matiz (hue 7) pra combinar com o acento da marca. */
+  --bg: oklch(0.165 0.008 7);
+  --bg-2: oklch(0.195 0.010 7);
+  --surface: oklch(0.225 0.012 7);
+  --surface-2: oklch(0.265 0.014 7);
+  --line: oklch(0.33 0.014 7);
+  --line-soft: oklch(0.33 0.014 7 / 0.6);
+  --muted: oklch(0.68 0.016 7);
+  --text-2: oklch(0.82 0.014 7);
+  --text: oklch(0.945 0.018 7);
+  --olive: oklch(0.572 0.127 7);
+  --olive-deep: oklch(0.446 0.105 7);
+  --olive-night: oklch(0.294 0.077 7);
+  --sage: oklch(0.727 0.106 7);
+  --sage-hi: oklch(0.863 0.053 7);
   --ochre: oklch(0.78 0.115 78);
   --terra: oklch(0.64 0.13 38);
-  --on-sage: oklch(0.2 0.02 128);
+  --on-sage: oklch(0.203 0.039 7);
   --whatsapp: oklch(0.77 0.17 152);
 
   /* Tipografia */
@@ -55,9 +56,9 @@
   --t-enter: 720ms;
 
   /* Elevação */
-  --shadow-float: 0 24px 60px -24px oklch(0.05 0.01 125 / 0.7);
-  --glow-sage: 0 10px 40px -12px oklch(0.757 0.067 124.6 / 0.55);
-  --ring-sage: 0 0 0 4px oklch(0.757 0.067 124.6 / 0.25);
+  --shadow-float: 0 24px 60px -24px oklch(0.05 0.01 7 / 0.7);
+  --glow-sage: 0 10px 40px -12px oklch(0.727 0.106 7 / 0.55);
+  --ring-sage: 0 0 0 4px oklch(0.727 0.106 7 / 0.25);
 }
 
 /* Reset enxuto */
@@ -88,7 +89,7 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
 a { color: inherit; }
 h1, h2, h3, h4 { font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
 p { text-wrap: pretty; }
-::selection { background: oklch(0.757 0.067 124.6 / 0.35); color: var(--text); }
+::selection { background: oklch(0.727 0.106 7 / 0.35); color: var(--text); }
 :focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; border-radius: 6px; }
 
 .sr-only {
@@ -107,8 +108,7 @@ p { text-wrap: pretty; }
 
 /* Marca */
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; }
-.brand__mark { width: 34px; height: 34px; border-radius: 9px; }
-.brand__word { width: 92px; height: 21px; color: var(--text); fill: currentColor; }
+.brand__logo { height: 34px; width: auto; display: block; }
 
 /* Rótulo curto em caixa alta (uso pontual) */
 .kicker {
@@ -144,7 +144,7 @@ p { text-wrap: pretty; }
   100% { transform: skewX(-18deg) translateX(420%); opacity: 0; }
 }
 @media (hover: hover) {
-  .btn:hover { --btn-bg: var(--sage-hi); box-shadow: 0 14px 44px -12px oklch(0.84 0.07 124 / 0.6); }
+  .btn:hover { --btn-bg: var(--sage-hi); box-shadow: 0 14px 44px -12px oklch(0.863 0.053 7 / 0.6); }
   .btn:hover .ico-go { transform: translateX(4px); }
 }
 .btn:active { transform: scale(0.97); }
@@ -153,14 +153,14 @@ p { text-wrap: pretty; }
 .btn--block { width: 100%; }
 .btn--ghost {
   --btn-bg: transparent; color: var(--text); box-shadow: none;
-  border: 1px solid oklch(0.945 0.018 110 / 0.28);
+  border: 1px solid oklch(0.945 0.018 7 / 0.28);
 }
-@media (hover: hover) { .btn--ghost:hover { --btn-bg: oklch(0.945 0.018 110 / 0.06); box-shadow: none; } }
+@media (hover: hover) { .btn--ghost:hover { --btn-bg: oklch(0.945 0.018 7 / 0.06); box-shadow: none; } }
 .btn.is-loading { pointer-events: none; }
 .btn.is-loading .btn__label { opacity: 0; }
 .btn.is-loading::before {
   content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%;
-  border: 2.5px solid oklch(0.2 0.02 128 / 0.25); border-top-color: var(--on-sage);
+  border: 2.5px solid oklch(0.203 0.039 7 / 0.25); border-top-color: var(--on-sage);
   animation: spin 700ms linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -184,12 +184,12 @@ p { text-wrap: pretty; }
 }
 .atmosphere::before {
   left: -35vmax; top: -45vmax;
-  background: radial-gradient(closest-side, oklch(0.44 0.055 128 / 0.55), transparent 70%);
+  background: radial-gradient(closest-side, oklch(0.446 0.105 7 / 0.55), transparent 70%);
   animation: drift-a 26s var(--ease-in-out) infinite alternate;
 }
 .atmosphere::after {
   right: -40vmax; bottom: -50vmax;
-  background: radial-gradient(closest-side, oklch(0.564 0.066 128.6 / 0.28), transparent 70%);
+  background: radial-gradient(closest-side, oklch(0.572 0.127 7 / 0.28), transparent 70%);
   animation: drift-b 32s var(--ease-in-out) infinite alternate;
 }
 @keyframes drift-a { to { transform: translate(12vmax, 10vmax) scale(1.12); } }

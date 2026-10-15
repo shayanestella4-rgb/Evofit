@@ -76,6 +76,13 @@ interface ConsultLead {
   createdAt: string;
 }
 
+interface EvolutionPhoto {
+  id: string;
+  tipo: string;
+  createdAt: string;
+  url: string | null;
+}
+
 interface AnamneseForm {
   nome: string; idade: string; sexo: string; peso: string; altura: string;
   objetivo: string; nivel: string; diasTreino: string; tempoTreino: string; sono: string;
@@ -143,6 +150,7 @@ export default function AdminPage() {
   const [quizEnd, setQuizEnd] = useState("");
 
   const [anamneseEmail, setAnamneseEmail] = useState("");
+  const [evolutionPhotos, setEvolutionPhotos] = useState<EvolutionPhoto[] | null>(null);
   const [anamneseForm, setAnamneseForm] = useState<AnamneseForm | null>(null);
   const [anamneseFound, setAnamneseFound] = useState(false);
   const [anamneseStatus, setAnamneseStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
@@ -174,7 +182,7 @@ export default function AdminPage() {
     setAnamneseMessage("");
     setOverrideStatus("idle");
     try {
-      const [anamneseRes, overridesRes] = await Promise.all([
+      const [anamneseRes, overridesRes, fotosRes] = await Promise.all([
         fetch("/api/admin/anamnese", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -185,9 +193,16 @@ export default function AdminPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
         }),
+        fetch("/api/admin/fotos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: ADMIN_PASSWORD, email: target }),
+        }),
       ]);
       const result = await anamneseRes.json();
       const overridesResult = await overridesRes.json();
+      const fotosResult = await fotosRes.json().catch(() => ({}));
+      setEvolutionPhotos(fotosRes.ok ? fotosResult.photos : []);
       if (!anamneseRes.ok) {
         setAnamneseStatus("error");
         setAnamneseMessage(result.error || "Erro ao buscar.");
@@ -863,6 +878,45 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+
+        {/* Fotos de evolução — registradas pela própria pessoa em /dashboard/fotos */}
+        {anamneseForm && evolutionPhotos && (
+          <div className="bg-[#1A1A1A] border border-[#2D2D2D] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 className="text-white font-bold text-sm">Fotos de evolução</h2>
+              <p className="text-[#8A8A8A] text-xs mt-1">Registradas pela própria pessoa no app, como prova de resultado.</p>
+            </div>
+            {evolutionPhotos.length === 0 ? (
+              <p className="text-[#8A8A8A] text-xs">Essa pessoa ainda não registrou nenhuma foto.</p>
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {(["frente", "lado", "costas"] as const).map((tipo) => {
+                  const list = evolutionPhotos.filter((p) => p.tipo === tipo);
+                  return (
+                    <div key={tipo} className="space-y-2">
+                      <p className="text-[10px] font-semibold text-[#8A8A8A] uppercase tracking-wide text-center">{tipo}</p>
+                      {list.length === 0 ? (
+                        <div className="aspect-[3/4] rounded-lg bg-[#111] border border-dashed border-[#2D2D2D]" />
+                      ) : (
+                        list.map((p) => (
+                          <a key={p.id} href={p.url ?? "#"} target="_blank" rel="noreferrer" className="block relative aspect-[3/4] rounded-lg overflow-hidden bg-[#111] border border-[#2D2D2D]">
+                            {p.url && (
+                              // eslint-disable-next-line @next/next/no-img-element -- miniatura dinâmica vinda de URL assinada temporária
+                              <img src={p.url} alt={tipo} className="w-full h-full object-cover" />
+                            )}
+                            <span className="absolute bottom-1 left-0 right-0 text-center text-[9px] font-semibold text-white bg-black/50 py-0.5">
+                              {new Date(p.createdAt).toLocaleDateString("pt-BR")}
+                            </span>
+                          </a>
+                        ))
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Treino atual — visualização somente-leitura do que o app dela mostra */}
         {anamneseForm && anamneseFound && (

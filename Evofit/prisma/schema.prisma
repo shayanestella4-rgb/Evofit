@@ -260,3 +260,18 @@ model ConsultLead {
 
   @@map("consult_leads")
 }
+
+// Fotos de evolução que o aluno tira periodicamente (frente/lado/costas) pra
+// acompanhar o progresso visual — arquivo em si fica no bucket privado
+// "fotos-evolucao" do Supabase Storage (ver lib/supabase.ts); aqui só a
+// referência, no mesmo padrão email-first dos outros models (sem User).
+model ProgressPhoto {
+  id          String   @id @default(cuid())
+  email       String
+  tipo        String   // "frente" | "lado" | "costas"
+  storagePath String
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+  @@map("progress_photos")
+}

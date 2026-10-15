@@ -28,6 +28,7 @@ type MenuItem = { icon: string; label: string; href?: string; badge?: string; ex
 
 const MENU_ITEMS: MenuItem[] = [
   { icon: "📋", label: "Refazer anamnese",         href: "/onboarding" },
+  { icon: "📸", label: "Fotos de evolução", href: "/dashboard/fotos" },
   { icon: "🔒", label: "Privacidade e dados", href: "/dashboard/privacidade" },
   {
     icon: "💬",

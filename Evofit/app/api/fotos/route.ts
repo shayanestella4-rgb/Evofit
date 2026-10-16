@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { supabase, FOTOS_BUCKET, getSignedPhotoUrl } from "@/lib/supabase";
+import { uploadPhoto, getSignedPhotoUrl } from "@/lib/supabase";
 
 const TIPOS = ["frente", "lado", "costas"] as const;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -57,9 +57,7 @@ export async function POST(request: NextRequest) {
   const emailSlug = email.replace(/[^a-zA-Z0-9.-]/g, "_");
   const storagePath = `${emailSlug}/${Date.now()}-${tipo}.${fileExt}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(FOTOS_BUCKET)
-    .upload(storagePath, buffer, { contentType: `image/${ext}` });
+  const { error: uploadError } = await uploadPhoto(storagePath, buffer, `image/${ext}`);
   if (uploadError) {
     return NextResponse.json({ error: "Erro ao enviar a foto." }, { status: 502 });
   }

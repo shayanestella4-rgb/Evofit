@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSignedPhotoUrl } from "@/lib/supabase";
+import { getSignedPhotoUrl, deletePhotoFile } from "@/lib/supabase";
 
 const ADMIN_PASSWORD = "evofit-admin-2026";
 
@@ -32,4 +32,27 @@ export async function POST(request: NextRequest) {
   );
 
   return NextResponse.json({ photos: withUrls });
+}
+
+/** Exclui uma foto de evolução (storage + registro) — uso exclusivo do painel /admin. */
+export async function DELETE(request: NextRequest) {
+  const body = await request.json().catch(() => ({}));
+  const { password, id } = body;
+
+  if (password !== ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!id || typeof id !== "string") {
+    return NextResponse.json({ error: "Id inválido" }, { status: 400 });
+  }
+
+  const photo = await prisma.progressPhoto.findUnique({ where: { id } });
+  if (!photo) {
+    return NextResponse.json({ error: "Foto não encontrada" }, { status: 404 });
+  }
+
+  await deletePhotoFile(photo.storagePath);
+  await prisma.progressPhoto.delete({ where: { id } });
+
+  return NextResponse.json({ ok: true });
 }

@@ -28,3 +28,7 @@ export async function getSignedPhotoUrl(storagePath: string): Promise<string | n
   if (error) return null;
   return data.signedUrl;
 }
+
+export async function deletePhotoFile(storagePath: string) {
+  return getSupabase().storage.from(FOTOS_BUCKET).remove([storagePath]);
+}

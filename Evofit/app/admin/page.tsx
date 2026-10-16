@@ -232,6 +232,18 @@ export default function AdminPage() {
     }
   }
 
+  async function deleteEvolutionPhoto(id: string) {
+    if (!confirm("Excluir essa foto? Não tem como desfazer.")) return;
+    const res = await fetch("/api/admin/fotos", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: ADMIN_PASSWORD, id }),
+    });
+    if (res.ok) {
+      setEvolutionPhotos((prev) => prev?.filter((p) => p.id !== id) ?? prev);
+    }
+  }
+
   async function saveAnamneseAdmin() {
     if (!anamneseForm) return;
     const target = anamneseEmail.trim().toLowerCase();
@@ -904,6 +916,13 @@ export default function AdminPage() {
                               // eslint-disable-next-line @next/next/no-img-element -- miniatura dinâmica vinda de URL assinada temporária
                               <img src={p.url} alt={tipo} className="w-full h-full object-cover" />
                             )}
+                            <button
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteEvolutionPhoto(p.id); }}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white text-xs leading-none flex items-center justify-center hover:bg-red-600"
+                              title="Excluir foto"
+                            >
+                              ×
+                            </button>
                             <span className="absolute bottom-1 left-0 right-0 text-center text-[9px] font-semibold text-white bg-black/50 py-0.5">
                               {new Date(p.createdAt).toLocaleDateString("pt-BR")}
                             </span>
